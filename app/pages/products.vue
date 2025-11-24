@@ -47,22 +47,90 @@ const hasCamera = ref<boolean | null>(null)
 const hasDisplay = ref<boolean | null>(null)
 const hasBattery = ref<boolean | null>(null)
 
-// Reset filters when category changes
-watch(selectedType, () => {
-  selectedChip.value = 'all'
-  selectedWifiVersion.value = 'all'
-  selectedBluetoothVersion.value = 'all'
-  selectedUsbType.value = 'all'
-  hasCamera.value = null
-  hasDisplay.value = null
-  hasBattery.value = null
-})
+// Flag to prevent URL updates during initialization
+const isInitializing = ref(true)
 
-// Initialize selectedType from URL query parameter
-onMounted(() => {
+// Initialize filters from URL query parameters
+const initializeFiltersFromURL = () => {
   if (route.query.type && typeof route.query.type === 'string') {
     selectedType.value = route.query.type
   }
+  if (route.query.search && typeof route.query.search === 'string') {
+    searchQuery.value = route.query.search
+  }
+  if (route.query.sort && typeof route.query.sort === 'string') {
+    sortBy.value = route.query.sort
+  }
+  if (route.query.chip && typeof route.query.chip === 'string') {
+    selectedChip.value = route.query.chip
+  }
+  if (route.query.wifi && typeof route.query.wifi === 'string') {
+    selectedWifiVersion.value = route.query.wifi
+  }
+  if (route.query.bluetooth && typeof route.query.bluetooth === 'string') {
+    selectedBluetoothVersion.value = route.query.bluetooth
+  }
+  if (route.query.usb && typeof route.query.usb === 'string') {
+    selectedUsbType.value = route.query.usb
+  }
+  if (route.query.camera === 'true') {
+    hasCamera.value = true
+  }
+  if (route.query.display === 'true') {
+    hasDisplay.value = true
+  }
+  if (route.query.battery === 'true') {
+    hasBattery.value = true
+  }
+}
+
+// Update URL with current filter state
+const updateURL = () => {
+  // Don't update URL during initialization
+  if (isInitializing.value) return
+  
+  const query: Record<string, string> = {}
+  
+  if (selectedType.value !== 'all') query.type = selectedType.value
+  if (searchQuery.value) query.search = searchQuery.value
+  if (sortBy.value !== 'newest') query.sort = sortBy.value
+  if (selectedChip.value !== 'all') query.chip = selectedChip.value
+  if (selectedWifiVersion.value !== 'all') query.wifi = selectedWifiVersion.value
+  if (selectedBluetoothVersion.value !== 'all') query.bluetooth = selectedBluetoothVersion.value
+  if (selectedUsbType.value !== 'all') query.usb = selectedUsbType.value
+  if (hasCamera.value === true) query.camera = 'true'
+  if (hasDisplay.value === true) query.display = 'true'
+  if (hasBattery.value === true) query.battery = 'true'
+  
+  navigateTo({ query }, { replace: true })
+}
+
+// Watch all filters and update URL
+watch([searchQuery, selectedType, sortBy, selectedChip, selectedWifiVersion, selectedBluetoothVersion, selectedUsbType, hasCamera, hasDisplay, hasBattery], () => {
+  updateURL()
+})
+
+// Reset filters when category changes
+watch(selectedType, (newType, oldType) => {
+  // Only reset if not initial load and category actually changed
+  if (!isInitializing.value && oldType !== undefined && oldType !== newType) {
+    selectedChip.value = 'all'
+    selectedWifiVersion.value = 'all'
+    selectedBluetoothVersion.value = 'all'
+    selectedUsbType.value = 'all'
+    hasCamera.value = null
+    hasDisplay.value = null
+    hasBattery.value = null
+  }
+})
+
+// Initialize filters from URL on mount
+onMounted(() => {
+  initializeFiltersFromURL()
+  // Allow URL updates after initialization is complete
+  nextTick(() => {
+    isInitializing.value = false
+  })
 })
 
 // Fetch products
@@ -233,6 +301,46 @@ const filteredProducts = computed(() => {
   return products
 })
 
+// Check if any filters are active
+const hasActiveFilters = computed(() => {
+  return searchQuery.value !== '' ||
+    selectedType.value !== 'all' ||
+    sortBy.value !== 'newest' ||
+    selectedChip.value !== 'all' ||
+    selectedWifiVersion.value !== 'all' ||
+    selectedBluetoothVersion.value !== 'all' ||
+    selectedUsbType.value !== 'all' ||
+    hasCamera.value !== null ||
+    hasDisplay.value !== null ||
+    hasBattery.value !== null
+})
+
+// Clear all filters
+const clearAllFilters = () => {
+  searchQuery.value = ''
+  selectedType.value = 'all'
+  sortBy.value = 'newest'
+  selectedChip.value = 'all'
+  selectedWifiVersion.value = 'all'
+  selectedBluetoothVersion.value = 'all'
+  selectedUsbType.value = 'all'
+  hasCamera.value = null
+  hasDisplay.value = null
+  hasBattery.value = null
+}
+
+// Share current filter configuration
+const shareFilters = async () => {
+  const url = window.location.href
+  try {
+    await navigator.clipboard.writeText(url)
+    // You could add a toast notification here
+    alert('Link copied to clipboard! Share this URL to show these exact filters.')
+  } catch (err) {
+    console.error('Failed to copy:', err)
+  }
+}
+
 // Set page meta
 useHead({
   title: 'Products - ESP32 Store',
@@ -247,13 +355,73 @@ useHead({
     <!-- Header -->
     <div class="bg-white border-b border-gray-200">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-bold text-gray-900">Products</h1>
-        <p class="mt-2 text-sm text-gray-600">
-          Browse our selection of ESP32 boards and components
-          <span v-if="productsData?.count" class="ml-2 font-medium text-gray-900">
-            ({{ filteredProducts.length }} of {{ productsData.count }} products)
-          </span>
-        </p>
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold text-gray-900">Products</h1>
+            <p class="mt-2 text-sm text-gray-600">
+              Browse our selection of ESP32 boards and components
+              <span v-if="productsData?.count" class="ml-2 font-medium text-gray-900">
+                ({{ filteredProducts.length }} of {{ productsData.count }} products)
+              </span>
+            </p>
+            
+            <!-- Active Filters Display -->
+            <div v-if="hasActiveFilters" class="mt-3 flex flex-wrap gap-2">
+              <span v-if="selectedType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                {{ productTypes.find((t: any) => t.value === selectedType)?.label }}
+              </span>
+              <span v-if="selectedChip !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-purple-50 px-3 py-1 text-xs font-medium text-purple-700">
+                {{ chipOptions.find((c: any) => c.value === selectedChip)?.label }}
+              </span>
+              <span v-if="selectedWifiVersion !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
+                WiFi {{ selectedWifiVersion }}
+              </span>
+              <span v-if="selectedBluetoothVersion !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
+                Bluetooth {{ selectedBluetoothVersion }}
+              </span>
+              <span v-if="selectedUsbType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 text-xs font-medium text-orange-700">
+                {{ usbTypeOptions.find((u: any) => u.value === selectedUsbType)?.label }}
+              </span>
+              <span v-if="hasCamera === true" class="inline-flex items-center gap-1 rounded-full bg-pink-50 px-3 py-1 text-xs font-medium text-pink-700">
+                Camera
+              </span>
+              <span v-if="hasDisplay === true" class="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-3 py-1 text-xs font-medium text-cyan-700">
+                Display
+              </span>
+              <span v-if="hasBattery === true" class="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-700">
+                Battery
+              </span>
+              <span v-if="searchQuery" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                Search: "{{ searchQuery }}"
+              </span>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div v-if="hasActiveFilters" class="ml-4 flex gap-2">
+            <button
+              @click="shareFilters"
+              class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              title="Share this filtered view"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              <span class="hidden sm:inline">Share</span>
+            </button>
+            
+            <button
+              @click="clearAllFilters"
+              class="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+              title="Clear all filters"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span class="hidden sm:inline">Clear All</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -401,9 +569,12 @@ useHead({
         <button
           v-if="selectedChip !== 'all' || selectedWifiVersion !== 'all' || selectedBluetoothVersion !== 'all' || selectedUsbType !== 'all' || hasCamera !== null || hasDisplay !== null || hasBattery !== null"
           @click="selectedChip = 'all'; selectedWifiVersion = 'all'; selectedBluetoothVersion = 'all'; selectedUsbType = 'all'; hasCamera = null; hasDisplay = null; hasBattery = null"
-          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-1.5"
         >
-          Clear Filters
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Clear Category Filters
         </button>
       </div>
     </div>
