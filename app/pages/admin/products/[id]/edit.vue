@@ -218,6 +218,149 @@
                   placeholder="e.g., 45"
                 />
               </div>
+
+              <!-- Connectivity Features -->
+              <div v-if="formData.metadata.filters.product_type === 'development_board'" class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-3">Connectivity</label>
+                
+                <!-- WiFi -->
+                <div class="mb-3">
+                  <label class="flex items-center gap-2 cursor-pointer mb-2">
+                    <input
+                      type="checkbox"
+                      v-model="formData.metadata.filters.has_wifi"
+                      @change="updateConnectivityDisplay"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-700">WiFi</span>
+                  </label>
+                  <div v-if="formData.metadata.filters.has_wifi" class="ml-6">
+                    <select
+                      v-model="formData.metadata.filters.wifi_version"
+                      @change="updateConnectivityDisplay"
+                      class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    >
+                      <option value="">Select version...</option>
+                      <option value="4">WiFi 4 (802.11n)</option>
+                      <option value="5">WiFi 5 (802.11ac)</option>
+                      <option value="6">WiFi 6 (802.11ax)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Bluetooth -->
+                <div class="mb-3">
+                  <label class="flex items-center gap-2 cursor-pointer mb-2">
+                    <input
+                      type="checkbox"
+                      v-model="formData.metadata.filters.has_bluetooth"
+                      @change="updateConnectivityDisplay"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-700">Bluetooth</span>
+                  </label>
+                  <div v-if="formData.metadata.filters.has_bluetooth" class="ml-6">
+                    <select
+                      v-model="formData.metadata.filters.bluetooth_version"
+                      @change="updateConnectivityDisplay"
+                      class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    >
+                      <option value="">Select version...</option>
+                      <option value="4.2">Bluetooth 4.2</option>
+                      <option value="5.0">Bluetooth 5.0 (LE)</option>
+                      <option value="5.1">Bluetooth 5.1 (LE)</option>
+                      <option value="5.2">Bluetooth 5.2 (LE)</option>
+                      <option value="5.3">Bluetooth 5.3 (LE)</option>
+                      <option value="5.4">Bluetooth 5.4 (LE)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Zigbee -->
+                <div class="mb-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      v-model="formData.metadata.filters.has_zigbee"
+                      @change="updateConnectivityDisplay"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-700">Zigbee</span>
+                  </label>
+                </div>
+
+                <!-- Thread -->
+                <div>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      v-model="formData.metadata.filters.has_thread"
+                      @change="updateConnectivityDisplay"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-700">Thread</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- USB Port Type -->
+              <div v-if="formData.metadata.filters.product_type === 'development_board'" class="mb-4">
+                <label for="usb_type" class="block text-sm font-medium text-gray-700 mb-2">USB Port</label>
+                <select
+                  id="usb_type"
+                  v-model="formData.metadata.filters.usb_type"
+                  @change="updateFeaturesDisplay"
+                  class="w-full rounded-lg border border-gray-200 px-4 py-2 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                >
+                  <option value="">No USB</option>
+                  <option value="micro_usb">Micro USB</option>
+                  <option value="usb_c">USB-C</option>
+                  <option value="usb_a">USB-A</option>
+                </select>
+              </div>
+
+              <!-- Hardware Features -->
+              <div v-if="formData.metadata.filters.product_type === 'development_board'">
+                <label class="block text-sm font-medium text-gray-700 mb-3">Hardware Features</label>
+                <div class="space-y-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      v-model="formData.metadata.filters.has_camera"
+                      @change="updateFeaturesDisplay"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-700">Camera Support</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      v-model="formData.metadata.filters.has_display"
+                      @change="updateFeaturesDisplay"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-700">Built-in Display</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      v-model="formData.metadata.filters.has_battery_pins"
+                      @change="updateFeaturesDisplay"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-700">Battery Connector</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      v-model="formData.metadata.filters.has_sd_card"
+                      @change="updateFeaturesDisplay"
+                      class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span class="text-sm text-gray-700">SD Card Slot</span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -416,6 +559,55 @@ const updateDisplayField = (field: string) => {
       break
     default:
       formData.value.metadata.display[field] = String(value)
+  }
+}
+
+// Update connectivity display
+const updateConnectivityDisplay = () => {
+  const connectivity = []
+  
+  if (formData.value.metadata.filters.has_wifi) {
+    const version = formData.value.metadata.filters.wifi_version
+    connectivity.push(version ? `WiFi ${version}` : 'WiFi')
+  }
+  
+  if (formData.value.metadata.filters.has_bluetooth) {
+    const version = formData.value.metadata.filters.bluetooth_version
+    connectivity.push(version ? `Bluetooth ${version}` : 'Bluetooth')
+  }
+  
+  if (formData.value.metadata.filters.has_zigbee) connectivity.push('Zigbee')
+  if (formData.value.metadata.filters.has_thread) connectivity.push('Thread')
+  
+  if (connectivity.length > 0) {
+    formData.value.metadata.display.connectivity = connectivity.join(', ')
+  } else {
+    delete formData.value.metadata.display.connectivity
+  }
+}
+
+// Update features display
+const updateFeaturesDisplay = () => {
+  const features = []
+  if (formData.value.metadata.filters.has_camera) features.push('Camera')
+  if (formData.value.metadata.filters.has_display) features.push('Display')
+  if (formData.value.metadata.filters.has_battery_pins) features.push('Battery')
+  if (formData.value.metadata.filters.has_sd_card) features.push('SD Card')
+  
+  // Add USB type
+  const usbType = formData.value.metadata.filters.usb_type
+  if (usbType) {
+    const usbDisplay = usbType === 'usb_c' ? 'USB-C' : usbType === 'micro_usb' ? 'Micro USB' : 'USB-A'
+    features.push(usbDisplay)
+    formData.value.metadata.display.usb_type = usbDisplay
+  } else {
+    delete formData.value.metadata.display.usb_type
+  }
+  
+  if (features.length > 0) {
+    formData.value.metadata.display.features = features.join(', ')
+  } else {
+    delete formData.value.metadata.display.features
   }
 }
 
