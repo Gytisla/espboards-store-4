@@ -1,18 +1,18 @@
 import { createServerSupabaseClient } from '~/server/utils/supabase'
 
 /**
- * GET /api/products/:id
- * Fetch a single product by ID
+ * GET /api/products/:slug
+ * Fetch a single product by slug
  * Public endpoint with RLS (only returns active products)
  */
 
 export default defineEventHandler(async (event) => {
-  const productId = getRouterParam(event, 'id')
+  const slug = getRouterParam(event, 'id') // Keep param name as 'id' for route compatibility
 
-  if (!productId) {
+  if (!slug) {
     throw createError({
       statusCode: 400,
-      message: 'Product ID is required',
+      message: 'Product slug is required',
     })
   }
 
@@ -24,6 +24,7 @@ export default defineEventHandler(async (event) => {
       .select(`
         id,
         asin,
+        slug,
         title,
         description,
         brand,
@@ -44,7 +45,7 @@ export default defineEventHandler(async (event) => {
           currency
         )
       `)
-      .eq('id', productId)
+      .eq('slug', slug)
       .eq('status', 'active')
       .single()
 

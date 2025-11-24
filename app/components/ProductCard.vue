@@ -17,6 +17,7 @@ interface ProductMetadata {
 interface Product {
   id: string
   asin: string
+  slug: string
   title: string
   description: string | null
   brand: string | null
@@ -77,7 +78,7 @@ const features = computed(() => getProductFeatures(props.product.metadata))
 
 <template>
   <NuxtLink
-    :to="`/products/${product.id}`"
+    :to="`/products/${product.slug}`"
     class="group flex flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-all hover:shadow-lg"
   >
     <!-- Product Image -->

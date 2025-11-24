@@ -1,9 +1,9 @@
 <script setup lang="ts">
 const route = useRoute()
-const productId = route.params.id as string
+const productSlug = route.params.id as string // Route param is still 'id' for file naming compatibility
 
-// Fetch product details from public API
-const { data, pending, error } = await useFetch(`/api/products/${productId}`)
+// Fetch product details from public API using slug
+const { data, pending, error } = await useFetch(`/api/products/${productSlug}`)
 
 // Handle errors
 if (error.value) {

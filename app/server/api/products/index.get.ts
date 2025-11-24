@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
       .select(`
         id,
         asin,
+        slug,
         title,
         description,
         brand,
