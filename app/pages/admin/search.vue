@@ -4,9 +4,11 @@ definePageMeta({
   middleware: 'auth'
 })
 
+// Use marketplace composable for global marketplace state
+const { selectedMarketplace, marketplace } = useMarketplace()
+
 // Reactive state
 const searchQuery = ref('')
-const selectedMarketplace = ref('US')
 const isLoading = ref(false)
 const searchResults = ref<any[]>([])
 const error = ref('')
@@ -26,12 +28,6 @@ const bulkImportProgress = ref({
   failed: 0,
   results: [] as Array<{ asin: string; title: string; success: boolean; error?: string }>
 })
-
-// Marketplace options
-const marketplaces = [
-  { code: 'US', name: 'United States', flag: '🇺🇸' },
-  { code: 'DE', name: 'Germany', flag: '🇩🇪' }
-]
 
 // Check if a product is selected
 const isSelected = (asin: string) => selectedAsins.value.has(asin)
@@ -75,6 +71,14 @@ const isImported = (asin: string) => importedAsins.value.has(asin)
 
 // Get import error for a product
 const getImportError = (asin: string) => importErrors.value.get(asin)
+
+// Watch for marketplace changes and re-search if we have results
+watch(selectedMarketplace, (newMarketplace) => {
+  // If we have search results, automatically re-search with the new marketplace
+  if (searchResults.value.length > 0 && searchQuery.value.trim()) {
+    performSearch()
+  }
+})
 
 // Search function
 const performSearch = async () => {
@@ -261,7 +265,7 @@ const handleSubmit = (e: Event) => {
       <form @submit="handleSubmit" class="space-y-4">
         <div class="grid gap-4 md:grid-cols-3">
           <!-- Search Input -->
-          <div class="md:col-span-2">
+          <div class="md:col-span-3">
             <label for="search" class="block text-sm font-semibold text-gray-900 mb-2">
               Search Query
             </label>
@@ -281,23 +285,6 @@ const handleSubmit = (e: Event) => {
                 :disabled="isLoading"
               />
             </div>
-          </div>
-
-          <!-- Marketplace Selector -->
-          <div>
-            <label for="marketplace" class="block text-sm font-semibold text-gray-900 mb-2">
-              Marketplace
-            </label>
-            <select
-              id="marketplace"
-              v-model="selectedMarketplace"
-              class="block w-full rounded-xl border border-gray-200 bg-white py-3 px-4 text-gray-900 outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-              :disabled="isLoading"
-            >
-              <option v-for="marketplace in marketplaces" :key="marketplace.code" :value="marketplace.code">
-                {{ marketplace.flag }} {{ marketplace.name }}
-              </option>
-            </select>
           </div>
         </div>
 
@@ -507,7 +494,7 @@ const handleSubmit = (e: Event) => {
                   {{ product.currentPrice ? `$${product.currentPrice}` : 'Price N/A' }}
                 </span>
                 <span class="text-xs text-gray-500">
-                  {{ selectedMarketplace === 'US' ? '🇺🇸' : '🇩🇪' }}
+                  {{ marketplace.flag }}
                 </span>
               </div>
             </div>

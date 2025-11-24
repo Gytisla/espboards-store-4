@@ -65,6 +65,9 @@ const navigation = [
 
         <!-- Right Actions -->
         <div class="flex items-center gap-2">
+          <!-- Marketplace Selector -->
+          <MarketplaceSelector />
+
           <!-- Search Button -->
           <button
             class="hidden md:flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm text-gray-500 transition-all hover:border-gray-300 hover:shadow-md"

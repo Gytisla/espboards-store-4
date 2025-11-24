@@ -39,6 +39,9 @@ const unreadCount = notifications.filter(n => n.unread).length
 
     <!-- Right: Search, Notifications, User Menu -->
     <div class="flex items-center gap-3">
+      <!-- Marketplace Selector -->
+      <MarketplaceSelector />
+
       <!-- Search -->
       <div class="relative hidden lg:block">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
