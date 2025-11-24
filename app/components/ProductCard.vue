@@ -76,14 +76,12 @@ const features = computed(() => getProductFeatures(props.product.metadata))
 </script>
 
 <template>
-  <a
-    :href="product.detail_page_url"
-    target="_blank"
-    rel="noopener noreferrer"
+  <NuxtLink
+    :to="`/products/${product.id}`"
     class="group flex flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-all hover:shadow-lg"
   >
     <!-- Product Image -->
-    <div class="aspect-square overflow-hidden bg-gray-100">
+    <div class="aspect-video overflow-hidden bg-gray-100">
       <img
         :src="productImage"
         :alt="product.title"
@@ -93,21 +91,21 @@ const features = computed(() => getProductFeatures(props.product.metadata))
     </div>
 
     <!-- Product Info -->
-    <div class="flex flex-1 flex-col p-4">
+    <div class="flex flex-1 flex-col p-3">
       <!-- Brand -->
       <p v-if="product.brand" class="text-xs font-medium text-gray-500 uppercase">
         {{ product.brand }}
       </p>
 
       <!-- Title -->
-      <h3 class="mt-1 text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600">
+      <h3 class="mt-0.5 text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600">
         {{ product.title }}
       </h3>
 
       <!-- Features/Tags -->
-      <div v-if="features.length > 0" class="mt-2 flex flex-wrap gap-1">
+      <div v-if="features.length > 0" class="mt-1.5 flex flex-wrap gap-1">
         <span
-          v-for="(feature, idx) in features.slice(0, 3)"
+          v-for="(feature, idx) in features.slice(0, 2)"
           :key="idx"
           class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700"
         >
@@ -119,33 +117,31 @@ const features = computed(() => getProductFeatures(props.product.metadata))
       <div class="flex-1"></div>
 
       <!-- Pricing -->
-      <div class="mt-4">
+      <div class="mt-2">
         <div class="flex items-baseline gap-2">
-          <span class="text-lg font-bold text-gray-900">
+          <span class="text-base font-bold text-gray-900">
             {{ formatPrice(product.current_price, product.currency) }}
           </span>
-          <span v-if="product.original_price && product.original_price > product.current_price" class="text-sm text-gray-500 line-through">
+          <span v-if="product.original_price && product.original_price > product.current_price" class="text-xs text-gray-500 line-through">
             {{ formatPrice(product.original_price, product.currency) }}
           </span>
         </div>
 
         <!-- Savings Badge -->
-        <div v-if="product.savings_percentage" class="mt-1">
-          <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-            Save {{ Math.round(product.savings_percentage) }}%
-          </span>
-        </div>
+        <span v-if="product.savings_percentage" class="mt-1 inline-flex items-center rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+          Save {{ Math.round(product.savings_percentage) }}%
+        </span>
       </div>
 
-      <!-- View on Amazon Button -->
-      <div class="mt-3">
-        <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600 transition-colors group-hover:bg-blue-50 group-hover:text-blue-700">
-          <span class="font-medium">View on Amazon</span>
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      <!-- View Details Button -->
+      <div class="mt-2">
+        <div class="flex items-center justify-between rounded-lg bg-gray-50 px-2.5 py-1.5 text-xs text-gray-600 transition-colors group-hover:bg-blue-50 group-hover:text-blue-700">
+          <span class="font-medium">View Details</span>
+          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
         </div>
       </div>
     </div>
-  </a>
+  </NuxtLink>
 </template>
