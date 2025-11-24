@@ -40,8 +40,8 @@ export default defineEventHandler(async (event) => {
         marketplace:marketplaces!marketplace_id (
           id,
           code,
-          name,
-          domain
+          region_name,
+          currency
         )
       `)
       .eq('status', 'active')
