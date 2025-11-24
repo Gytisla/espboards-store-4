@@ -36,6 +36,7 @@ export default defineEventHandler(async (event) => {
         savings_percentage,
         currency,
         status,
+        metadata,
         created_at,
         marketplace:marketplaces!marketplace_id (
           id,
