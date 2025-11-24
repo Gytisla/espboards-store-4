@@ -1,0 +1,115 @@
+{
+  "scriptId": "393",
+  "url": "file:///Users/gytis/Documents/Projects/Blog/espboards-store-v4/espboards-store/supabase/functions/_shared/validation.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 13119, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [
+        { "startOffset": 1373, "endOffset": 1449, "count": 6 },
+        { "startOffset": 1402, "endOffset": 1425, "count": 1 },
+        { "startOffset": 1426, "endOffset": 1449, "count": 1 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1746, "endOffset": 1793, "count": 5 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 2601, "endOffset": 2683, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "generateValidationErrorMessage",
+      "ranges": [
+        { "startOffset": 6515, "endOffset": 7531, "count": 2 },
+        { "startOffset": 6592, "endOffset": 6642, "count": 0 },
+        { "startOffset": 6793, "endOffset": 6803, "count": 0 },
+        { "startOffset": 6887, "endOffset": 7117, "count": 1 },
+        { "startOffset": 7019, "endOffset": 7117, "count": 0 },
+        { "startOffset": 7122, "endOffset": 7199, "count": 1 },
+        { "startOffset": 7204, "endOffset": 7279, "count": 0 },
+        { "startOffset": 7284, "endOffset": 7373, "count": 0 },
+        { "startOffset": 7378, "endOffset": 7452, "count": 0 },
+        { "startOffset": 7457, "endOffset": 7525, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "validateImportRequest",
+      "ranges": [
+        { "startOffset": 7679, "endOffset": 8072, "count": 6 },
+        { "startOffset": 7802, "endOffset": 8013, "count": 2 },
+        { "startOffset": 8013, "endOffset": 8071, "count": 4 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "validateAsin",
+      "ranges": [{ "startOffset": 8183, "endOffset": 8521, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "validateMarketplaceCode",
+      "ranges": [{ "startOffset": 8642, "endOffset": 9007, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "validatePaapiErrorResponse",
+      "ranges": [{ "startOffset": 9132, "endOffset": 9508, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "validatePaapiGetItemsResponse",
+      "ranges": [{ "startOffset": 9636, "endOffset": 10021, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "validatePaapiItem",
+      "ranges": [{ "startOffset": 10132, "endOffset": 10480, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "formatValidationErrors",
+      "ranges": [{ "startOffset": 10620, "endOffset": 10808, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isPaapiErrorCode",
+      "ranges": [{ "startOffset": 10957, "endOffset": 11030, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "parsePaapiErrorCode",
+      "ranges": [{ "startOffset": 11172, "endOffset": 11321, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "sanitizeAsin",
+      "ranges": [{ "startOffset": 11654, "endOffset": 11820, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "sanitizeMarketplaceCode",
+      "ranges": [{ "startOffset": 11986, "endOffset": 12174, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isZodError",
+      "ranges": [{ "startOffset": 12409, "endOffset": 12477, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isValidationError",
+      "ranges": [{ "startOffset": 12533, "endOffset": 12724, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

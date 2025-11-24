@@ -1,0 +1,79 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window", "deno.unstable"],
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false
+  },
+  "lint": {
+    "include": ["supabase/functions/"],
+    "exclude": [
+      "supabase/functions/_shared/__tests__/"
+    ],
+    "rules": {
+      "tags": ["recommended"],
+      "include": [
+        "ban-untagged-todo",
+        "camelcase",
+        "eqeqeq",
+        "explicit-function-return-type",
+        "explicit-module-boundary-types",
+        "no-await-in-loop",
+        "no-console",
+        "no-eval",
+        "no-implicit-declare-namespace-export",
+        "no-non-null-assertion",
+        "no-throw-literal",
+        "no-var"
+      ]
+    }
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "include": ["supabase/functions/"],
+    "exclude": ["supabase/functions/_shared/__tests__/"]
+  },
+  "test": {
+    "include": ["supabase/functions/**/*.test.ts"],
+    "exclude": []
+  },
+  "tasks": {
+    "dev": "supabase functions serve",
+    "test": "deno test --allow-all --coverage=coverage supabase/functions/",
+    "test:watch": "deno test --allow-all --watch supabase/functions/",
+    "coverage": "deno coverage coverage --lcov --output=coverage.lcov",
+    "lint": "deno lint supabase/functions/",
+    "fmt": "deno fmt supabase/functions/",
+    "fmt:check": "deno fmt --check supabase/functions/",
+    "typecheck": "deno check supabase/functions/**/*.ts"
+  },
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@^2.45.0",
+    "zod": "npm:zod@^3.23.0",
+    "pino": "npm:pino@^9.0.0"
+  },
+  "nodeModulesDir": "auto",
+  "unstable": [
+    "cron",
+    "kv",
+    "broadcast-channel"
+  ]
+}

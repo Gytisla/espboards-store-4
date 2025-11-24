@@ -1,0 +1,96 @@
+{
+  "scriptId": "392",
+  "url": "file:///Users/gytis/Documents/Projects/Blog/espboards-store-v4/espboards-store/supabase/functions/_shared/errors.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 12752, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1246, "endOffset": 2974, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "createErrorResponse",
+      "ranges": [{ "startOffset": 4620, "endOffset": 4946, "count": 2 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "createErrorResponseObject",
+      "ranges": [{ "startOffset": 5369, "endOffset": 5979, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "logError",
+      "ranges": [{ "startOffset": 6361, "endOffset": 6892, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "logErrorAndRespond",
+      "ranges": [{ "startOffset": 7321, "endOffset": 7597, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isValidationError",
+      "ranges": [{ "startOffset": 7834, "endOffset": 8069, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isPaapiError",
+      "ranges": [{ "startOffset": 8121, "endOffset": 8349, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isDatabaseError",
+      "ranges": [{ "startOffset": 8403, "endOffset": 8576, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isRetryableError",
+      "ranges": [{ "startOffset": 8643, "endOffset": 8845, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "mapPaapiErrorCode",
+      "ranges": [{ "startOffset": 9181, "endOffset": 9692, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "createPaapiErrorResponse",
+      "ranges": [{ "startOffset": 9937, "endOffset": 10297, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "validationError",
+      "ranges": [{ "startOffset": 10554, "endOffset": 10740, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "notFoundError",
+      "ranges": [{ "startOffset": 10793, "endOffset": 10983, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "unauthorizedError",
+      "ranges": [{ "startOffset": 11040, "endOffset": 11219, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "rateLimitError",
+      "ranges": [{ "startOffset": 11297, "endOffset": 11728, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "circuitBreakerError",
+      "ranges": [{ "startOffset": 11792, "endOffset": 12265, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "internalServerError",
+      "ranges": [{ "startOffset": 12325, "endOffset": 12546, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "scriptId": "397",
+  "url": "file:///Users/gytis/Documents/Projects/Blog/espboards-store-v4/espboards-store/supabase/functions/_shared/types.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 3764, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 909, "endOffset": 1438, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 1534, "endOffset": 2644, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "isPaapiError",
+      "ranges": [{ "startOffset": 2886, "endOffset": 3084, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isErrorResponse",
+      "ranges": [{ "startOffset": 3152, "endOffset": 3338, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isProductStatus",
+      "ranges": [{ "startOffset": 3404, "endOffset": 3548, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "isCircuitBreakerState",
+      "ranges": [{ "startOffset": 3619, "endOffset": 3763, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

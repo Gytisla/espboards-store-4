@@ -1,0 +1,90 @@
+{
+  "scriptId": "391",
+  "url": "file:///Users/gytis/Documents/Projects/Blog/espboards-store-v4/espboards-store/supabase/functions/_shared/logger.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 5003, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 578, "endOffset": 739, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "generateCorrelationId",
+      "ranges": [{ "startOffset": 1132, "endOffset": 1198, "count": 6 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "<instance_members_initializer>",
+      "ranges": [{ "startOffset": 1258, "endOffset": 1264, "count": 7 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "Logger",
+      "ranges": [{ "startOffset": 1360, "endOffset": 1457, "count": 7 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "setCorrelationId",
+      "ranges": [{ "startOffset": 1590, "endOffset": 1674, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "getCorrelationId",
+      "ranges": [{ "startOffset": 1775, "endOffset": 1837, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "shouldLog",
+      "ranges": [{ "startOffset": 1981, "endOffset": 2085, "count": 44 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "log",
+      "ranges": [
+        { "startOffset": 2294, "endOffset": 3126, "count": 44 },
+        { "startOffset": 2365, "endOffset": 2386, "count": 0 },
+        { "startOffset": 2927, "endOffset": 3050, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "debug",
+      "ranges": [{ "startOffset": 3247, "endOffset": 3326, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "info",
+      "ranges": [{ "startOffset": 3445, "endOffset": 3522, "count": 42 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "warn",
+      "ranges": [{ "startOffset": 3647, "endOffset": 3724, "count": 2 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "error",
+      "ranges": [{ "startOffset": 3878, "endOffset": 3971, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "child",
+      "ranges": [{ "startOffset": 4160, "endOffset": 4328, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "createLogger",
+      "ranges": [{ "startOffset": 4450, "endOffset": 4512, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "createLoggerWithCorrelation",
+      "ranges": [{ "startOffset": 4840, "endOffset": 5002, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

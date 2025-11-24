@@ -1,0 +1,94 @@
+{
+  "scriptId": "394",
+  "url": "file:///Users/gytis/Documents/Projects/Blog/espboards-store-v4/espboards-store/supabase/functions/_shared/paapi-client.ts",
+  "functions": [
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 0, "endOffset": 10222, "count": 1 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "<instance_members_initializer>",
+      "ranges": [{ "startOffset": 724, "endOffset": 739, "count": 0 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "PaapiClientError",
+      "ranges": [{ "startOffset": 743, "endOffset": 881, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "<instance_members_initializer>",
+      "ranges": [{ "startOffset": 1461, "endOffset": 1491, "count": 4 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "PaapiClient",
+      "ranges": [{ "startOffset": 1758, "endOffset": 2131, "count": 4 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "validateConfig",
+      "ranges": [
+        { "startOffset": 2254, "endOffset": 2581, "count": 4 },
+        { "startOffset": 2436, "endOffset": 2577, "count": 20 },
+        { "startOffset": 2464, "endOffset": 2571, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "getItems",
+      "ranges": [
+        { "startOffset": 3134, "endOffset": 5086, "count": 4 },
+        { "startOffset": 4125, "endOffset": 4194, "count": 0 },
+        { "startOffset": 4254, "endOffset": 4279, "count": 0 },
+        { "startOffset": 4281, "endOffset": 4350, "count": 0 },
+        { "startOffset": 4376, "endOffset": 5082, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "",
+      "ranges": [{ "startOffset": 3651, "endOffset": 3673, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "buildGetItemsRequest",
+      "ranges": [{ "startOffset": 5282, "endOffset": 5523, "count": 4 }],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "generateSignatureV4",
+      "ranges": [{ "startOffset": 5850, "endOffset": 6585, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "getSignedHeaders",
+      "ranges": [{ "startOffset": 6655, "endOffset": 6772, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "getEndpoint",
+      "ranges": [
+        { "startOffset": 6814, "endOffset": 7251, "count": 4 },
+        { "startOffset": 7221, "endOffset": 7246, "count": 0 }
+      ],
+      "isBlockCoverage": true
+    },
+    {
+      "functionName": "handlePaapiError",
+      "ranges": [{ "startOffset": 7629, "endOffset": 9934, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "getAmzDate",
+      "ranges": [{ "startOffset": 9997, "endOffset": 10079, "count": 0 }],
+      "isBlockCoverage": false
+    },
+    {
+      "functionName": "getDateStamp",
+      "ranges": [{ "startOffset": 10133, "endOffset": 10219, "count": 0 }],
+      "isBlockCoverage": false
+    }
+  ]
+}

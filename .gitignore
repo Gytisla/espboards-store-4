@@ -1,0 +1,48 @@
+# Environment Variables
+.env
+.env.*
+!.env.example
+.env.local
+
+# Supabase
+.supabase/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs
+*.log
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+*~
+
+# Build outputs
+dist/
+build/
+.output/
+.cache/
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
