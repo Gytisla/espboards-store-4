@@ -1,13 +1,20 @@
 <template>
-  <div class="py-6">
+  <div class="space-y-6">
     <!-- Page Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Products</h1>
-      <p class="mt-2 text-gray-600 dark:text-gray-400">Manage your product catalog</p>
+    <div class="rounded-2xl bg-linear-to-r from-blue-600 to-purple-600 p-6 sm:p-8 text-white shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10">
+      <div class="flex items-center gap-3">
+        <svg class="h-8 w-8 sm:h-10 sm:w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold">Products Management</h2>
+          <p class="text-sm sm:text-base text-blue-100 dark:text-blue-200">Manage and monitor your product catalog</p>
+        </div>
+      </div>
     </div>
 
     <!-- Filters and Search -->
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex flex-1 gap-3">
         <!-- Search Input -->
         <div class="relative flex-1 max-w-md">

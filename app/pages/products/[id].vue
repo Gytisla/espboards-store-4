@@ -16,6 +16,28 @@ if (error.value) {
 // Extract product from response (with type assertion)
 const product = computed(() => (data.value as any)?.product)
 
+// Amazon click tracking
+const { trackAmazonClick } = useAmazonTracking()
+
+// Handle Amazon link click with tracking
+const handleAmazonClick = (amazonUrl: string) => {
+  if (!product.value) return
+  
+  // Track the click (fire-and-forget, non-blocking)
+  trackAmazonClick(
+    {
+      id: product.value.id,
+      asin: product.value.asin,
+      slug: product.value.slug,
+      marketplace: product.value.marketplace,
+    },
+    amazonUrl
+  )
+  
+  // Open Amazon link in new tab
+  window.open(amazonUrl, '_blank')
+}
+
 // Format price
 const formatPrice = (price: number | null, currency: string) => {
   if (!price) return 'N/A'
@@ -935,17 +957,15 @@ useHead({
 
           <!-- CTA Button -->
           <div class="space-y-3">
-            <a
-              :href="product.detail_page_url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 dark:bg-blue-700 px-6 py-4 text-base sm:text-lg font-semibold text-white shadow-lg transition-all hover:bg-blue-700 dark:hover:bg-blue-600 hover:shadow-xl"
+            <button
+              @click="handleAmazonClick(product.detail_page_url)"
+              class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 dark:bg-blue-700 px-6 py-4 text-base sm:text-lg font-semibold text-white shadow-lg transition-all hover:bg-blue-700 dark:hover:bg-blue-600 hover:shadow-xl cursor-pointer"
             >
               <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               <span class="whitespace-nowrap">View on Amazon</span>
-            </a>
+            </button>
             <p class="text-center text-xs text-gray-500 dark:text-gray-400">
               As an Amazon Associate, we earn from qualifying purchases. You will be redirected to Amazon to complete your purchase.
             </p>
