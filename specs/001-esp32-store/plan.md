@@ -1,4 +1,4 @@
-# Implementation Plan: ESP32 Store Platform
+# Implementation Plan: ESPBoards Store Platform
 
 **Branch**: `001-esp32-store` | **Date**: 2025-11-24 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/001-esp32-store/spec.md`

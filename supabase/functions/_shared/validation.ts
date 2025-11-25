@@ -1,5 +1,5 @@
 /**
- * Validation Schemas for ESP32 Store Edge Functions
+ * Validation Schemas for ESPBoards Store Edge Functions
  * 
  * This file provides Zod validation schemas for:
  * - API request validation (import-product, etc.)

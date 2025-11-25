@@ -18,7 +18,7 @@
 ### 2. Create New Project
 
 1. Click "New project" button
-2. Select or create an organization (e.g., "ESP32 Store")
+2. Select or create an organization (e.g., "ESPBoards Store")
 3. Fill in project details:
    - **Project Name**: `espboards-store-v4` (or your preferred name)
    - **Database Password**: Generate a strong password (save this!)

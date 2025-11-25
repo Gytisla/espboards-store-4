@@ -1,4 +1,4 @@
-# Feature Specification: ESP32 Store Platform
+# Feature Specification: ESPBoards Store Platform
 
 **Feature Branch**: `001-esp32-store`  
 **Created**: 2025-11-24  

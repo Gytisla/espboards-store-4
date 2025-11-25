@@ -1,4 +1,4 @@
-# Tasks: ESP32 Store Platform - Iteration 001
+# Tasks: ESPBoards Store Platform - Iteration 001
 
 **Input**: Design documents from `/specs/001-esp32-store/`
 **Prerequisites**: plan.md ✅, spec.md ✅, iterations/iter-001-backend-import-refresh.md ✅

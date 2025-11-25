@@ -1,5 +1,5 @@
 /**
- * Shared TypeScript Interfaces for ESP32 Store Edge Functions
+ * Shared TypeScript Interfaces for ESPBoards Store Edge Functions
  * 
  * This file contains all shared type definitions used across Edge Functions:
  * - Database table types (matching PostgreSQL schema)

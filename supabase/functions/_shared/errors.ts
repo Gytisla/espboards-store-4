@@ -1,5 +1,5 @@
 /**
- * Standardized Error Responses for ESP32 Store Edge Functions
+ * Standardized Error Responses for ESPBoards Store Edge Functions
  * 
  * This file provides:
  * - ErrorResponse interface and error code constants

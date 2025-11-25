@@ -6,7 +6,7 @@
 
 ## Overview
 
-Implemented a complete circuit breaker pattern to protect the ESP32 Store platform from cascade failures during Amazon Product Advertising API (PA-API) outages. The circuit breaker provides automatic failure detection, fast-failing during outages, and automatic recovery.
+Implemented a complete circuit breaker pattern to protect the ESPBoards Store platform from cascade failures during Amazon Product Advertising API (PA-API) outages. The circuit breaker provides automatic failure detection, fast-failing during outages, and automatic recovery.
 
 ## Implementation Timeline
 
