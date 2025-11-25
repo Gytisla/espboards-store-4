@@ -1,21 +1,13 @@
 [build]
   # Build command for Nuxt 3
-  command = "cd app && pnpm install && pnpm run build"
+  command = "cd app && pnpm install && pnpm run build && cd .. && cp -r app/.netlify .netlify 2>/dev/null || true"
   
   # Publish directory - Nuxt 3 with Netlify preset outputs to dist/
   publish = "app/dist"
-  
-  # Functions directory for Netlify
-  functions = "app/.netlify/functions-internal"
 
 [build.environment]
   # Node.js version
   NODE_VERSION = "20"
-
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/server/:splat"
-  status = 200
 
 # Cache static assets
 [[headers]]
