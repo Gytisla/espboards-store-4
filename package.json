@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"vue-bundle-renderer": "^2.2.0"
+	}
+}
