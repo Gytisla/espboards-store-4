@@ -2,11 +2,10 @@
   # Build command for Nuxt 3
   command = "cd app && pnpm install && pnpm run build"
   
-  # Publish directory - Nuxt 3 outputs to .output/public
-  publish = "app/dist/public"
+  # Publish directory - Nuxt 3 with Netlify preset outputs to dist/
+  publish = "app/dist"
   
-  # Functions directory for Nuxt server routes
-  functions = "app/dist/server"
+  # Functions directory is handled by Netlify automatically via .netlify folder
 
 [build.environment]
   # Node.js version
