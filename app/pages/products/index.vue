@@ -375,9 +375,17 @@ const filteredProducts = computed(() => {
   }
 
   if (hasBattery.value !== null) {
-    products = products.filter(
-      (p) => p.metadata?.filters?.has_battery === hasBattery.value
-    )
+    products = products.filter((p) => {
+      // Check for has_battery_pins (the actual field name in the database)
+      if (typeof p.metadata?.filters?.has_battery_pins === 'boolean') {
+        return p.metadata?.filters?.has_battery_pins === hasBattery.value
+      }
+      // Also check for has_battery for backwards compatibility
+      if (typeof p.metadata?.filters?.has_battery === 'boolean') {
+        return p.metadata?.filters?.has_battery === hasBattery.value
+      }
+      return false
+    })
   }
 
   if (hasZigbee.value !== null) {
