@@ -242,16 +242,80 @@ async function handler(req: Request): Promise<Response> {
     // Define comprehensive Resources list for PA-API request
     // Note: These resources are validated in T026 (paapi-client.test.ts)
     const resources = [
-      // Images
-      "Images.Primary.Large",
+      // Browse node information
+      'BrowseNodeInfo.BrowseNodes',
+      'BrowseNodeInfo.BrowseNodes.Ancestor',
+      'BrowseNodeInfo.BrowseNodes.SalesRank',
+      'BrowseNodeInfo.WebsiteSalesRank',
       
-      // Item Information
-      "ItemInfo.Title",
-      "ItemInfo.ByLineInfo",
+      // Customer reviews
+      'CustomerReviews.Count',
+      'CustomerReviews.StarRating',
       
-      // Offers and Pricing
-      "Offers.Listings.Price",
-      "Offers.Listings.SavingBasis",
+      // All image resources
+      'Images.Primary.Small',
+      'Images.Primary.Medium',
+      'Images.Primary.Large',
+      'Images.Primary.HighRes',
+      'Images.Variants.Small',
+      'Images.Variants.Medium',
+      'Images.Variants.Large',
+      'Images.Variants.HighRes',
+      
+      // Item information
+      'ItemInfo.ByLineInfo',
+      'ItemInfo.ContentInfo',
+      'ItemInfo.ContentRating',
+      'ItemInfo.Classifications',
+      'ItemInfo.ExternalIds',
+      'ItemInfo.Features',
+      'ItemInfo.ManufactureInfo',
+      'ItemInfo.ProductInfo',
+      'ItemInfo.TechnicalInfo',
+      'ItemInfo.Title',
+      'ItemInfo.TradeInInfo',
+      
+      // Offers and pricing - detailed
+      'Offers.Listings.Availability.MaxOrderQuantity',
+      'Offers.Listings.Availability.Message',
+      'Offers.Listings.Availability.MinOrderQuantity',
+      'Offers.Listings.Availability.Type',
+      'Offers.Listings.Condition',
+      'Offers.Listings.Condition.ConditionNote',
+      'Offers.Listings.Condition.SubCondition',
+      'Offers.Listings.DeliveryInfo.IsAmazonFulfilled',
+      'Offers.Listings.DeliveryInfo.IsFreeShippingEligible',
+      'Offers.Listings.DeliveryInfo.IsPrimeEligible',
+      'Offers.Listings.DeliveryInfo.ShippingCharges',
+      'Offers.Listings.IsBuyBoxWinner',
+      'Offers.Listings.LoyaltyPoints.Points',
+      'Offers.Listings.MerchantInfo',
+      'Offers.Listings.Price',
+      'Offers.Listings.ProgramEligibility.IsPrimeExclusive',
+      'Offers.Listings.ProgramEligibility.IsPrimePantry',
+      'Offers.Listings.Promotions',
+      'Offers.Listings.SavingBasis',
+      'Offers.Summaries.HighestPrice',
+      'Offers.Summaries.LowestPrice',
+      'Offers.Summaries.OfferCount',
+      
+      // Parent ASIN
+      'ParentASIN',
+      
+      // Rental offers
+      'RentalOffers.Listings.Availability.MaxOrderQuantity',
+      'RentalOffers.Listings.Availability.Message',
+      'RentalOffers.Listings.Availability.MinOrderQuantity',
+      'RentalOffers.Listings.Availability.Type',
+      'RentalOffers.Listings.BasePrice',
+      'RentalOffers.Listings.Condition',
+      'RentalOffers.Listings.Condition.ConditionNote',
+      'RentalOffers.Listings.Condition.SubCondition',
+      'RentalOffers.Listings.DeliveryInfo.IsAmazonFulfilled',
+      'RentalOffers.Listings.DeliveryInfo.IsFreeShippingEligible',
+      'RentalOffers.Listings.DeliveryInfo.IsPrimeEligible',
+      'RentalOffers.Listings.DeliveryInfo.ShippingCharges',
+      'RentalOffers.Listings.MerchantInfo',
     ];
 
     // T034: Log PA-API request start with correlation ID
@@ -327,17 +391,125 @@ async function handler(req: Request): Promise<Response> {
       const manufacturer = paapiItem.ItemInfo?.ByLineInfo?.Manufacturer?.DisplayValue || null;
       const detailPageUrl = paapiItem.DetailPageURL || null;
 
-      // Extract images
-      const images = paapiItem.Images?.Primary?.Large?.URL
-        ? [
-            {
-              url: paapiItem.Images.Primary.Large.URL,
-              width: paapiItem.Images.Primary.Large.Width || null,
-              height: paapiItem.Images.Primary.Large.Height || null,
-              variant: "Large",
-            },
-          ]
-        : null;
+      // Extract features array (cast to unknown for dynamic PA-API fields)
+      const itemInfo = paapiItem.ItemInfo as unknown as Record<string, unknown>;
+      const featuresData = itemInfo?.Features as Record<string, unknown> | undefined;
+      const features = (featuresData?.DisplayValues as string[] | undefined) || null;
+
+      // Extract technical information
+      const technicalInfo = itemInfo?.TechnicalInfo ? 
+        itemInfo.TechnicalInfo as Record<string, unknown> : null;
+
+      // Extract product information
+      const productInfo = itemInfo?.ProductInfo ? 
+        itemInfo.ProductInfo as Record<string, unknown> : null;
+
+      // Extract content information
+      const contentInfo = itemInfo?.ContentInfo ? 
+        itemInfo.ContentInfo as Record<string, unknown> : null;
+
+      // Extract manufacturing information
+      const manufactureInfo = itemInfo?.ManufactureInfo ? 
+        itemInfo.ManufactureInfo as Record<string, unknown> : null;
+
+      // Extract ALL image variants (Small, Medium, Large, HighRes for Primary and Variants)
+      const images = (() => {
+        const imageData: Record<string, unknown> = {};
+        const paapiImages = paapiItem.Images as unknown as Record<string, unknown>;
+        
+        // Extract primary images
+        if (paapiImages?.Primary) {
+          const primary = paapiImages.Primary as Record<string, unknown>;
+          const primaryData: Record<string, unknown> = {};
+          
+          if (primary.Small) {
+            const small = primary.Small as Record<string, unknown>;
+            primaryData.small = {
+              url: small.URL,
+              width: small.Width || null,
+              height: small.Height || null,
+            };
+          }
+          
+          if (primary.Medium) {
+            const medium = primary.Medium as Record<string, unknown>;
+            primaryData.medium = {
+              url: medium.URL,
+              width: medium.Width || null,
+              height: medium.Height || null,
+            };
+          }
+          
+          if (primary.Large) {
+            const large = primary.Large as Record<string, unknown>;
+            primaryData.large = {
+              url: large.URL,
+              width: large.Width || null,
+              height: large.Height || null,
+            };
+          }
+          
+          if (primary.HighRes) {
+            const highRes = primary.HighRes as Record<string, unknown>;
+            primaryData.highRes = {
+              url: highRes.URL,
+              width: highRes.Width || null,
+              height: highRes.Height || null,
+            };
+          }
+          
+          if (Object.keys(primaryData).length > 0) {
+            imageData.primary = primaryData;
+          }
+        }
+        
+        // Extract variant images
+        if (paapiImages?.Variants && Array.isArray(paapiImages.Variants)) {
+          imageData.variants = (paapiImages.Variants as Record<string, unknown>[]).map((variant) => {
+            const variantData: Record<string, unknown> = {};
+            
+            if (variant.Small) {
+              const small = variant.Small as Record<string, unknown>;
+              variantData.small = {
+                url: small.URL,
+                width: small.Width || null,
+                height: small.Height || null,
+              };
+            }
+            
+            if (variant.Medium) {
+              const medium = variant.Medium as Record<string, unknown>;
+              variantData.medium = {
+                url: medium.URL,
+                width: medium.Width || null,
+                height: medium.Height || null,
+              };
+            }
+            
+            if (variant.Large) {
+              const large = variant.Large as Record<string, unknown>;
+              variantData.large = {
+                url: large.URL,
+                width: large.Width || null,
+                height: large.Height || null,
+              };
+            }
+            
+            if (variant.HighRes) {
+              const highRes = variant.HighRes as Record<string, unknown>;
+              variantData.highRes = {
+                url: highRes.URL,
+                width: highRes.Width || null,
+                height: highRes.Height || null,
+              };
+            }
+            
+            return variantData;
+          });
+        }
+        
+        return Object.keys(imageData).length > 0 ? imageData : null;
+      })();
 
       // Extract pricing information
       const listing = paapiItem.Offers?.Listings?.[0];
@@ -381,6 +553,12 @@ async function handler(req: Request): Promise<Response> {
         hasSavings: savingsAmount !== null,
         customerReviewCount,
         starRating,
+        hasFeatures: !!features,
+        featureCount: features?.length || 0,
+        hasTechnicalInfo: !!technicalInfo,
+        hasProductInfo: !!productInfo,
+        hasContentInfo: !!contentInfo,
+        hasManufactureInfo: !!manufactureInfo,
       });
 
       // T032: Database upsert logic
@@ -459,6 +637,11 @@ async function handler(req: Request): Promise<Response> {
         title,
         brand,
         manufacturer,
+        features,
+        technical_info: technicalInfo,
+        product_info: productInfo,
+        content_info: contentInfo,
+        manufacture_info: manufactureInfo,
         images,
         detail_page_url: detailPageUrl,
         current_price: currentPrice,
