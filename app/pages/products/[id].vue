@@ -392,6 +392,7 @@ const technicalSpecs = computed(() => {
     const filters = product.value.metadata.filters
     
     if (filters.chip) specs.push({ label: 'Chip Model', value: filters.chip })
+    if (filters.chip_series) specs.push({ label: 'Chip Series', value: filters.chip_series })
     if (filters.psram_mb) specs.push({ label: 'PSRAM', value: `${filters.psram_mb} MB` })
     if (filters.flash_mb) specs.push({ label: 'Flash Memory', value: `${filters.flash_mb} MB` })
     if (filters.gpio_pins) specs.push({ label: 'GPIO Pins', value: filters.gpio_pins })
@@ -577,6 +578,35 @@ const getTagFilterUrl = (tag: any) => {
   
   // Default fallback to products page
   return '/products'
+}
+
+// Tooltip explanations for technical specifications
+const specExplanations: Record<string, string> = {
+  chip: 'The microcontroller model that powers the board. Different chips offer varying performance, features, and power consumption.',
+  psram: 'Pseudo Static RAM - External RAM that expands available memory for running larger applications and handling more data.',
+  flash: 'Non-volatile storage memory for storing your program code, files, and data that persists after power off.',
+  gpio: 'General Purpose Input/Output pins - Programmable pins for connecting sensors, actuators, displays, and other peripherals.',
+  wifi: 'Built-in WiFi connectivity standard. Higher versions (WiFi 6) offer better speed, range, and power efficiency.',
+  bluetooth: 'Built-in Bluetooth wireless connectivity. Higher versions offer improved range, speed, and lower power consumption.',
+  zigbee: 'Low-power mesh networking protocol ideal for smart home devices and IoT sensor networks.',
+  thread: 'IPv6-based mesh networking protocol designed for secure, reliable smart home connectivity.',
+  usb: 'USB interface type for programming and power. USB-C offers reversible connection and faster data transfer.',
+  camera: 'Built-in camera interface for connecting camera modules to capture images and video.',
+  display: 'Built-in display interface for connecting LCD, OLED, or e-paper screens.',
+  battery: 'Built-in battery management circuitry for LiPo/Li-ion batteries and power management.',
+  sd_card: 'SD card slot for expandable storage, useful for logging data or storing files.'
+}
+
+// Tooltip state management
+const activeTooltip = ref<string | null>(null)
+
+// Show/hide tooltip functions
+const showTooltip = (specType: string) => {
+  activeTooltip.value = specType
+}
+
+const hideTooltip = () => {
+  activeTooltip.value = null
 }
 
 // Check if product is Prime eligible
@@ -961,9 +991,32 @@ useHead({
                   </div>
                   <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.chip || product.metadata.filters.chip }}</p>
                 </div>
-                <svg class="h-4 w-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'chip' ? hideTooltip() : showTooltip('chip')"
+                    @mouseenter="showTooltip('chip')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about chip"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'chip'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.chip }}
               </div>
             </NuxtLink>
 
@@ -983,9 +1036,32 @@ useHead({
                   </div>
                   <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.psram || `${product.metadata.filters.psram_mb} MB` }}</p>
                 </div>
-                <svg class="h-4 w-4 text-purple-600 dark:text-purple-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'psram' ? hideTooltip() : showTooltip('psram')"
+                    @mouseenter="showTooltip('psram')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-purple-100 dark:hover:bg-purple-900 hover:text-purple-600 dark:hover:text-purple-400 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about PSRAM"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-purple-600 dark:text-purple-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'psram'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.psram }}
               </div>
             </NuxtLink>
 
@@ -1005,9 +1081,32 @@ useHead({
                   </div>
                   <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.flash || `${product.metadata.filters.flash_mb} MB` }}</p>
                 </div>
-                <svg class="h-4 w-4 text-pink-600 dark:text-pink-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'flash' ? hideTooltip() : showTooltip('flash')"
+                    @mouseenter="showTooltip('flash')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-pink-100 dark:hover:bg-pink-900 hover:text-pink-600 dark:hover:text-pink-400 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about flash memory"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-pink-600 dark:text-pink-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'flash'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.flash }}
               </div>
             </NuxtLink>
 
@@ -1027,9 +1126,32 @@ useHead({
                   </div>
                   <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.gpio || `${product.metadata.filters.gpio_pins} pins` }}</p>
                 </div>
-                <svg class="h-4 w-4 text-gray-600 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'gpio' ? hideTooltip() : showTooltip('gpio')"
+                    @mouseenter="showTooltip('gpio')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about GPIO pins"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-gray-600 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'gpio'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.gpio }}
               </div>
             </NuxtLink>
 
@@ -1051,9 +1173,32 @@ useHead({
                     {{ product.metadata.display?.wifi || (product.metadata.filters.wifi_version ? `WiFi ${product.metadata.filters.wifi_version}` : 'Supported') }}
                   </p>
                 </div>
-                <svg class="h-4 w-4 text-green-600 dark:text-green-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'wifi' ? hideTooltip() : showTooltip('wifi')"
+                    @mouseenter="showTooltip('wifi')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-green-100 dark:hover:bg-green-900 hover:text-green-600 dark:hover:text-green-400 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about WiFi"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-green-600 dark:text-green-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'wifi'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.wifi }}
               </div>
             </NuxtLink>
 
@@ -1075,9 +1220,32 @@ useHead({
                     {{ product.metadata.display?.bluetooth || (product.metadata.filters.bluetooth_version ? `Bluetooth ${product.metadata.filters.bluetooth_version}` : 'Supported') }}
                   </p>
                 </div>
-                <svg class="h-4 w-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'bluetooth' ? hideTooltip() : showTooltip('bluetooth')"
+                    @mouseenter="showTooltip('bluetooth')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about Bluetooth"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'bluetooth'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.bluetooth }}
               </div>
             </NuxtLink>
 
@@ -1097,9 +1265,32 @@ useHead({
                   </div>
                   <p class="text-sm font-semibold text-gray-900 dark:text-white">Supported</p>
                 </div>
-                <svg class="h-4 w-4 text-yellow-600 dark:text-yellow-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'zigbee' ? hideTooltip() : showTooltip('zigbee')"
+                    @mouseenter="showTooltip('zigbee')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-yellow-100 dark:hover:bg-yellow-900 hover:text-yellow-600 dark:hover:text-yellow-400 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about Zigbee"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-yellow-600 dark:text-yellow-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'zigbee'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.zigbee }}
               </div>
             </NuxtLink>
 
@@ -1119,9 +1310,32 @@ useHead({
                   </div>
                   <p class="text-sm font-semibold text-gray-900 dark:text-white">Supported</p>
                 </div>
-                <svg class="h-4 w-4 text-orange-600 dark:text-orange-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'thread' ? hideTooltip() : showTooltip('thread')"
+                    @mouseenter="showTooltip('thread')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-orange-100 dark:hover:bg-orange-900 hover:text-orange-600 dark:hover:text-orange-400 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about Thread"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-orange-600 dark:text-orange-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'thread'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.thread }}
               </div>
             </NuxtLink>
 
@@ -1141,9 +1355,32 @@ useHead({
                   </div>
                   <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.filters.usb_type.toUpperCase().replace('_', '-') }}</p>
                 </div>
-                <svg class="h-4 w-4 text-slate-600 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button
+                    @click.prevent="activeTooltip === 'usb' ? hideTooltip() : showTooltip('usb')"
+                    @mouseenter="showTooltip('usb')"
+                    @mouseleave="hideTooltip()"
+                    class="h-5 w-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300 flex items-center justify-center transition-colors duration-200"
+                    aria-label="Information about USB"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                  <svg class="h-4 w-4 text-slate-600 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Tooltip -->
+              <div
+                v-if="activeTooltip === 'usb'"
+                class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg"
+                @click.prevent
+              >
+                <div class="absolute -top-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+                {{ specExplanations.usb }}
               </div>
             </NuxtLink>
 
