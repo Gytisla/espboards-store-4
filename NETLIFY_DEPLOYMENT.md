@@ -17,14 +17,26 @@ This project is configured for easy deployment on Netlify.
 
 ### 2. Environment Variables
 
-Set the following environment variables in your Netlify site settings:
+⚠️ **IMPORTANT**: Set these environment variables in Netlify **BEFORE** deploying:
+
+Go to: **Site Settings > Environment Variables**
 
 ```bash
-# Supabase Configuration
+# Supabase Configuration (REQUIRED)
 NUXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NUXT_PUBLIC_SUPABASE_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
+
+**Where to find these values:**
+1. Go to your Supabase project dashboard
+2. Click on "Settings" (gear icon) > "API"
+3. Copy the following:
+   - **Project URL** → `NUXT_PUBLIC_SUPABASE_URL`
+   - **anon/public key** → `NUXT_PUBLIC_SUPABASE_KEY`
+   - **service_role key** → `SUPABASE_SERVICE_ROLE_KEY` (keep this secret!)
+
+⚠️ Without these variables, the site will show a 500 error!
 
 ### 3. Build Settings
 

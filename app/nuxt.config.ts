@@ -40,6 +40,10 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'netlify',
     compressPublicAssets: true,
+    // Don't externalize vue-bundle-renderer - bundle it with the function
+    externals: {
+      inline: ['vue-bundle-renderer']
+    },
   },
   // Enable SSR (Server-Side Rendering) - default is true but making it explicit
   ssr: true,
