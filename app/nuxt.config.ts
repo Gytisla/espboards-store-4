@@ -36,4 +36,9 @@ export default defineNuxtConfig({
       supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
     },
   },
+  // Netlify deployment configuration
+  nitro: {
+    preset: 'netlify',
+    compressPublicAssets: true,
+  },
 })
