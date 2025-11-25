@@ -52,20 +52,20 @@ const socialLinks = [
 </script>
 
 <template>
-  <footer class="border-t border-gray-200 bg-linear-to-b from-white to-gray-50">
+  <footer class="border-t border-gray-200 dark:border-gray-800 bg-linear-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Main Footer Content -->
       <div class="grid grid-cols-2 gap-8 py-12 md:grid-cols-4 lg:gap-12">
         <!-- Products -->
         <div>
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
             Products
           </h3>
           <ul class="space-y-3">
             <li v-for="link in footerLinks.products" :key="link.name">
               <NuxtLink
                 :to="link.href"
-                class="text-sm text-gray-600 transition-colors hover:text-blue-600"
+                class="text-sm text-gray-600 dark:text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
               >
                 {{ link.name }}
               </NuxtLink>
@@ -75,14 +75,14 @@ const socialLinks = [
 
         <!-- Company -->
         <div>
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
             Company
           </h3>
           <ul class="space-y-3">
             <li v-for="link in footerLinks.company" :key="link.name">
               <NuxtLink
                 :to="link.href"
-                class="text-sm text-gray-600 transition-colors hover:text-blue-600"
+                class="text-sm text-gray-600 dark:text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
               >
                 {{ link.name }}
               </NuxtLink>
@@ -92,14 +92,14 @@ const socialLinks = [
 
         <!-- Support -->
         <div>
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
             Support
           </h3>
           <ul class="space-y-3">
             <li v-for="link in footerLinks.support" :key="link.name">
               <NuxtLink
                 :to="link.href"
-                class="text-sm text-gray-600 transition-colors hover:text-blue-600"
+                class="text-sm text-gray-600 dark:text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
               >
                 {{ link.name }}
               </NuxtLink>
@@ -109,14 +109,14 @@ const socialLinks = [
 
         <!-- Legal -->
         <div>
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
             Legal
           </h3>
           <ul class="space-y-3">
             <li v-for="link in footerLinks.legal" :key="link.name">
               <NuxtLink
                 :to="link.href"
-                class="text-sm text-gray-600 transition-colors hover:text-blue-600"
+                class="text-sm text-gray-600 dark:text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
               >
                 {{ link.name }}
               </NuxtLink>
@@ -126,13 +126,13 @@ const socialLinks = [
       </div>
 
       <!-- Newsletter Section -->
-      <div class="border-t border-gray-200 py-10">
+      <div class="border-t border-gray-200 dark:border-gray-800 py-10">
         <div class="flex flex-col items-center gap-6 md:flex-row md:justify-between">
           <div class="text-center md:text-left">
-            <h3 class="text-lg font-semibold text-gray-900">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               Stay updated with latest products
             </h3>
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Get notified about new ESP32 boards and exclusive deals
             </p>
           </div>
@@ -140,10 +140,10 @@ const socialLinks = [
             <input
               type="email"
               placeholder="Enter your email"
-              class="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900"
             />
             <button
-              class="rounded-lg bg-linear-to-r from-blue-600 to-purple-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40"
+              class="rounded-lg bg-linear-to-r from-blue-600 to-purple-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 dark:shadow-blue-500/10 transition-all hover:shadow-xl hover:shadow-blue-500/40 dark:hover:shadow-blue-500/20"
             >
               Subscribe
             </button>
@@ -152,7 +152,7 @@ const socialLinks = [
       </div>
 
       <!-- Bottom Bar -->
-      <div class="border-t border-gray-200 py-8">
+      <div class="border-t border-gray-200 dark:border-gray-800 py-8">
         <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
           <!-- Brand & Copyright -->
           <div class="flex items-center gap-2">
@@ -161,8 +161,8 @@ const socialLinks = [
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
               </svg>
             </div>
-            <p class="text-sm text-gray-600">
-              © {{ currentYear }} ESP Store. All rights reserved.
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              © {{ currentYear }} ESPBoards. All rights reserved.
             </p>
           </div>
 
@@ -174,10 +174,10 @@ const socialLinks = [
               :href="social.href"
               target="_blank"
               rel="noopener noreferrer"
-              class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white transition-all hover:border-gray-300 hover:shadow-md"
+              class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
               :aria-label="social.name"
             >
-              <svg class="h-5 w-5 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
+              <svg class="h-5 w-5 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                 <path :d="social.icon" />
               </svg>
             </a>

@@ -61,33 +61,33 @@ const productCategories = [
 <template>
   <div>
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-linear-to-br from-blue-50 via-white to-purple-50 py-20 md:py-32">
+    <section class="relative overflow-hidden bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950 py-20 md:py-32">
       <!-- Background decoration -->
       <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-blue-200/30 blur-3xl"></div>
-        <div class="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-purple-200/30 blur-3xl"></div>
+        <div class="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-blue-200/30 dark:bg-blue-500/10 blur-3xl"></div>
+        <div class="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-purple-200/30 dark:bg-purple-500/10 blur-3xl"></div>
       </div>
 
       <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="text-center">
           <!-- Badge -->
-          <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg shadow-black/5">
+          <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white dark:bg-gray-800 px-4 py-2 shadow-lg shadow-black/5 dark:shadow-black/20">
             <span class="relative flex h-2 w-2">
               <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
               <span class="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
             </span>
-            <span class="text-sm font-medium text-gray-700">New products added weekly</span>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">New products added weekly</span>
           </div>
 
           <!-- Heading -->
-          <h1 class="mb-6 text-5xl font-bold tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
+          <h1 class="mb-6 text-5xl font-bold tracking-tight text-gray-900 dark:text-white md:text-6xl lg:text-7xl">
             Build Amazing IoT
             <span class="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Projects
             </span>
           </h1>
 
-          <p class="mx-auto mb-10 max-w-2xl text-lg text-gray-600 md:text-xl">
+          <p class="mx-auto mb-10 max-w-2xl text-lg text-gray-600 dark:text-gray-400 md:text-xl">
             Your one-stop shop for ESP32 development boards, sensors, displays, and components. 
             Everything you need to bring your IoT ideas to life.
           </p>
@@ -105,25 +105,25 @@ const productCategories = [
             </NuxtLink>
             <NuxtLink
               to="/categories"
-              class="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-8 py-4 text-base font-semibold text-gray-900 transition-all hover:border-gray-300 hover:shadow-lg"
+              class="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg"
             >
               Explore Categories
             </NuxtLink>
           </div>
 
           <!-- Stats -->
-          <div class="mt-16 grid grid-cols-3 gap-8 border-t border-gray-200 pt-8">
+          <div class="mt-16 grid grid-cols-3 gap-8 border-t border-gray-200 dark:border-gray-700 pt-8">
             <div>
-              <div class="text-3xl font-bold text-gray-900 md:text-4xl">120+</div>
-              <div class="mt-1 text-sm text-gray-600">Products</div>
+              <div class="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">120+</div>
+              <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">Products</div>
             </div>
             <div>
-              <div class="text-3xl font-bold text-gray-900 md:text-4xl">10k+</div>
-              <div class="mt-1 text-sm text-gray-600">Customers</div>
+              <div class="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">10k+</div>
+              <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">Customers</div>
             </div>
             <div>
-              <div class="text-3xl font-bold text-gray-900 md:text-4xl">4.9</div>
-              <div class="mt-1 text-sm text-gray-600">Rating</div>
+              <div class="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">4.9</div>
+              <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">Rating</div>
             </div>
           </div>
         </div>
@@ -131,13 +131,13 @@ const productCategories = [
     </section>
 
     <!-- Product Categories -->
-    <section class="py-20 md:py-24">
+    <section class="py-20 md:py-24 bg-white dark:bg-gray-900">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center">
-          <h2 class="mb-4 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+          <h2 class="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl">
             Shop by Category
           </h2>
-          <p class="mx-auto max-w-2xl text-lg text-gray-600">
+          <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
             Find exactly what you need for your next project
           </p>
         </div>
@@ -147,11 +147,11 @@ const productCategories = [
             v-for="category in productCategories"
             :key="category.name"
             :to="category.href"
-            class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition-all hover:border-transparent hover:shadow-2xl hover:-translate-y-1"
+            class="group relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 transition-all hover:border-transparent hover:shadow-2xl hover:-translate-y-1"
           >
             <!-- Gradient background on hover -->
             <div 
-              class="absolute inset-0 bg-linear-to-br opacity-0 transition-opacity group-hover:opacity-5"
+              class="absolute inset-0 bg-linear-to-br opacity-0 transition-opacity group-hover:opacity-5 dark:group-hover:opacity-10"
               :class="category.gradient"
             ></div>
             
@@ -160,15 +160,15 @@ const productCategories = [
               <div class="mb-4 text-5xl">{{ category.image }}</div>
               
               <!-- Content -->
-              <h3 class="mb-2 text-xl font-semibold text-gray-900">
+              <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
                 {{ category.name }}
               </h3>
-              <p class="mb-4 text-sm text-gray-600">
+              <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
                 {{ category.description }}
               </p>
               
               <!-- Count badge -->
-              <div class="inline-flex items-center gap-1 text-sm font-medium text-blue-600">
+              <div class="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400">
                 {{ category.count }}
                 <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -181,13 +181,13 @@ const productCategories = [
     </section>
 
     <!-- Features Section -->
-    <section class="border-t border-gray-200 bg-gray-50 py-20 md:py-24">
+    <section class="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 py-20 md:py-24">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center">
-          <h2 class="mb-4 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
-            Why Choose ESP Store?
+          <h2 class="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl">
+            Why Choose ESPBoards Store?
           </h2>
-          <p class="mx-auto max-w-2xl text-lg text-gray-600">
+          <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
             We're committed to providing the best experience for makers and developers
           </p>
         </div>
@@ -196,20 +196,20 @@ const productCategories = [
           <div
             v-for="feature in features"
             :key="feature.title"
-            class="rounded-2xl border border-gray-200 bg-white p-8 transition-shadow hover:shadow-lg"
+            class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 transition-shadow hover:shadow-lg dark:hover:shadow-gray-900/50"
           >
             <!-- Icon -->
-            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-blue-50 to-purple-50">
-              <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
+              <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="feature.icon" />
               </svg>
             </div>
             
             <!-- Content -->
-            <h3 class="mb-2 text-lg font-semibold text-gray-900">
+            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {{ feature.title }}
             </h3>
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
               {{ feature.description }}
             </p>
           </div>
@@ -218,9 +218,9 @@ const productCategories = [
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 md:py-24">
+    <section class="py-20 md:py-24 bg-white dark:bg-gray-900">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="relative overflow-hidden rounded-3xl bg-linear-to-r from-blue-600 to-purple-600 p-12 text-center shadow-2xl shadow-blue-500/30">
+        <div class="relative overflow-hidden rounded-3xl bg-linear-to-r from-blue-600 to-purple-600 p-12 text-center shadow-2xl shadow-blue-500/30 dark:shadow-blue-500/10">
           <!-- Background decoration -->
           <div class="absolute inset-0 overflow-hidden">
             <div class="absolute -left-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-2xl"></div>
@@ -232,7 +232,7 @@ const productCategories = [
               Ready to Start Building?
             </h2>
             <p class="mx-auto mb-8 max-w-2xl text-lg text-blue-100">
-              Join thousands of makers and developers who trust ESP Store for their IoT projects
+              Join thousands of makers and developers who trust ESPBoards Store for their IoT projects
             </p>
             <NuxtLink
               to="/products"

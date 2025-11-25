@@ -9,11 +9,11 @@ const toggleSidebar = () => {
 </script>
 
 <template>
-  <div class="flex h-screen overflow-hidden bg-gray-50">
+  <div class="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
     <!-- Sidebar -->
     <aside
       :class="[
-        'relative flex flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out',
+        'relative flex flex-col border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out',
         sidebarCollapsed ? 'w-20' : 'w-64'
       ]"
     >
@@ -27,7 +27,7 @@ const toggleSidebar = () => {
       <AdminTopBar />
 
       <!-- Page Content -->
-      <main class="flex-1 overflow-y-auto overflow-x-hidden">
+      <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-gray-900">
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <slot />
         </div>

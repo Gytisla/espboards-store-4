@@ -374,47 +374,47 @@ useHead({
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div class="flex items-start justify-between">
           <div class="flex-1">
-            <h1 class="text-3xl font-bold text-gray-900">Products</h1>
-            <p class="mt-2 text-sm text-gray-600">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Products</h1>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
               Browse our selection of ESP32 boards and components
-              <span v-if="productsData?.count" class="ml-2 font-medium text-gray-900">
+              <span v-if="productsData?.count" class="ml-2 font-medium text-gray-900 dark:text-white">
                 ({{ filteredProducts.length }} of {{ productsData.count }} products)
               </span>
             </p>
             
             <!-- Active Filters Display -->
             <div v-if="hasActiveFilters" class="mt-3 flex flex-wrap gap-2">
-              <span v-if="selectedType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+              <span v-if="selectedType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-950 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
                 {{ productTypes.find((t: any) => t.value === selectedType)?.label }}
               </span>
-              <span v-if="selectedChip !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-purple-50 px-3 py-1 text-xs font-medium text-purple-700">
+              <span v-if="selectedChip !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-purple-50 dark:bg-purple-950 px-3 py-1 text-xs font-medium text-purple-700 dark:text-purple-300">
                 {{ chipOptions.find((c: any) => c.value === selectedChip)?.label }}
               </span>
-              <span v-if="selectedWifiVersion !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
+              <span v-if="selectedWifiVersion !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-950 px-3 py-1 text-xs font-medium text-green-700 dark:text-green-300">
                 WiFi {{ selectedWifiVersion }}
               </span>
-              <span v-if="selectedBluetoothVersion !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
+              <span v-if="selectedBluetoothVersion !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 dark:bg-indigo-950 px-3 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
                 Bluetooth {{ selectedBluetoothVersion }}
               </span>
-              <span v-if="selectedUsbType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 text-xs font-medium text-orange-700">
+              <span v-if="selectedUsbType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-orange-50 dark:bg-orange-950 px-3 py-1 text-xs font-medium text-orange-700 dark:text-orange-300">
                 {{ usbTypeOptions.find((u: any) => u.value === selectedUsbType)?.label }}
               </span>
-              <span v-if="hasCamera === true" class="inline-flex items-center gap-1 rounded-full bg-pink-50 px-3 py-1 text-xs font-medium text-pink-700">
+              <span v-if="hasCamera === true" class="inline-flex items-center gap-1 rounded-full bg-pink-50 dark:bg-pink-950 px-3 py-1 text-xs font-medium text-pink-700 dark:text-pink-300">
                 Camera
               </span>
-              <span v-if="hasDisplay === true" class="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-3 py-1 text-xs font-medium text-cyan-700">
+              <span v-if="hasDisplay === true" class="inline-flex items-center gap-1 rounded-full bg-cyan-50 dark:bg-cyan-950 px-3 py-1 text-xs font-medium text-cyan-700 dark:text-cyan-300">
                 Display
               </span>
-              <span v-if="hasBattery === true" class="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-700">
+              <span v-if="hasBattery === true" class="inline-flex items-center gap-1 rounded-full bg-yellow-50 dark:bg-yellow-950 px-3 py-1 text-xs font-medium text-yellow-700 dark:text-yellow-300">
                 Battery
               </span>
-              <span v-if="searchQuery" class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+              <span v-if="searchQuery" class="inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
                 Search: "{{ searchQuery }}"
               </span>
             </div>
@@ -424,7 +424,7 @@ useHead({
           <div v-if="hasActiveFilters" class="ml-4 flex gap-2">
             <button
               @click="shareFilters"
-              class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              class="flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
               title="Share this filtered view"
             >
               <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -435,7 +435,7 @@ useHead({
             
             <button
               @click="clearAllFilters"
-              class="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+              class="flex items-center gap-2 rounded-lg bg-gray-900 dark:bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:hover:bg-blue-700"
               title="Clear all filters"
             >
               <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -455,7 +455,7 @@ useHead({
         <div class="flex-1 lg:max-w-md">
           <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
@@ -463,7 +463,7 @@ useHead({
               v-model="searchQuery"
               type="text"
               placeholder="Search products..."
-              class="block w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-3 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              class="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-10 pr-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -473,7 +473,7 @@ useHead({
           <!-- Product Type Filter -->
           <select
             v-model="selectedType"
-            class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option v-for="type in productTypes" :key="type.value" :value="type.value">
               {{ type.label }}
@@ -483,7 +483,7 @@ useHead({
           <!-- Sort By -->
           <select
             v-model="sortBy"
-            class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option v-for="option in sortOptions" :key="option.value" :value="option.value">
               {{ option.label }}
@@ -494,8 +494,8 @@ useHead({
 
       <!-- Dynamic Filters (shown based on category) -->
       <div v-if="showDevelopmentBoardFilters" class="mt-4 flex flex-wrap gap-3">
-        <div class="text-sm font-medium text-gray-700 flex items-center">
-          <svg class="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+          <svg class="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
           </svg>
           Filters:
@@ -504,7 +504,7 @@ useHead({
         <!-- Chip Filter -->
         <select
           v-model="selectedChip"
-          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option v-for="chip in chipOptions" :key="chip.value" :value="chip.value">
             {{ chip.label }}
@@ -514,7 +514,7 @@ useHead({
         <!-- WiFi Version Filter -->
         <select
           v-model="selectedWifiVersion"
-          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option v-for="wifi in wifiVersionOptions" :key="wifi.value" :value="wifi.value">
             {{ wifi.label }}
@@ -524,7 +524,7 @@ useHead({
         <!-- Bluetooth Version Filter -->
         <select
           v-model="selectedBluetoothVersion"
-          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option v-for="bt in bluetoothVersionOptions" :key="bt.value" :value="bt.value">
             {{ bt.label }}
@@ -534,7 +534,7 @@ useHead({
         <!-- USB Type Filter -->
         <select
           v-model="selectedUsbType"
-          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option v-for="usb in usbTypeOptions" :key="usb.value" :value="usb.value">
             {{ usb.label }}
@@ -546,8 +546,8 @@ useHead({
           @click="hasCamera = hasCamera === true ? null : true"
           class="rounded-lg border px-3 py-1.5 text-sm font-medium transition-all"
           :class="hasCamera === true 
-            ? 'border-blue-500 bg-blue-50 text-blue-700' 
-            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'"
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' 
+            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
         >
           <span class="flex items-center gap-1.5">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -562,8 +562,8 @@ useHead({
           @click="hasDisplay = hasDisplay === true ? null : true"
           class="rounded-lg border px-3 py-1.5 text-sm font-medium transition-all"
           :class="hasDisplay === true 
-            ? 'border-blue-500 bg-blue-50 text-blue-700' 
-            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'"
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' 
+            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
         >
           <span class="flex items-center gap-1.5">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -577,8 +577,8 @@ useHead({
           @click="hasBattery = hasBattery === true ? null : true"
           class="rounded-lg border px-3 py-1.5 text-sm font-medium transition-all"
           :class="hasBattery === true 
-            ? 'border-blue-500 bg-blue-50 text-blue-700' 
-            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'"
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' 
+            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
         >
           <span class="flex items-center gap-1.5">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -592,7 +592,7 @@ useHead({
         <button
           v-if="selectedChip !== 'all' || selectedWifiVersion !== 'all' || selectedBluetoothVersion !== 'all' || selectedUsbType !== 'all' || hasCamera !== null || hasDisplay !== null || hasBattery !== null"
           @click="selectedChip = 'all'; selectedWifiVersion = 'all'; selectedBluetoothVersion = 'all'; selectedUsbType = 'all'; hasCamera = null; hasDisplay = null; hasBattery = null"
-          class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-1.5"
+          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-1.5"
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -607,19 +607,19 @@ useHead({
       <!-- Loading State -->
       <div v-if="pending" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <div v-for="i in 8" :key="i" class="animate-pulse">
-          <div class="aspect-square rounded-lg bg-gray-200"></div>
-          <div class="mt-4 h-4 rounded bg-gray-200"></div>
-          <div class="mt-2 h-4 w-2/3 rounded bg-gray-200"></div>
+          <div class="aspect-square rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+          <div class="mt-4 h-4 rounded bg-gray-200 dark:bg-gray-700"></div>
+          <div class="mt-2 h-4 w-2/3 rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
       </div>
 
       <!-- No Products -->
       <div v-else-if="filteredProducts.length === 0" class="py-12 text-center">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
         </svg>
-        <h3 class="mt-2 text-sm font-semibold text-gray-900">No products found</h3>
-        <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria</p>
+        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">No products found</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your search or filter criteria</p>
         <button
           @click="searchQuery = ''; selectedType = 'all'"
           class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"

@@ -255,23 +255,23 @@ const handleSubmit = (e: Event) => {
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="rounded-2xl bg-linear-to-r from-blue-600 to-purple-600 p-8 text-white shadow-xl shadow-blue-500/20">
+    <div class="rounded-2xl bg-linear-to-r from-blue-600 to-purple-600 p-8 text-white shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10">
       <h1 class="text-2xl font-bold">Product Search 🔍</h1>
-      <p class="mt-2 text-blue-100">Search and import products from Amazon</p>
+      <p class="mt-2 text-blue-100 dark:text-blue-200">Search and import products from Amazon</p>
     </div>
 
     <!-- Search Form -->
-    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
       <form @submit="handleSubmit" class="space-y-4">
         <div class="grid gap-4 md:grid-cols-3">
           <!-- Search Input -->
           <div class="md:col-span-3">
-            <label for="search" class="block text-sm font-semibold text-gray-900 mb-2">
+            <label for="search" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
               Search Query
             </label>
             <div class="relative">
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -280,7 +280,7 @@ const handleSubmit = (e: Event) => {
                 v-model="searchQuery"
                 type="text"
                 required
-                class="block w-full rounded-xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                class="block w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 py-3 pl-12 pr-4 text-gray-900 dark:text-white outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30"
                 placeholder="Search Amazon products..."
                 :disabled="isLoading"
               />
@@ -293,7 +293,7 @@ const handleSubmit = (e: Event) => {
           <button
             type="submit"
             :disabled="isLoading || !searchQuery.trim()"
-            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg v-if="isLoading" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -319,19 +319,19 @@ const handleSubmit = (e: Event) => {
     >
       <div
         v-if="error"
-        class="rounded-xl border border-red-200 bg-red-50 p-4"
+        class="rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 p-4"
       >
         <div class="flex items-start gap-3">
-          <svg class="h-5 w-5 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div class="flex-1">
-            <h3 class="text-sm font-semibold text-red-900">Search Error</h3>
-            <p class="mt-1 text-sm text-red-700">{{ error }}</p>
+            <h3 class="text-sm font-semibold text-red-900 dark:text-red-200">Search Error</h3>
+            <p class="mt-1 text-sm text-red-700 dark:text-red-300">{{ error }}</p>
           </div>
           <button
             @click="error = ''"
-            class="shrink-0 text-red-600 transition-colors hover:text-red-700"
+            class="shrink-0 text-red-600 dark:text-red-400 transition-colors hover:text-red-700 dark:hover:text-red-300"
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -352,19 +352,19 @@ const handleSubmit = (e: Event) => {
     >
       <div
         v-if="successMessage"
-        class="rounded-xl border border-green-200 bg-green-50 p-4"
+        class="rounded-xl border border-green-200 dark:border-green-800/50 bg-green-50 dark:bg-green-900/20 p-4"
       >
         <div class="flex items-start gap-3">
-          <svg class="h-5 w-5 shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="h-5 w-5 shrink-0 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div class="flex-1">
-            <h3 class="text-sm font-semibold text-green-900">Success</h3>
-            <p class="mt-1 text-sm text-green-700">{{ successMessage }}</p>
+            <h3 class="text-sm font-semibold text-green-900 dark:text-green-200">Success</h3>
+            <p class="mt-1 text-sm text-green-700 dark:text-green-300">{{ successMessage }}</p>
           </div>
           <button
             @click="successMessage = ''"
-            class="shrink-0 text-green-600 transition-colors hover:text-green-700"
+            class="shrink-0 text-green-600 dark:text-green-400 transition-colors hover:text-green-700 dark:hover:text-green-300"
           >
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -379,7 +379,7 @@ const handleSubmit = (e: Event) => {
       <!-- Results Header with Select All -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <h2 class="text-lg font-semibold text-gray-900">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
             Search Results ({{ searchResults.length }})
           </h2>
           <label class="flex items-center gap-2 cursor-pointer">
@@ -387,9 +387,9 @@ const handleSubmit = (e: Event) => {
               type="checkbox"
               :checked="allSelected"
               @change="toggleSelectAll"
-              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             />
-            <span class="text-sm text-gray-600">Select all</span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Select all</span>
           </label>
         </div>
         
@@ -406,7 +406,7 @@ const handleSubmit = (e: Event) => {
             v-if="hasSelection"
             @click="bulkImportProducts"
             :disabled="isBulkImporting"
-            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -421,10 +421,10 @@ const handleSubmit = (e: Event) => {
         <div
           v-for="product in searchResults"
           :key="product.asin"
-          class="rounded-2xl border transition-all"
+          class="rounded-2xl border transition-all bg-white dark:bg-gray-800"
           :class="{
             'border-blue-500 shadow-lg': isSelected(product.asin),
-            'border-gray-200 shadow-sm hover:shadow-lg': !isSelected(product.asin)
+            'border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg dark:hover:shadow-gray-900/50': !isSelected(product.asin)
           }"
         >
           <div class="p-6">
@@ -436,14 +436,14 @@ const handleSubmit = (e: Event) => {
                   :checked="isSelected(product.asin)"
                   @change="toggleSelection(product.asin)"
                   :disabled="isImported(product.asin)"
-                  class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                  class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50"
                 />
               </label>
               <div class="flex flex-col items-end gap-1">
-                <span class="text-xs font-mono text-gray-400">{{ product.asin }}</span>
+                <span class="text-xs font-mono text-gray-400 dark:text-gray-500">{{ product.asin }}</span>
                 <span
                   v-if="isImported(product.asin)"
-                  class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700"
+                  class="inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-xs font-medium text-gray-700 dark:text-gray-300"
                 >
                   <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -454,14 +454,14 @@ const handleSubmit = (e: Event) => {
             </div>
             
             <!-- Product Image -->
-            <div class="aspect-square mb-4 overflow-hidden rounded-xl bg-gray-100">
+            <div class="aspect-square mb-4 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700">
               <img
                 v-if="product.images?.[0]?.url"
                 :src="product.images[0].url"
                 :alt="product.title"
                 class="h-full w-full object-cover"
               />
-              <div v-else class="flex h-full items-center justify-center text-gray-400">
+              <div v-else class="flex h-full items-center justify-center text-gray-400 dark:text-gray-500">
                 <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -470,7 +470,7 @@ const handleSubmit = (e: Event) => {
 
             <!-- Product Info -->
             <div class="space-y-2">
-              <h3 class="text-sm font-semibold text-gray-900 line-clamp-2">
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">
                 {{ product.title }}
               </h3>
 
@@ -479,21 +479,21 @@ const handleSubmit = (e: Event) => {
                   <svg class="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </svg>
-                  <span class="text-sm text-gray-600">
+                  <span class="text-sm text-gray-600 dark:text-gray-400">
                     {{ product.starRating || 'N/A' }}
                   </span>
                 </div>
-                <span class="text-sm text-gray-400">•</span>
-                <span class="text-sm text-gray-600">
+                <span class="text-sm text-gray-400 dark:text-gray-500">•</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">
                   {{ product.customerReviewCount || 0 }} reviews
                 </span>
               </div>
 
               <div class="flex items-center justify-between">
-                <span class="text-lg font-bold text-gray-900">
+                <span class="text-lg font-bold text-gray-900 dark:text-white">
                   {{ product.currentPrice ? `$${product.currentPrice}` : 'Price N/A' }}
                 </span>
-                <span class="text-xs text-gray-500">
+                <span class="text-xs text-gray-500 dark:text-gray-400">
                   {{ marketplace.flag }}
                 </span>
               </div>
@@ -504,7 +504,7 @@ const handleSubmit = (e: Event) => {
               <!-- Import Error for this product -->
               <div
                 v-if="getImportError(product.asin)"
-                class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700"
+                class="rounded-lg border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 px-3 py-2 text-xs text-red-700 dark:text-red-300"
               >
                 {{ getImportError(product.asin) }}
               </div>
@@ -515,8 +515,8 @@ const handleSubmit = (e: Event) => {
                 :disabled="isImporting(product.asin) || isImported(product.asin)"
                 class="w-full inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold shadow-sm transition-all focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 :class="{
-                  'bg-green-600 text-white hover:bg-green-700 focus:ring-green-100': !isImported(product.asin),
-                  'bg-gray-100 text-gray-600': isImported(product.asin)
+                  'bg-green-600 text-white hover:bg-green-700 focus:ring-green-100 dark:focus:ring-green-900/30': !isImported(product.asin),
+                  'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400': isImported(product.asin)
                 }"
               >
                 <!-- Loading spinner -->
@@ -547,12 +547,12 @@ const handleSubmit = (e: Event) => {
     </div>
 
     <!-- No Results -->
-    <div v-else-if="!isLoading && searchQuery && !error" class="rounded-2xl border border-gray-200 bg-white p-12 text-center">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div v-else-if="!isLoading && searchQuery && !error" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-12 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
-      <h3 class="mt-4 text-lg font-semibold text-gray-900">No products found</h3>
-      <p class="mt-2 text-gray-600">Try adjusting your search query or selecting a different marketplace.</p>
+      <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No products found</h3>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">Try adjusting your search query or selecting a different marketplace.</p>
     </div>
 
     <!-- Bulk Import Progress Modal -->
@@ -569,15 +569,15 @@ const handleSubmit = (e: Event) => {
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         @click.self="closeBulkModal"
       >
-        <div class="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white shadow-2xl">
+        <div class="w-full max-w-2xl rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-2xl">
           <!-- Modal Header -->
-          <div class="border-b border-gray-200 p-6">
+          <div class="border-b border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between">
-              <h2 class="text-xl font-bold text-gray-900">Bulk Import Progress</h2>
+              <h2 class="text-xl font-bold text-gray-900 dark:text-white">Bulk Import Progress</h2>
               <button
                 v-if="!isBulkImporting"
                 @click="closeBulkModal"
-                class="text-gray-400 transition-colors hover:text-gray-600"
+                class="text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -591,14 +591,14 @@ const handleSubmit = (e: Event) => {
             <!-- Progress Bar -->
             <div class="space-y-2">
               <div class="flex items-center justify-between text-sm">
-                <span class="font-semibold text-gray-700">
+                <span class="font-semibold text-gray-700 dark:text-gray-300">
                   {{ bulkImportProgress.completed }} / {{ bulkImportProgress.total }} products processed
                 </span>
-                <span class="text-gray-600">
+                <span class="text-gray-600 dark:text-gray-400">
                   {{ Math.round((bulkImportProgress.completed / bulkImportProgress.total) * 100) }}%
                 </span>
               </div>
-              <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+              <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                 <div
                   class="h-full transition-all duration-300"
                   :class="{
@@ -613,33 +613,33 @@ const handleSubmit = (e: Event) => {
 
             <!-- Stats -->
             <div class="grid grid-cols-3 gap-4">
-              <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 text-center">
-                <div class="text-2xl font-bold text-gray-900">{{ bulkImportProgress.total }}</div>
-                <div class="text-xs text-gray-600">Total</div>
+              <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
+                <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ bulkImportProgress.total }}</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400">Total</div>
               </div>
-              <div class="rounded-xl border border-green-200 bg-green-50 p-4 text-center">
-                <div class="text-2xl font-bold text-green-900">{{ bulkImportProgress.successful }}</div>
-                <div class="text-xs text-green-600">Successful</div>
+              <div class="rounded-xl border border-green-200 dark:border-green-800/50 bg-green-50 dark:bg-green-900/20 p-4 text-center">
+                <div class="text-2xl font-bold text-green-900 dark:text-green-200">{{ bulkImportProgress.successful }}</div>
+                <div class="text-xs text-green-600 dark:text-green-400">Successful</div>
               </div>
-              <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-center">
-                <div class="text-2xl font-bold text-red-900">{{ bulkImportProgress.failed }}</div>
-                <div class="text-xs text-red-600">Failed</div>
+              <div class="rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 p-4 text-center">
+                <div class="text-2xl font-bold text-red-900 dark:text-red-200">{{ bulkImportProgress.failed }}</div>
+                <div class="text-xs text-red-600 dark:text-red-400">Failed</div>
               </div>
             </div>
 
             <!-- Results List -->
             <div v-if="bulkImportProgress.results.length > 0" class="space-y-2">
-              <h3 class="text-sm font-semibold text-gray-900">Import Results</h3>
-              <div class="max-h-64 space-y-2 overflow-y-auto rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Import Results</h3>
+              <div class="max-h-64 space-y-2 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-4">
                 <div
                   v-for="result in bulkImportProgress.results"
                   :key="result.asin"
-                  class="flex items-start gap-3 rounded-lg bg-white p-3 text-sm"
+                  class="flex items-start gap-3 rounded-lg bg-white dark:bg-gray-800 p-3 text-sm"
                 >
                   <!-- Success/Failure Icon -->
                   <svg
                     v-if="result.success"
-                    class="h-5 w-5 shrink-0 text-green-600"
+                    class="h-5 w-5 shrink-0 text-green-600 dark:text-green-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -648,7 +648,7 @@ const handleSubmit = (e: Event) => {
                   </svg>
                   <svg
                     v-else
-                    class="h-5 w-5 shrink-0 text-red-600"
+                    class="h-5 w-5 shrink-0 text-red-600 dark:text-red-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -658,9 +658,9 @@ const handleSubmit = (e: Event) => {
 
                   <!-- Product Info -->
                   <div class="flex-1">
-                    <div class="font-medium text-gray-900 line-clamp-1">{{ result.title }}</div>
-                    <div class="text-xs text-gray-500">{{ result.asin }}</div>
-                    <div v-if="!result.success && result.error" class="mt-1 text-xs text-red-600">
+                    <div class="font-medium text-gray-900 dark:text-white line-clamp-1">{{ result.title }}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ result.asin }}</div>
+                    <div v-if="!result.success && result.error" class="mt-1 text-xs text-red-600 dark:text-red-400">
                       {{ result.error }}
                     </div>
                   </div>
@@ -674,15 +674,15 @@ const handleSubmit = (e: Event) => {
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span class="text-sm font-medium text-gray-700">Importing products...</span>
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Importing products...</span>
             </div>
           </div>
 
           <!-- Modal Footer -->
-          <div v-if="!isBulkImporting" class="border-t border-gray-200 p-6">
+          <div v-if="!isBulkImporting" class="border-t border-gray-200 dark:border-gray-700 p-6">
             <button
               @click="closeBulkModal"
-              class="w-full rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-gray-800 focus:ring-4 focus:ring-gray-100"
+              class="w-full rounded-xl bg-gray-900 dark:bg-gray-700 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-gray-800 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700"
             >
               Close
             </button>

@@ -54,9 +54,9 @@ const topProducts = [
 <template>
   <div class="space-y-6">
     <!-- Welcome Section -->
-    <div class="rounded-2xl bg-linear-to-r from-blue-600 to-purple-600 p-8 text-white shadow-xl shadow-blue-500/20">
+    <div class="rounded-2xl bg-linear-to-r from-blue-600 to-purple-600 p-8 text-white shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10">
       <h2 class="mb-2 text-2xl font-bold">Welcome back, Admin! 👋</h2>
-      <p class="text-blue-100">Here's what's happening with your store today.</p>
+      <p class="text-blue-100 dark:text-blue-200">Here's what's happening with your store today.</p>
     </div>
 
     <!-- Stats Grid -->
@@ -64,64 +64,64 @@ const topProducts = [
       <div
         v-for="stat in stats"
         :key="stat.name"
-        class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-lg"
+        class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm transition-shadow hover:shadow-lg dark:hover:shadow-gray-900/50"
       >
         <div class="flex items-start justify-between">
-          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-blue-50 to-purple-50">
-            <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
+            <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon" />
             </svg>
           </div>
           <span
             class="rounded-full px-2.5 py-1 text-xs font-semibold"
-            :class="stat.trend === 'up' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+            :class="stat.trend === 'up' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'"
           >
             {{ stat.change }}
           </span>
         </div>
         <div class="mt-4">
-          <h3 class="text-sm font-medium text-gray-600">{{ stat.name }}</h3>
-          <p class="mt-1 text-3xl font-bold text-gray-900">{{ stat.value }}</p>
+          <h3 class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ stat.name }}</h3>
+          <p class="mt-1 text-3xl font-bold text-gray-900 dark:text-white">{{ stat.value }}</p>
         </div>
       </div>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-3">
       <!-- Recent Orders -->
-      <div class="rounded-2xl border border-gray-200 bg-white shadow-sm lg:col-span-2">
-        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-          <h3 class="text-lg font-semibold text-gray-900">Recent Orders</h3>
-          <NuxtLink to="/admin/orders" class="text-sm font-medium text-blue-600 hover:text-blue-700">
+      <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm lg:col-span-2">
+        <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Orders</h3>
+          <NuxtLink to="/admin/orders" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
             View all →
           </NuxtLink>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full">
-            <thead class="border-b border-gray-200 bg-gray-50">
+            <thead class="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Order</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Customer</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Product</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Amount</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Order</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Customer</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Product</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Amount</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Status</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr v-for="order in recentOrders" :key="order.id" class="transition-colors hover:bg-gray-50">
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+              <tr v-for="order in recentOrders" :key="order.id" class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50">
                 <td class="whitespace-nowrap px-6 py-4">
-                  <span class="font-medium text-gray-900">{{ order.id }}</span>
-                  <span class="block text-xs text-gray-500">{{ order.date }}</span>
+                  <span class="font-medium text-gray-900 dark:text-white">{{ order.id }}</span>
+                  <span class="block text-xs text-gray-500 dark:text-gray-400">{{ order.date }}</span>
                 </td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">{{ order.customer }}</td>
-                <td class="px-6 py-4 text-sm text-gray-600">{{ order.product }}</td>
-                <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-gray-900">{{ order.amount }}</td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900 dark:text-gray-300">{{ order.customer }}</td>
+                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ order.product }}</td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{{ order.amount }}</td>
                 <td class="whitespace-nowrap px-6 py-4">
                   <span
                     class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
                     :class="{
-                      'bg-green-100 text-green-700': order.status === 'completed',
-                      'bg-blue-100 text-blue-700': order.status === 'processing',
-                      'bg-yellow-100 text-yellow-700': order.status === 'pending',
+                      'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400': order.status === 'completed',
+                      'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400': order.status === 'processing',
+                      'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400': order.status === 'pending',
                     }"
                   >
                     {{ order.status }}
@@ -134,9 +134,9 @@ const topProducts = [
       </div>
 
       <!-- Top Products -->
-      <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
-        <div class="border-b border-gray-200 px-6 py-4">
-          <h3 class="text-lg font-semibold text-gray-900">Top Products</h3>
+      <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+        <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Top Products</h3>
         </div>
         <div class="p-6">
           <div class="space-y-4">
@@ -145,20 +145,20 @@ const topProducts = [
               :key="product.name"
               class="flex items-center gap-4"
             >
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-50 to-purple-50 font-bold text-blue-600">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 font-bold text-blue-600 dark:text-blue-400">
                 {{ index + 1 }}
               </div>
               <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-semibold text-gray-900">{{ product.name }}</p>
-                <div class="mt-1 flex items-center gap-2 text-xs text-gray-600">
+                <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">{{ product.name }}</p>
+                <div class="mt-1 flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                   <span>{{ product.sales }} sales</span>
-                  <span class="text-gray-400">•</span>
-                  <span class="font-semibold text-gray-900">{{ product.revenue }}</span>
+                  <span class="text-gray-400 dark:text-gray-500">•</span>
+                  <span class="font-semibold text-gray-900 dark:text-white">{{ product.revenue }}</span>
                 </div>
               </div>
               <div
                 class="shrink-0"
-                :class="product.trend === 'up' ? 'text-green-600' : 'text-red-600'"
+                :class="product.trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
               >
                 <svg v-if="product.trend === 'up'" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />

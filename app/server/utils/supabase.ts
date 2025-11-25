@@ -4,8 +4,6 @@ import { createServerClient } from '@supabase/ssr'
 export async function createServerSupabaseClient(event: H3Event) {
   const config = useRuntimeConfig()
   
-  console.log(config.public.supabaseUrl);
-  console.log(config.public.supabaseKey);
   return createServerClient(
     config.public.supabaseUrl,
     config.public.supabaseKey,
@@ -25,10 +23,6 @@ export async function createServerSupabaseClient(event: H3Event) {
  */
 export function createServerSupabaseAdminClient() {
   const config = useRuntimeConfig()
-  
-  console.log('Admin client - URL:', config.public.supabaseUrl)
-  console.log('Admin client - Service key exists:', !!config.supabaseServiceKey)
-  console.log('Admin client - Service key length:', config.supabaseServiceKey?.length)
   
   // Use createServerClient with service role key instead of anon key
   // This will bypass RLS policies

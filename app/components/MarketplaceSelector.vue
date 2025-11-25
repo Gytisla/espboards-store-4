@@ -1,15 +1,15 @@
 <template>
-  <div class="marketplace-selector">
+  <div class="relative">
     <button
       @click="isOpen = !isOpen"
-      class="selector-button"
+      class="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm font-medium transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900"
       :aria-expanded="isOpen"
       aria-haspopup="true"
     >
-      <span class="flag">{{ marketplace.flag }}</span>
-      <span class="code">{{ marketplace.code }}</span>
+      <span class="text-xl leading-none">{{ marketplace.flag }}</span>
+      <span class="font-semibold text-gray-700 dark:text-gray-300">{{ marketplace.code }}</span>
       <svg
-        class="chevron"
+        class="h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform"
         :class="{ 'rotate-180': isOpen }"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
@@ -23,23 +23,30 @@
       </svg>
     </button>
 
-    <transition name="dropdown">
-      <div v-if="isOpen" class="dropdown">
+    <transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-2"
+    >
+      <div v-if="isOpen" class="absolute top-full left-0 mt-2 min-w-[250px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl overflow-hidden z-50">
         <button
           v-for="mkpl in Object.values(marketplaces)"
           :key="mkpl.code"
           @click="selectMarketplace(mkpl.code)"
-          class="dropdown-item"
-          :class="{ active: mkpl.code === selectedMarketplace }"
+          class="flex items-center gap-3 w-full px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+          :class="{ 'bg-blue-50 dark:bg-blue-950': mkpl.code === selectedMarketplace }"
         >
-          <span class="flag">{{ mkpl.flag }}</span>
-          <div class="details">
-            <span class="name">{{ mkpl.name }}</span>
-            <span class="domain">{{ mkpl.domain }}</span>
+          <span class="text-2xl leading-none">{{ mkpl.flag }}</span>
+          <div class="flex flex-col gap-0.5 flex-1">
+            <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ mkpl.name }}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ mkpl.domain }}</span>
           </div>
           <svg
             v-if="mkpl.code === selectedMarketplace"
-            class="check"
+            class="h-5 w-5 text-blue-600 dark:text-blue-400"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
@@ -72,7 +79,7 @@ const selectMarketplace = (code: MarketplaceCode) => {
 // Close dropdown when clicking outside
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement
-  if (!target.closest('.marketplace-selector')) {
+  if (!target.closest('.relative')) {
     isOpen.value = false
   }
 }
@@ -85,133 +92,3 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
-
-<style scoped>
-.marketplace-selector {
-  position: relative;
-}
-
-.selector-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.selector-button:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-}
-
-.selector-button:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.flag {
-  font-size: 1.25rem;
-  line-height: 1;
-}
-
-.code {
-  color: #374151;
-  font-weight: 600;
-}
-
-.chevron {
-  width: 1rem;
-  height: 1rem;
-  color: #9ca3af;
-  transition: transform 0.2s;
-}
-
-.chevron.rotate-180 {
-  transform: rotate(180deg);
-}
-
-.dropdown {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  left: 0;
-  min-width: 250px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  z-index: 50;
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: white;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s;
-  text-align: left;
-}
-
-.dropdown-item:hover {
-  background: #f9fafb;
-}
-
-.dropdown-item.active {
-  background: #eff6ff;
-}
-
-.dropdown-item .flag {
-  font-size: 1.5rem;
-}
-
-.details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  flex: 1;
-}
-
-.name {
-  font-weight: 600;
-  color: #111827;
-  font-size: 0.875rem;
-}
-
-.domain {
-  font-size: 0.75rem;
-  color: #6b7280;
-}
-
-.check {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #3b82f6;
-}
-
-/* Dropdown transition */
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 0.2s ease;
-}
-
-.dropdown-enter-from {
-  opacity: 0;
-  transform: translateY(-0.5rem);
-}
-
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(-0.5rem);
-}
-</style>
