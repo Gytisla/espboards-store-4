@@ -5,35 +5,19 @@
   # Publish directory - Nuxt 3 with Netlify preset outputs to dist/
   publish = "app/dist"
   
-  # Functions directory is handled by Netlify automatically via .netlify folder
+  # Functions directory for Netlify
+  functions = "app/.netlify/functions-internal"
 
 [build.environment]
   # Node.js version
   NODE_VERSION = "20"
-  
-  # Enable pnpm
-  NPM_FLAGS = "--version"
 
-# Redirect rules for SPA routing
 [[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
-  force = false
-  conditions = {Role = ["client"]}
-
-# API routes (server-side functions)
-[[redirects]]
-  from = "/api/*"
   to = "/.netlify/functions/server/:splat"
   status = 200
 
 # Cache static assets
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
 [[headers]]
   for = "/_nuxt/*"
   [headers.values]

@@ -41,4 +41,6 @@ export default defineNuxtConfig({
     preset: 'netlify',
     compressPublicAssets: true,
   },
+  // Enable SSR (Server-Side Rendering) - default is true but making it explicit
+  ssr: true,
 })
