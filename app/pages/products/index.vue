@@ -81,6 +81,9 @@ const hasSdCard = ref<boolean | null>(null)
 // Flag to prevent URL updates during initialization
 const isInitializing = ref(true)
 
+// Collapse state for mobile specifications
+const isSpecificationsOpen = ref(true)
+
 // Initialize filters from URL query parameters
 const initializeFiltersFromURL = () => {
   if (route.query.type && typeof route.query.type === 'string') {
@@ -518,7 +521,7 @@ const shareFilters = async () => {
 
 // Set page meta
 useHead({
-  title: 'Products - ESP32 Store',
+  title: 'Products - ESPBoards Store',
   meta: [
     { name: 'description', content: 'Browse our selection of ESP32 development boards, sensors, displays, and accessories.' },
   ],
@@ -528,7 +531,7 @@ useHead({
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Hero Section -->
-    <div class="relative overflow-hidden bg-linear-to-br from-blue-600 via-purple-600 to-blue-800 dark:from-blue-900 dark:via-purple-900 dark:to-blue-950">
+    <div class="relative overflow-hidden bg-linear-to-br from-blue-500 via-blue-600 to-blue-800 dark:from-blue-700 dark:via-blue-900 dark:to-blue-950">
       <!-- Animated Background Pattern -->
       <div class="absolute inset-0 opacity-10">
         <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
@@ -748,19 +751,40 @@ useHead({
             <!-- Advanced Filters (Development Boards) -->
             <div v-if="showDevelopmentBoardFilters" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
               <div class="flex items-center justify-between mb-2">
-                <h3 class="text-xs font-semibold text-gray-900 dark:text-white">
-                  Specifications
-                </h3>
+                <button
+                  @click="isSpecificationsOpen = !isSpecificationsOpen"
+                  class="flex items-center justify-between flex-1 text-xs font-semibold text-gray-900 dark:text-white lg:cursor-default"
+                >
+                  <span>Specifications</span>
+                  <svg
+                    class="h-4 w-4 transition-transform lg:hidden"
+                    :class="{ 'rotate-180': isSpecificationsOpen }"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
                 <button
                   v-if="selectedChip !== 'all' || selectedWifiVersion !== 'all' || selectedBluetoothVersion !== 'all' || selectedUsbType !== 'all' || selectedFlashSize !== 'all' || selectedPsramSize !== 'all' || selectedGpioPins !== 'all' || minPrice !== null || maxPrice !== null || hasCamera !== null || hasDisplay !== null || hasBattery !== null || hasZigbee !== null || hasThread !== null || hasSdCard !== null"
                   @click="selectedChip = 'all'; selectedWifiVersion = 'all'; selectedBluetoothVersion = 'all'; selectedUsbType = 'all'; selectedFlashSize = 'all'; selectedPsramSize = 'all'; selectedGpioPins = 'all'; minPrice = null; maxPrice = null; hasCamera = null; hasDisplay = null; hasBattery = null; hasZigbee = null; hasThread = null; hasSdCard = null"
-                  class="text-[10px] text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  class="text-[10px] text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors ml-2"
                 >
                   Clear
                 </button>
               </div>
 
-              <div class="space-y-2.5">
+              <transition
+                enter-active-class="transition-all duration-300 ease-out"
+                enter-from-class="opacity-0 max-h-0"
+                enter-to-class="opacity-100 max-h-[3000px]"
+                leave-active-class="transition-all duration-300 ease-in"
+                leave-from-class="opacity-100 max-h-[3000px]"
+                leave-to-class="opacity-0 max-h-0"
+              >
+                <div v-show="isSpecificationsOpen" class="overflow-hidden">
+                  <div class="space-y-2.5">
                 <!-- Chip Filter -->
                 <div>
                   <label class="mb-1 block text-[10px] font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
@@ -983,6 +1007,8 @@ useHead({
                   </button>
                 </div>
               </div>
+                </div>
+              </transition>
             </div>
           </div>
         </aside>

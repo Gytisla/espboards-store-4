@@ -2,17 +2,17 @@
 const currentYear = new Date().getFullYear()
 
 const footerLinks = {
+   company: [
+    { name: 'About Us', href: '/about' },
+    { name: 'Contact', href: 'https://www.espboards.dev/about/#contact-us' },
+    { name: 'Blog', href: 'https://www.espboards.dev/blog/' },
+    { name: 'ESPBoards', href: 'https://www.espboards.dev' },
+  ],
   products: [
     { name: 'Development Boards', href: '/products?type=development_board' },
     { name: 'Sensors', href: '/products?type=sensor' },
     { name: 'Displays', href: '/products?type=display' },
     { name: 'Power Modules', href: '/products?type=power' },
-  ],
-  company: [
-    { name: 'About Us', href: '/about' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Careers', href: '/careers' },
   ],
   legal: [
     { name: 'Privacy Policy', href: '/privacy' },
@@ -23,24 +23,34 @@ const footerLinks = {
 
 const socialLinks = [
   {
+    name: 'Facebook',
+    href: 'https://www.facebook.com/espboards/',
+    icon: 'M13.135 6H15V3h-1.865a4.147 4.147 0 0 0-4.142 4.142V9H7v3h2v9.938h3V12h2.021l.592-3H12V6.591A.6.6 0 0 1 12.592 6h.543Z',
+    viewBox: '0 0 24 24',
+  },
+  {
+    name: 'Instagram',
+    href: 'https://www.instagram.com/espboards/',
+    icon: 'M3 8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8Zm5-3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H8Zm7.597 2.214a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2h-.01a1 1 0 0 1-1-1ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm-5 3a5 5 0 1 1 10 0 5 5 0 0 1-10 0Z',
+    viewBox: '0 0 24 24',
+  },
+  {
+    name: 'X',
+    href: 'https://x.com/espboards',
+    icon: 'M13.795 10.533 20.68 2h-3.073l-5.255 6.517L7.69 2H1l7.806 10.91L1.47 22h3.074l5.705-7.07L15.31 22H22l-8.205-11.467Zm-2.38 2.95L9.97 11.464 4.36 3.627h2.31l4.528 6.317 1.443 2.02 6.018 8.409h-2.31l-4.934-6.89Z',
+    viewBox: '0 0 24 24',
+  },
+  {
     name: 'GitHub',
-    href: 'https://github.com',
-    icon: 'M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z',
+    href: 'https://github.com/ESPBoards',
+    icon: 'M10 .333A9.911 9.911 0 0 0 6.866 19.65c.5.092.678-.215.678-.477 0-.237-.01-1.017-.014-1.845-2.757.6-3.338-1.169-3.338-1.169a2.627 2.627 0 0 0-1.1-1.451c-.9-.615.07-.6.07-.6a2.084 2.084 0 0 1 1.518 1.021 2.11 2.11 0 0 0 2.884.823c.044-.503.268-.973.63-1.325-2.2-.25-4.516-1.1-4.516-4.9A3.832 3.832 0 0 1 4.7 7.068a3.56 3.56 0 0 1 .095-2.623s.832-.266 2.726 1.016a9.409 9.409 0 0 1 4.962 0c1.89-1.282 2.717-1.016 2.717-1.016.366.83.402 1.768.1 2.623a3.827 3.827 0 0 1 1.02 2.659c0 3.807-2.319 4.644-4.525 4.889a2.366 2.366 0 0 1 .673 1.834c0 1.326-.012 2.394-.012 2.72 0 .263.18.572.681.475A9.911 9.911 0 0 0 10 .333Z',
+    viewBox: '0 0 20 20',
   },
   {
-    name: 'Twitter',
-    href: 'https://twitter.com',
-    icon: 'M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z',
-  },
-  {
-    name: 'YouTube',
-    href: 'https://youtube.com',
-    icon: 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z',
-  },
-  {
-    name: 'Discord',
-    href: 'https://discord.com',
-    icon: 'M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z',
+    name: 'Pinterest',
+    href: 'https://pin.it/7AwGDIY',
+    icon: 'M51.125,0C24.469,0,11.029,19.11,11.029,35.047c0,9.649,3.653,18.232,11.487,21.432c1.286,0.525,2.438,0.019,2.812-1.403 c0.258-0.985,0.871-3.468,1.144-4.503c0.376-1.407,0.229-1.9-0.807-3.126c-2.259-2.665-3.703-6.115-3.703-11.002	c0-14.178,10.608-26.87,27.624-26.87c15.064,0,23.342,9.206,23.342,21.5c0,16.176-7.159,29.828-17.786,29.828 c-5.87,0-10.262-4.854-8.854-10.807c1.686-7.107,4.951-14.778,4.951-19.907c0-4.592-2.463-8.423-7.565-8.423 c-6,0-10.819,6.207-10.819,14.521c0,5.296,1.789,8.878,1.789,8.878s-6.141,26.015-7.215,30.571 c-2.145,9.072-0.322,20.195-0.168,21.318c0.089,0.666,0.944,0.824,1.332,0.322c0.555-0.723,7.7-9.544,10.129-18.359 c0.687-2.496,3.944-15.42,3.944-15.42c1.95,3.717,7.647,6.992,13.706,6.992c18.034,0,30.271-16.441,30.271-38.45 C86.644,15.498,72.547,0,51.125,0z',
+    viewBox: '0 0 97.672 97.672',
   },
 ]
 </script>
@@ -49,17 +59,20 @@ const socialLinks = [
   <footer class="border-t border-gray-200 dark:border-gray-800 bg-linear-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Main Footer Content -->
-      <div class="grid grid-cols-1 gap-8 py-12 md:grid-cols-3 lg:gap-12">
+      <div class="grid grid-cols-1 gap-8 py-12 md:grid-cols-4 lg:gap-12">
         <!-- Column 1: Brand & Social -->
         <div>
           <!-- Logo -->
-          <NuxtLink to="/" class="inline-flex items-center gap-2 mb-4">
-            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/30">
-              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-              </svg>
+          <NuxtLink to="/" class="inline-flex items-center gap-2 mb-4 transition-opacity hover:opacity-80">
+            <img 
+              src="/logo.png" 
+              alt="ESPBoards Logo" 
+              class="h-8 w-auto"
+            />
+            <div class="flex flex-col leading-tight">
+              <span class="font-semibold text-lg text-gray-900 dark:text-white">ESPBoards</span>
+              <span class="font-medium text-sm text-gray-600 dark:text-gray-400 -mt-1">Store</span>
             </div>
-            <span class="text-xl font-bold text-gray-900 dark:text-white">ESP Store</span>
           </NuxtLink>
           
           <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
@@ -81,18 +94,46 @@ const socialLinks = [
                 class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md hover:scale-105"
                 :aria-label="social.name"
               >
-                <svg class="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path :d="social.icon" />
+                <svg class="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600" fill="currentColor" :viewBox="social.viewBox || '0 0 24 24'">
+                  <path :d="social.icon" fill-rule="evenodd" clip-rule="evenodd" />
                 </svg>
               </a>
             </div>
           </div>
         </div>
 
-        <!-- Column 2: Quick Links -->
+        <!-- Column 1: About Links -->
         <div>
           <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
-            Quick Links
+            About
+          </h3>
+          <ul class="space-y-3">
+            <li v-for="link in footerLinks.company" :key="link.name">
+              <NuxtLink
+                :to="link.href"
+                :target="link.href.startsWith('http') ? '_blank' : '_self'"
+                :rel="link.href.startsWith('http') ? 'noopener noreferrer' : undefined"
+                class="inline-flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+              >
+                {{ link.name }}
+                <svg 
+                  v-if="link.href.startsWith('http')" 
+                  class="h-3.5 w-3.5 opacity-50" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 2: Categories -->
+        <div>
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
+            Categories
           </h3>
           <ul class="space-y-3">
             <li v-for="link in footerLinks.products" :key="link.name">
@@ -125,7 +166,7 @@ const socialLinks = [
       </div>
 
       <!-- Newsletter Section -->
-      <div class="border-t border-gray-200 dark:border-gray-800 py-10">
+      <!-- <div class="border-t border-gray-200 dark:border-gray-800 py-10">
         <div class="flex flex-col items-center gap-6 md:flex-row md:justify-between">
           <div class="text-center md:text-left">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -148,14 +189,14 @@ const socialLinks = [
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Bottom Bar -->
       <div class="border-t border-gray-200 dark:border-gray-800 py-8">
         <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <!-- Copyright -->
           <p class="text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
-            © {{ currentYear }} ESP Store. All rights reserved.
+            © {{ currentYear }} ESPBoards. All rights reserved.
           </p>
 
           <!-- Amazon Disclaimer -->

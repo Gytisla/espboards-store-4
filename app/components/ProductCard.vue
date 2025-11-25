@@ -164,15 +164,15 @@ const features = computed(() => getProductFeatures(props.product))
       </h3>
 
       <!-- Features/Tags -->
-      <div v-if="features.length > 0" class="mt-2.5 flex flex-wrap gap-1.5">
+      <div v-if="features.length > 0" class="mt-2 flex flex-wrap gap-1">
         <span
           v-for="(feature, idx) in features.slice(0, 2)"
           :key="idx"
-          class="inline-flex items-center rounded-md bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900"
+          class="inline-flex items-center rounded-md bg-linear-to-r from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-950 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900"
         >
           {{ feature }}
         </span>
-        <span v-if="features.length > 2" class="inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-700 px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+        <span v-if="features.length > 2" class="inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:text-gray-400">
           +{{ features.length - 2 }}
         </span>
       </div>
@@ -181,7 +181,7 @@ const features = computed(() => getProductFeatures(props.product))
       <div class="flex-1"></div>
 
       <!-- Pricing -->
-      <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+      <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
         <div class="flex items-baseline gap-2">
           <span class="text-xl font-bold text-gray-900 dark:text-white">
             {{ formatPrice(product.current_price, product.currency) }}
@@ -192,8 +192,8 @@ const features = computed(() => getProductFeatures(props.product))
         </div>
 
         <!-- Savings Info -->
-        <div v-if="product.savings_percentage" class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 dark:bg-green-950 px-3 py-1 text-xs font-semibold text-green-700 dark:text-green-300">
-          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div v-if="product.savings_percentage" class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-950 px-2.5 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-300">
+          <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
           </svg>
           Save {{ Math.round(product.savings_percentage) }}%
@@ -201,8 +201,8 @@ const features = computed(() => getProductFeatures(props.product))
       </div>
 
       <!-- View Details Button -->
-      <div class="mt-3">
-        <div class="flex items-center justify-between rounded-lg bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 px-4 py-2.5 text-sm font-semibold text-blue-700 dark:text-blue-300 transition-all group-hover:from-blue-100 group-hover:to-purple-100 dark:group-hover:from-blue-900 dark:group-hover:to-purple-900 border border-blue-100 dark:border-blue-900">
+      <div class="mt-2.5">
+        <div class="flex items-center justify-between rounded-lg bg-linear-to-r from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-950 px-4 py-2.5 text-sm font-semibold text-blue-700 dark:text-blue-300 transition-all group-hover:from-blue-50 group-hover:to-blue-100 dark:group-hover:from-blue-800 dark:group-hover:to-blue-900 border border-blue-100 dark:border-blue-900">
           <span>View Details</span>
           <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

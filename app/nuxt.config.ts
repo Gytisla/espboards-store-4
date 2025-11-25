@@ -10,6 +10,22 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
+  app: {
+    head: {
+      title: 'ESPBoards Store - ESP32 Development Boards & Components',
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'Your one-stop shop for ESP32 development boards, sensors, displays, and IoT components. Quality products at competitive prices.' },
+        { name: 'theme-color', content: '#3b82f6' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+        { rel: 'apple-touch-icon', href: '/favicon.png' },
+      ],
+    },
+  },
   runtimeConfig: {
     // Private keys (only available server-side)
     supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,

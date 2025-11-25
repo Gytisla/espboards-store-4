@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Set page meta
 useHead({
-  title: 'About Us - ESP32 Store',
+  title: 'About Us - ESPBoards Store',
   meta: [
-    { name: 'description', content: 'Learn about ESP32 Store - your trusted source for ESP32 development boards, modules, sensors, and IoT components.' }
+    { name: 'description', content: 'Learn about ESPBoards Store - your trusted source for ESP32 development boards, modules, sensors, and IoT components.' }
   ]
 })
 
@@ -44,8 +44,8 @@ const features = [
 // Statistics
 const stats = [
   { value: '500+', label: 'Products Listed' },
-  { value: '10+', label: 'Product Categories' },
-  { value: '5', label: 'Global Marketplaces' },
+  { value: '8+', label: 'Product Categories' },
+  { value: '2', label: 'Global Marketplaces' },
   { value: '24/7', label: 'Price Updates' }
 ]
 
@@ -87,14 +87,20 @@ const getIconPath = (iconName: string) => {
       <div class="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
         <div class="text-center">
           <!-- Icon/Logo -->
-          <div class="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-500 shadow-2xl shadow-blue-500/50">
-            <svg class="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-            </svg>
+          <div class="mx-auto mb-8 inline-flex items-center gap-3">
+            <img 
+              src="/logo.png" 
+              alt="ESPBoards Logo" 
+              class="h-16 w-auto drop-shadow-2xl"
+            />
+            <div class="flex flex-col leading-tight text-left">
+              <span class="font-bold text-3xl text-white drop-shadow-lg">ESPBoards</span>
+              <span class="font-semibold text-xl text-blue-200 -mt-1 drop-shadow-md">Store</span>
+            </div>
           </div>
 
           <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-7xl mb-6" style="text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);">
-            About ESP32 Store
+            About ESPBoards Store
           </h1>
           <p class="mt-6 text-xl sm:text-2xl text-gray-100 max-w-3xl mx-auto leading-relaxed font-medium" style="text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);">
             Your one-stop destination for discovering and comparing ESP32 development boards, 
@@ -108,11 +114,11 @@ const getIconPath = (iconName: string) => {
               <div class="text-sm font-semibold text-gray-600 dark:text-gray-300">Products</div>
             </div>
             <div class="rounded-2xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm px-8 py-4 shadow-xl border border-white/50 dark:border-gray-700/50">
-              <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">10+</div>
+              <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">8+</div>
               <div class="text-sm font-semibold text-gray-600 dark:text-gray-300">Categories</div>
             </div>
             <div class="rounded-2xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm px-8 py-4 shadow-xl border border-white/50 dark:border-gray-700/50">
-              <div class="text-3xl font-bold text-purple-600 dark:text-purple-400">5</div>
+              <div class="text-3xl font-bold text-purple-600 dark:text-purple-400">2</div>
               <div class="text-sm font-semibold text-gray-600 dark:text-gray-300">Marketplaces</div>
             </div>
           </div>
@@ -136,7 +142,7 @@ const getIconPath = (iconName: string) => {
           </h2>
           <div class="space-y-4 text-lg text-gray-600 dark:text-gray-300">
             <p>
-              ESP32 Store was created to solve a common problem faced by IoT developers and makers: 
+              ESPBoards Store was created to solve a common problem faced by IoT developers and makers: 
               finding the right ESP32 components shouldn't be complicated or time-consuming.
             </p>
             <p>
@@ -190,7 +196,7 @@ const getIconPath = (iconName: string) => {
     <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Why Choose ESP32 Store?
+          Why Choose ESPBoards Store?
         </h2>
         <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
           We're more than just a product catalog. Here's what makes us different.

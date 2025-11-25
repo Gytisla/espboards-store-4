@@ -1,4 +1,57 @@
 <script setup lang="ts">
+interface ImageVariant {
+  url: string
+  width?: number | null
+  height?: number | null
+}
+
+interface ProductImages {
+  primary?: {
+    small?: ImageVariant
+    medium?: ImageVariant
+    large?: ImageVariant
+    highRes?: ImageVariant
+  }
+  variants?: Array<{
+    small?: ImageVariant
+    medium?: ImageVariant
+    large?: ImageVariant
+    highRes?: ImageVariant
+  }>
+}
+
+interface Product {
+  id: string
+  asin: string
+  slug: string
+  title: string
+  description: string | null
+  brand: string | null
+  images: ProductImages | null
+  detail_page_url: string
+  current_price: number | null
+  original_price: number | null
+  savings_amount: number | null
+  savings_percentage: number | null
+  currency: string
+  status: string
+  metadata: any
+  created_at: string
+}
+
+const { selectedMarketplace } = useMarketplace()
+
+// Fetch featured products (latest 8 active products)
+const { data: featuredProductsData, pending: loadingProducts } = await useFetch<{ products: Product[] }>('/api/products', {
+  query: {
+    marketplace: selectedMarketplace,
+  },
+})
+
+const featuredProducts = computed(() => {
+  return featuredProductsData.value?.products?.slice(0, 8) || []
+})
+
 const features = [
   {
     icon: 'M13 10V3L4 14h7v7l9-11h-7z',
@@ -61,7 +114,7 @@ const productCategories = [
 <template>
   <div>
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950 py-20 md:py-32">
+    <section class="relative overflow-hidden bg-linear-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950 py-16 md:py-24">
       <!-- Background decoration -->
       <div class="absolute inset-0 overflow-hidden">
         <div class="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-blue-200/30 dark:bg-blue-500/10 blur-3xl"></div>
@@ -70,19 +123,10 @@ const productCategories = [
 
       <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-          <!-- Badge -->
-          <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white dark:bg-gray-800 px-4 py-2 shadow-lg shadow-black/5 dark:shadow-black/20">
-            <span class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
-            </span>
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">New products added weekly</span>
-          </div>
-
           <!-- Heading -->
           <h1 class="mb-6 text-5xl font-bold tracking-tight text-gray-900 dark:text-white md:text-6xl lg:text-7xl">
             Build Amazing IoT
-            <span class="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span class="bg-linear-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
               Projects
             </span>
           </h1>
@@ -96,7 +140,7 @@ const productCategories = [
           <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <NuxtLink
               to="/products"
-              class="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-600 to-purple-600 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-blue-500/30 transition-all hover:shadow-2xl hover:shadow-blue-500/40 hover:-translate-y-0.5"
+              class="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-blue-600 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-blue-500/30 transition-all hover:shadow-2xl hover:shadow-blue-500/40 hover:-translate-y-0.5"
             >
               Browse Products
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -111,21 +155,66 @@ const productCategories = [
             </NuxtLink>
           </div>
 
-          <!-- Stats -->
-          <div class="mt-16 grid grid-cols-3 gap-8 border-t border-gray-200 dark:border-gray-700 pt-8">
-            <div>
-              <div class="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">120+</div>
-              <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">Products</div>
-            </div>
-            <div>
-              <div class="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">10k+</div>
-              <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">Customers</div>
-            </div>
-            <div>
-              <div class="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">4.9</div>
-              <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">Rating</div>
+          <!-- Marketplace Selector -->
+          <div class="mt-8 flex justify-center">
+            <div class="inline-flex flex-col items-center gap-3">
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Select your Amazon marketplace</span>
+              <MarketplaceSelector />
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 py-20 md:py-24">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-12 text-center">
+          <h2 class="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl">
+            Featured Products
+          </h2>
+          <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
+            Check out our latest and most popular ESP32 components
+          </p>
+        </div>
+
+        <div v-if="loadingProducts" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div v-for="i in 8" :key="i" class="animate-pulse">
+            <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+              <div class="mb-4 aspect-square w-full rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+              <div class="mb-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+              <div class="mb-4 h-4 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+              <div class="h-8 w-full rounded bg-gray-200 dark:bg-gray-700"></div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="featuredProducts.length > 0" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ProductCard
+            v-for="product in featuredProducts"
+            :key="product.id"
+            :product="product"
+          />
+        </div>
+
+        <div v-else class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-12 text-center">
+          <svg class="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+          </svg>
+          <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">No products available</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Check back soon for new products!</p>
+        </div>
+
+        <div class="mt-12 text-center">
+          <NuxtLink
+            to="/products"
+            class="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg"
+          >
+            View All Products
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </NuxtLink>
         </div>
       </div>
     </section>
@@ -181,7 +270,7 @@ const productCategories = [
     </section>
 
     <!-- Features Section -->
-    <section class="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 py-20 md:py-24">
+    <section class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-20 md:py-24">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center">
           <h2 class="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl">
@@ -218,9 +307,9 @@ const productCategories = [
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 md:py-24 bg-white dark:bg-gray-900">
+    <section class="py-20 md:py-24 bg-gray-50 dark:bg-gray-950">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="relative overflow-hidden rounded-3xl bg-linear-to-r from-blue-600 to-purple-600 p-12 text-center shadow-2xl shadow-blue-500/30 dark:shadow-blue-500/10">
+        <div class="relative overflow-hidden rounded-3xl bg-linear-to-r from-blue-500 to-blue-600 dark:from-blue-800 dark:to-blue-900 p-12 text-center shadow-2xl shadow-blue-500/30 dark:shadow-blue-500/10">
           <!-- Background decoration -->
           <div class="absolute inset-0 overflow-hidden">
             <div class="absolute -left-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-2xl"></div>

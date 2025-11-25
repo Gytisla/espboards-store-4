@@ -157,7 +157,7 @@ const unreadCount = notifications.filter(n => n.unread).length
           @click="userMenuOpen = !userMenuOpen"
           class="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 transition-all hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600"
         >
-          <div class="relative h-7 w-7 overflow-hidden rounded-lg bg-linear-to-br from-blue-500 to-purple-500">
+          <div class="relative h-7 w-7 overflow-hidden rounded-lg bg-linear-to-br from-blue-400 to-blue-500">
             <img
               src="https://ui-avatars.com/api/?name=Admin+User&background=3b82f6&color=fff&size=128"
               alt="Admin"

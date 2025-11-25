@@ -123,7 +123,7 @@ const getColorClasses = (color: string) => {
 
 // Set page meta
 useHead({
-  title: 'Product Categories - ESP32 Store',
+  title: 'Product Categories - ESPBoards Store',
   meta: [
     { name: 'description', content: 'Browse ESP32 products by category - development boards, modules, sensors, displays, and more.' }
   ]

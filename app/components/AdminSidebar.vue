@@ -70,7 +70,7 @@ const handleNavClick = () => {
           to="/admin"
           class="flex items-center gap-3"
         >
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-400 to-blue-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
             <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -78,7 +78,7 @@ const handleNavClick = () => {
           <span class="text-lg font-bold text-gray-900 dark:text-white">ESPBoards Admin</span>
         </NuxtLink>
         <div v-else class="flex items-center justify-center">
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-400 to-blue-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
             <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -112,7 +112,7 @@ const handleNavClick = () => {
         :title="collapsed ? item.name : undefined"
         @click="handleNavClick"
         class="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-        active-class="!bg-linear-to-r from-blue-600 to-purple-600 !text-white hover:!bg-linear-to-r hover:from-blue-700 hover:to-purple-700"
+        active-class="!bg-linear-to-r from-blue-500 to-blue-600 !text-white hover:!bg-linear-to-r hover:from-blue-600 hover:to-blue-700"
       >
         <!-- Icon -->
         <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -167,7 +167,7 @@ const handleNavClick = () => {
         :class="{ 'justify-center': collapsed }"
       >
         <div class="relative shrink-0">
-          <div class="h-9 w-9 overflow-hidden rounded-lg bg-linear-to-br from-blue-500 to-purple-500">
+          <div class="h-9 w-9 overflow-hidden rounded-lg bg-linear-to-br from-blue-400 to-blue-500">
             <img
               src="https://ui-avatars.com/api/?name=Admin+User&background=3b82f6&color=fff&size=128"
               alt="Admin User"

@@ -40,14 +40,17 @@ const navigation = [
         <div class="flex items-center gap-2">
           <NuxtLink
             to="/"
-            class="flex items-center gap-2 text-xl font-bold tracking-tight transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+            class="flex items-center gap-2 transition-opacity hover:opacity-80"
           >
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/30">
-              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-              </svg>
+            <img 
+              src="/logo.png" 
+              alt="ESPBoards Logo" 
+              class="h-8 w-auto"
+            />
+            <div class="flex flex-col leading-tight">
+              <span class="font-semibold text-lg text-gray-900 dark:text-white">ESPBoards</span>
+              <span class="font-medium text-sm text-gray-600 dark:text-gray-400 -mt-1">Store</span>
             </div>
-            <span class="text-gray-900 dark:text-white">ESPBoards Store</span>
           </NuxtLink>
         </div>
 
@@ -70,10 +73,10 @@ const navigation = [
 
         <!-- Right Actions -->
         <div class="flex items-center gap-2">
-          <!-- Theme Picker -->
+          <!-- Theme Picker (Desktop Only) -->
           <button
             @click="cycleTheme"
-            class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
+            class="hidden md:flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
             :title="`Theme: ${theme}`"
           >
             <!-- Light Mode Icon -->
@@ -106,7 +109,7 @@ const navigation = [
 
           <!-- Cart Button -->
           <button
-            class="relative flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
+            class="relative hidden md:flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
           >
             <svg class="h-5 w-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
