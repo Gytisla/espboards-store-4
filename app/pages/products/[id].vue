@@ -25,6 +25,36 @@ const formatPrice = (price: number | null, currency: string) => {
   }).format(price)
 }
 
+// Format date for last refresh
+const formatLastRefresh = (dateString: string | null) => {
+  if (!dateString) return null
+  
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
+  
+  // Show relative time for recent updates
+  if (diffMins < 60) {
+    return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`
+  } else if (diffHours < 24) {
+    return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`
+  } else if (diffDays < 7) {
+    return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`
+  } else {
+    // Show full date for older updates
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+}
+
 // Get main image - prioritize large for detail page
 const mainImage = computed(() => {
   if (!product.value?.images) {
@@ -603,6 +633,12 @@ useHead({
             <p v-if="product.savings_amount" class="mt-2 text-sm text-green-600 dark:text-green-400">
               You save {{ formatPrice(product.savings_amount, product.currency) }}
             </p>
+            <p v-if="product.last_refresh_at" class="mt-2 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Price updated {{ formatLastRefresh(product.last_refresh_at) }}</span>
+            </p>
           </div>
 
           <!-- CTA Button -->
@@ -619,7 +655,7 @@ useHead({
               <span class="whitespace-nowrap">View on Amazon</span>
             </a>
             <p class="text-center text-xs text-gray-500 dark:text-gray-400">
-              You will be redirected to Amazon to complete your purchase
+              As an Amazon Associate, we earn from qualifying purchases. You will be redirected to Amazon to complete your purchase.
             </p>
           </div>
 

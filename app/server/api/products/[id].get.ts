@@ -38,6 +38,7 @@ export default defineEventHandler(async (event) => {
         status,
         metadata,
         created_at,
+        last_refresh_at,
         features,
         product_info,
         manufacture_info,
