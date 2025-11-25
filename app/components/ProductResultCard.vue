@@ -1,8 +1,29 @@
 <script setup lang="ts">
+interface ImageVariant {
+  url: string
+  width?: number | null
+  height?: number | null
+}
+
+interface ProductImages {
+  primary?: {
+    small?: ImageVariant
+    medium?: ImageVariant
+    large?: ImageVariant
+    highRes?: ImageVariant
+  }
+  variants?: Array<{
+    small?: ImageVariant
+    medium?: ImageVariant
+    large?: ImageVariant
+    highRes?: ImageVariant
+  }>
+}
+
 interface Product {
   asin: string
   title: string
-  images?: Array<{ url: string; width: number; height: number; variant: string }>
+  images?: ProductImages
   currentPrice?: number
   starRating?: number
   customerReviewCount?: number
@@ -29,6 +50,18 @@ const openAmazonPage = () => {
     window.open(props.product.detailPageUrl, '_blank')
   }
 }
+
+// Get product image - prioritize medium for search results
+const getProductImageUrl = (images?: ProductImages) => {
+  if (!images) return null
+  
+  return images.primary?.medium?.url || 
+         images.primary?.large?.url || 
+         images.primary?.small?.url || 
+         null
+}
+
+const imageUrl = computed(() => getProductImageUrl(props.product.images))
 </script>
 
 <template>
@@ -36,8 +69,8 @@ const openAmazonPage = () => {
     <!-- Product Image -->
     <div class="aspect-square mb-4 overflow-hidden rounded-xl bg-gray-100 cursor-pointer" @click="openAmazonPage">
       <img
-        v-if="product.images?.[0]?.url"
-        :src="product.images[0].url"
+        v-if="imageUrl"
+        :src="imageUrl"
         :alt="product.title"
         class="h-full w-full object-cover transition-transform hover:scale-105"
       />

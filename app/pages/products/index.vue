@@ -3,13 +3,36 @@ const route = useRoute()
 const { selectedMarketplace } = useMarketplace()
 
 // Types
+interface ImageVariant {
+  url: string
+  width?: number | null
+  height?: number | null
+}
+
+interface ProductImages {
+  primary?: {
+    small?: ImageVariant
+    medium?: ImageVariant
+    large?: ImageVariant
+    highRes?: ImageVariant
+  }
+  variants?: Array<{
+    small?: ImageVariant
+    medium?: ImageVariant
+    large?: ImageVariant
+    highRes?: ImageVariant
+  }>
+}
+
 interface Product {
   id: string
   asin: string
+  slug: string
   title: string
   description: string | null
   brand: string | null
-  images: Array<{ url: string; width?: number; height?: number; variant?: string }> | null
+  features?: string[] | null
+  images: ProductImages | null
   detail_page_url: string
   current_price: number | null
   original_price: number | null

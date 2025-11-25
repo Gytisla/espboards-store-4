@@ -38,6 +38,9 @@ export default defineEventHandler(async (event) => {
         status,
         metadata,
         created_at,
+        features,
+        product_info,
+        manufacture_info,
         marketplace:marketplaces!marketplace_id (
           id,
           code,

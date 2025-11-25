@@ -1,9 +1,23 @@
 <script setup lang="ts">
-interface ProductImage {
+interface ImageVariant {
   url: string
-  width?: number
-  height?: number
-  variant?: string
+  width?: number | null
+  height?: number | null
+}
+
+interface ProductImages {
+  primary?: {
+    small?: ImageVariant
+    medium?: ImageVariant
+    large?: ImageVariant
+    highRes?: ImageVariant
+  }
+  variants?: Array<{
+    small?: ImageVariant
+    medium?: ImageVariant
+    large?: ImageVariant
+    highRes?: ImageVariant
+  }>
 }
 
 interface ProductMetadata {
@@ -21,7 +35,8 @@ interface Product {
   title: string
   description: string | null
   brand: string | null
-  images: ProductImage[] | null
+  features?: string[] | null
+  images: ProductImages | null
   detail_page_url: string
   current_price: number | null
   original_price: number | null
@@ -37,17 +52,28 @@ const props = defineProps<{
   product: Product
 }>()
 
-// Get product image
-const getProductImage = (images: ProductImage[] | null) => {
-  if (!images || images.length === 0) {
+// Get product image - prioritize medium, then large, then small
+const getProductImage = (images: ProductImages | null) => {
+  if (!images) {
     return 'https://via.placeholder.com/300x300?text=No+Image'
   }
-  // Handle both string array and object array formats
-  if (typeof images[0] === 'string') {
-    return images[0]
+  
+  // Try to get large image first (best for card display)
+  if (images.primary?.large?.url) {
+    return images.primary.large.url
   }
-  // Handle object format with url property
-  return images[0]?.url || 'https://via.placeholder.com/300x300?text=No+Image'
+
+  // Fall back to large
+  if (images.primary?.medium?.url) {
+    return images.primary.medium.url
+  }
+  
+  // Fall back to small
+  if (images.primary?.small?.url) {
+    return images.primary.small.url
+  }
+  
+  return 'https://via.placeholder.com/300x300?text=No+Image'
 }
 
 // Format price
@@ -59,21 +85,27 @@ const formatPrice = (price: number | null, currency: string) => {
   }).format(price)
 }
 
-// Get product features from metadata
-const getProductFeatures = (metadata: ProductMetadata | null) => {
-  if (!metadata?.display) return []
+// Get product features - prioritize the new features array
+const getProductFeatures = (product: Product) => {
+  // Use new features array if available
+  if (product.features && product.features.length > 0) {
+    return product.features
+  }
+  
+  // Fall back to metadata features
+  if (!product.metadata?.display) return []
   
   const features = []
   
-  if (metadata.display.chip) features.push(metadata.display.chip)
-  if (metadata.display.connectivity) features.push(metadata.display.connectivity)
-  if (metadata.display.features) features.push(metadata.display.features)
+  if (product.metadata.display.chip) features.push(product.metadata.display.chip)
+  if (product.metadata.display.connectivity) features.push(product.metadata.display.connectivity)
+  if (product.metadata.display.features) features.push(product.metadata.display.features)
   
   return features.filter(Boolean)
 }
 
 const productImage = computed(() => getProductImage(props.product.images))
-const features = computed(() => getProductFeatures(props.product.metadata))
+const features = computed(() => getProductFeatures(props.product))
 </script>
 
 <template>
