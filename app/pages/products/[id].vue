@@ -115,10 +115,68 @@ const allImages = computed(() => {
 
 // Selected image for gallery
 const selectedImage = ref(mainImage.value)
+const selectedImageIndex = ref(0)
 
 watch(mainImage, (newVal) => {
   selectedImage.value = newVal
+  selectedImageIndex.value = 0
 })
+
+// Update index when image changes
+watch(selectedImage, (newVal) => {
+  const index = allImages.value.findIndex((img: string) => img === newVal)
+  if (index !== -1) {
+    selectedImageIndex.value = index
+  }
+})
+
+// Swipe functionality
+const touchStartX = ref(0)
+const touchEndX = ref(0)
+const minSwipeDistance = 50
+
+const handleTouchStart = (e: TouchEvent) => {
+  if (e.touches[0]) {
+    touchStartX.value = e.touches[0].clientX
+  }
+}
+
+const handleTouchMove = (e: TouchEvent) => {
+  if (e.touches[0]) {
+    touchEndX.value = e.touches[0].clientX
+  }
+}
+
+const handleTouchEnd = () => {
+  const distance = touchStartX.value - touchEndX.value
+  const isSwipe = Math.abs(distance) > minSwipeDistance
+
+  if (isSwipe && allImages.value.length > 1) {
+    if (distance > 0) {
+      // Swiped left - next image
+      nextImage()
+    } else {
+      // Swiped right - previous image
+      previousImage()
+    }
+  }
+}
+
+const nextImage = () => {
+  if (allImages.value.length === 0) return
+  const nextIndex = (selectedImageIndex.value + 1) % allImages.value.length
+  selectedImage.value = allImages.value[nextIndex]
+  selectedImageIndex.value = nextIndex
+}
+
+const previousImage = () => {
+  if (allImages.value.length === 0) return
+  const prevIndex = selectedImageIndex.value === 0 
+    ? allImages.value.length - 1 
+    : selectedImageIndex.value - 1
+  selectedImage.value = allImages.value[prevIndex]
+  selectedImageIndex.value = prevIndex
+}
 
 // Lightbox state
 const isLightboxOpen = ref(false)
@@ -127,13 +185,70 @@ const openLightbox = () => {
   isLightboxOpen.value = true
   // Prevent body scroll when lightbox is open
   document.body.style.overflow = 'hidden'
+  // Add keyboard and wheel event listeners
+  window.addEventListener('keydown', handleLightboxKeydown)
+  window.addEventListener('wheel', handleLightboxWheel, { passive: false })
 }
 
 const closeLightbox = () => {
   isLightboxOpen.value = false
   // Restore body scroll
   document.body.style.overflow = ''
+  // Remove event listeners
+  window.removeEventListener('keydown', handleLightboxKeydown)
+  window.removeEventListener('wheel', handleLightboxWheel)
 }
+
+// Handle keyboard navigation in lightbox
+const handleLightboxKeydown = (e: KeyboardEvent) => {
+  if (!isLightboxOpen.value || allImages.value.length <= 1) return
+  
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault()
+    previousImage()
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault()
+    nextImage()
+  } else if (e.key === 'Escape') {
+    closeLightbox()
+  }
+}
+
+// Handle scroll/wheel navigation in lightbox
+const handleLightboxWheel = (e: WheelEvent) => {
+  if (!isLightboxOpen.value || allImages.value.length <= 1) return
+  
+  e.preventDefault()
+  
+  // Debounce scroll events to prevent too rapid switching
+  if (scrollTimeout.value) return
+  
+  if (e.deltaY > 0) {
+    // Scroll down - next image
+    nextImage()
+  } else if (e.deltaY < 0) {
+    // Scroll up - previous image
+    previousImage()
+  }
+  
+  // Set timeout to debounce scroll events (300ms)
+  scrollTimeout.value = setTimeout(() => {
+    scrollTimeout.value = null
+  }, 300)
+}
+
+// Scroll debounce timeout
+const scrollTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (isLightboxOpen.value) {
+    closeLightbox()
+  }
+  if (scrollTimeout.value) {
+    clearTimeout(scrollTimeout.value)
+  }
+})
 
 // Carousel scroll ref
 const carouselRef = ref<HTMLElement | null>(null)
@@ -277,7 +392,6 @@ const technicalSpecs = computed(() => {
     const filters = product.value.metadata.filters
     
     if (filters.chip) specs.push({ label: 'Chip Model', value: filters.chip })
-    if (filters.chip_series) specs.push({ label: 'Chip Series', value: filters.chip_series })
     if (filters.psram_mb) specs.push({ label: 'PSRAM', value: `${filters.psram_mb} MB` })
     if (filters.flash_mb) specs.push({ label: 'Flash Memory', value: `${filters.flash_mb} MB` })
     if (filters.gpio_pins) specs.push({ label: 'GPIO Pins', value: filters.gpio_pins })
@@ -300,8 +414,6 @@ const hardwareFeatures = computed(() => {
   if (filters.has_display) features.push('Display')
   if (filters.has_battery) features.push('Battery')
   if (filters.has_sd_card) features.push('SD Card')
-  if (filters.has_zigbee) features.push('Zigbee')
-  if (filters.has_thread) features.push('Thread')
   
   return features
 })
@@ -415,6 +527,57 @@ const technicalTags = computed(() => {
   
   return tags
 })
+
+// Helper function to get filter URL for hardware features
+const getFeatureFilterUrl = (feature: string) => {
+  const featureMap: Record<string, string> = {
+    'Camera': 'camera=true',
+    'Display': 'display=true',
+    'Battery': 'battery=true',
+    'SD Card': 'sd_card=true'
+  }
+  
+  const queryParam = featureMap[feature]
+  return queryParam ? `/products?${queryParam}` : '/products'
+}
+
+// Helper function to get filter URL for technical tags
+const getTagFilterUrl = (tag: any) => {
+  // Map tag labels to filter parameters
+  if (tag.label === 'Chip' && product.value?.metadata?.filters?.chip) {
+    return `/products?chip=${encodeURIComponent(product.value.metadata.filters.chip)}`
+  }
+  if (tag.label === 'Series' && product.value?.metadata?.filters?.chip_series) {
+    return `/products?chip_series=${encodeURIComponent(product.value.metadata.filters.chip_series)}`
+  }
+  if (tag.label === 'PSRAM' && product.value?.metadata?.filters?.psram_mb) {
+    return `/products?psram=${product.value.metadata.filters.psram_mb}`
+  }
+  if (tag.label === 'Flash' && product.value?.metadata?.filters?.flash_mb) {
+    return `/products?flash=${product.value.metadata.filters.flash_mb}`
+  }
+  if (tag.label === 'WiFi' && product.value?.metadata?.filters?.wifi_version) {
+    return `/products?wifi=${product.value.metadata.filters.wifi_version}`
+  }
+  if (tag.label === 'Bluetooth' && product.value?.metadata?.filters?.bluetooth_version) {
+    return `/products?bluetooth=${product.value.metadata.filters.bluetooth_version}`
+  }
+  if (tag.label === 'GPIO' && product.value?.metadata?.filters?.gpio_pins) {
+    return `/products?gpio=${product.value.metadata.filters.gpio_pins}`
+  }
+  if (tag.label === 'USB' && product.value?.metadata?.filters?.usb_type) {
+    return `/products?usb=${product.value.metadata.filters.usb_type}`
+  }
+  if (tag.label === 'Protocol' && tag.value === 'Zigbee') {
+    return `/products?zigbee=true`
+  }
+  if (tag.label === 'Protocol' && tag.value === 'Thread') {
+    return `/products?thread=true`
+  }
+  
+  // Default fallback to products page
+  return '/products'
+}
 
 // Check if product is Prime eligible
 const isPrimeEligible = computed(() => {
@@ -554,14 +717,55 @@ useHead({
         <div class="space-y-4 min-w-0">
           <!-- Main Image -->
           <div 
-            class="aspect-square overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg cursor-zoom-in w-full relative"
+            class="aspect-square overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg cursor-zoom-in w-full relative group"
             @click="openLightbox"
+            @touchstart="handleTouchStart"
+            @touchmove="handleTouchMove"
+            @touchend="handleTouchEnd"
           >
             <img
               :src="selectedImage"
               :alt="product.title"
               class="h-full w-full object-contain object-center"
             />
+            
+            <!-- Navigation Arrows (visible only if multiple images) -->
+            <template v-if="allImages.length > 1">
+              <!-- Previous Image Button -->
+              <button
+                @click.stop="previousImage"
+                class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Previous image"
+              >
+                <svg class="h-6 w-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <!-- Next Image Button -->
+              <button
+                @click.stop="nextImage"
+                class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Next image"
+              >
+                <svg class="h-6 w-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              
+              <!-- Image Counter Dots -->
+              <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                <button
+                  v-for="(_, idx) in allImages"
+                  :key="idx"
+                  @click.stop="selectedImage = allImages[idx]; selectedImageIndex = idx"
+                  class="h-2 w-2 rounded-full transition-all"
+                  :class="selectedImageIndex === idx ? 'bg-blue-500 w-6' : 'bg-black/60 hover:bg-black/80'"
+                  :aria-label="`View image ${idx + 1}`"
+                ></button>
+              </div>
+            </template>
+            
             <!-- Prime Badge -->
             <div
               v-if="isPrimeEligible"
@@ -633,34 +837,38 @@ useHead({
 
           <!-- Technical Tags/Badges -->
           <div v-if="technicalTags.length > 0" class="flex flex-wrap gap-2">
-            <div
+            <NuxtLink
               v-for="(tag, idx) in technicalTags"
               :key="idx"
+              :to="getTagFilterUrl(tag)"
               :class="getBadgeClasses(tag.color)"
-              class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm"
+              class="group inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md cursor-pointer"
             >
               <!-- Icon for WiFi -->
-              <svg v-if="tag.icon === 'wifi'" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-if="tag.icon === 'wifi'" class="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
               </svg>
               <!-- Icon for Bluetooth -->
-              <svg v-else-if="tag.icon === 'bluetooth'" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <svg v-else-if="tag.icon === 'bluetooth'" class="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/>
               </svg>
               <!-- Icon for Chip -->
-              <svg v-else-if="tag.icon === 'chip'" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-else-if="tag.icon === 'chip'" class="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
               </svg>
               <!-- Icon for Memory (PSRAM/Flash) -->
-              <svg v-else-if="tag.icon === 'memory'" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-else-if="tag.icon === 'memory'" class="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
               </svg>
               <!-- Icon for Zigbee -->
-              <svg v-else-if="tag.icon === 'zigbee'" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-else-if="tag.icon === 'zigbee'" class="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span class="font-mono">{{ tag.value }}</span>
-            </div>
+              <svg class="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </NuxtLink>
           </div>
 
           <!-- Title -->
@@ -738,107 +946,206 @@ useHead({
           
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <!-- Chip Details -->
-            <div v-if="product.metadata.filters.chip" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+            <NuxtLink 
+              v-if="product.metadata.filters.chip" 
+              :to="`/products?chip=${product.metadata.filters.chip}`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-blue-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-blue-600 dark:text-blue-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">Chip Model</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.chip || product.metadata.filters.chip }}</p>
+                </div>
+                <svg class="h-4 w-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Chip Model</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.chip || product.metadata.filters.chip }}</p>
-            </div>
+            </NuxtLink>
 
             <!-- PSRAM -->
-            <div v-if="product.metadata.filters.psram_mb" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+            <NuxtLink 
+              v-if="product.metadata.filters.psram_mb" 
+              :to="`/products?psram=${product.metadata.filters.psram_mb}`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-purple-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-purple-600 dark:text-purple-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">PSRAM</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.psram || `${product.metadata.filters.psram_mb} MB` }}</p>
+                </div>
+                <svg class="h-4 w-4 text-purple-600 dark:text-purple-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">PSRAM</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.psram || `${product.metadata.filters.psram_mb} MB` }}</p>
-            </div>
+            </NuxtLink>
 
             <!-- Flash Memory -->
-            <div v-if="product.metadata.filters.flash_mb" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-pink-600 dark:text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+            <NuxtLink 
+              v-if="product.metadata.filters.flash_mb" 
+              :to="`/products?flash=${product.metadata.filters.flash_mb}`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-pink-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-pink-600 dark:text-pink-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">Flash Memory</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.flash || `${product.metadata.filters.flash_mb} MB` }}</p>
+                </div>
+                <svg class="h-4 w-4 text-pink-600 dark:text-pink-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Flash Memory</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.flash || `${product.metadata.filters.flash_mb} MB` }}</p>
-            </div>
+            </NuxtLink>
 
             <!-- GPIO Pins -->
-            <div v-if="product.metadata.filters.gpio_pins" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <NuxtLink 
+              v-if="product.metadata.filters.gpio_pins" 
+              :to="`/products?gpio=${product.metadata.filters.gpio_pins}`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-gray-600 dark:text-gray-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">GPIO Pins</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.gpio || `${product.metadata.filters.gpio_pins} pins` }}</p>
+                </div>
+                <svg class="h-4 w-4 text-gray-600 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">GPIO Pins</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.display?.gpio || `${product.metadata.filters.gpio_pins} pins` }}</p>
-            </div>
+            </NuxtLink>
 
             <!-- WiFi -->
-            <div v-if="product.metadata.filters.has_wifi || product.metadata.filters.wifi_version" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+            <NuxtLink 
+              v-if="product.metadata.filters.has_wifi || product.metadata.filters.wifi_version" 
+              :to="`/products?wifi=${product.metadata.filters.wifi_version || '6'}`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-green-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-green-600 dark:text-green-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">WiFi</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                    {{ product.metadata.display?.wifi || (product.metadata.filters.wifi_version ? `WiFi ${product.metadata.filters.wifi_version}` : 'Supported') }}
+                  </p>
+                </div>
+                <svg class="h-4 w-4 text-green-600 dark:text-green-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">WiFi</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">
-                {{ product.metadata.display?.wifi || (product.metadata.filters.wifi_version ? `WiFi ${product.metadata.filters.wifi_version}` : 'Supported') }}
-              </p>
-            </div>
+            </NuxtLink>
 
             <!-- Bluetooth -->
-            <div v-if="product.metadata.filters.has_bluetooth || product.metadata.filters.bluetooth_version" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/>
+            <NuxtLink 
+              v-if="product.metadata.filters.has_bluetooth || product.metadata.filters.bluetooth_version" 
+              :to="`/products?bluetooth=${product.metadata.filters.bluetooth_version || '5'}`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-blue-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-blue-600 dark:text-blue-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/>
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">Bluetooth</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                    {{ product.metadata.display?.bluetooth || (product.metadata.filters.bluetooth_version ? `Bluetooth ${product.metadata.filters.bluetooth_version}` : 'Supported') }}
+                  </p>
+                </div>
+                <svg class="h-4 w-4 text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Bluetooth</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">
-                {{ product.metadata.display?.bluetooth || (product.metadata.filters.bluetooth_version ? `Bluetooth ${product.metadata.filters.bluetooth_version}` : 'Supported') }}
-              </p>
-            </div>
+            </NuxtLink>
 
             <!-- Zigbee -->
-            <div v-if="product.metadata.filters.has_zigbee" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <NuxtLink 
+              v-if="product.metadata.filters.has_zigbee" 
+              :to="`/products?zigbee=true`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-yellow-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-yellow-600 dark:text-yellow-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">Zigbee</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">Supported</p>
+                </div>
+                <svg class="h-4 w-4 text-yellow-600 dark:text-yellow-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Zigbee</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">Supported</p>
-            </div>
+            </NuxtLink>
 
             <!-- Thread -->
-            <div v-if="product.metadata.filters.has_thread" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <NuxtLink 
+              v-if="product.metadata.filters.has_thread" 
+              :to="`/products?thread=true`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-orange-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-orange-600 dark:text-orange-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">Thread</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">Supported</p>
+                </div>
+                <svg class="h-4 w-4 text-orange-600 dark:text-orange-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Thread</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">Supported</p>
-            </div>
+            </NuxtLink>
 
             <!-- USB Type -->
-            <div v-if="product.metadata.filters.usb_type" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div class="flex items-center gap-2 mb-1">
-                <svg class="h-4 w-4 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <NuxtLink 
+              v-if="product.metadata.filters.usb_type" 
+              :to="`/products?usb=${product.metadata.filters.usb_type}`"
+              class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1 hover:bg-slate-50 dark:hover:bg-gray-700 cursor-pointer group"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="h-4 w-4 text-slate-600 dark:text-slate-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase transition-colors duration-300">USB Type</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.filters.usb_type.toUpperCase().replace('_', '-') }}</p>
+                </div>
+                <svg class="h-4 w-4 text-slate-600 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">USB Type</span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ product.metadata.filters.usb_type.toUpperCase().replace('_', '-') }}</p>
-            </div>
+            </NuxtLink>
 
             <!-- Additional Features -->
             <div v-if="hardwareFeatures.length > 0" class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm lg:col-span-3">
@@ -849,13 +1156,17 @@ useHead({
                 <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Additional Features</span>
               </div>
               <div class="flex flex-wrap gap-2">
-                <span
+                <NuxtLink
                   v-for="(feature, idx) in hardwareFeatures"
                   :key="idx"
-                  class="inline-flex items-center rounded-full bg-indigo-100 dark:bg-indigo-950 px-2.5 py-0.5 text-xs font-medium text-indigo-800 dark:text-indigo-300"
+                  :to="getFeatureFilterUrl(feature)"
+                  class="group inline-flex items-center gap-1.5 rounded-full bg-indigo-100 dark:bg-indigo-950 px-2.5 py-1 text-xs font-medium text-indigo-800 dark:text-indigo-300 transition-all duration-300 hover:scale-105 hover:bg-indigo-200 dark:hover:bg-indigo-900 hover:shadow-md cursor-pointer"
                 >
-                  {{ feature }}
-                </span>
+                  <span>{{ feature }}</span>
+                  <svg class="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </NuxtLink>
               </div>
             </div>
           </div>
@@ -1022,17 +1333,45 @@ useHead({
           v-if="isLightboxOpen"
           class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-2 sm:p-4"
           @click="closeLightbox"
+          @touchstart="handleTouchStart"
+          @touchmove="handleTouchMove"
+          @touchend="handleTouchEnd"
         >
           <!-- Close Button -->
           <button
             @click="closeLightbox"
-            class="absolute top-2 right-2 sm:top-4 sm:right-4 text-white hover:text-gray-300 transition-colors p-2 sm:p-0"
+            class="absolute top-2 right-2 sm:top-4 sm:right-4 text-white hover:text-gray-300 transition-colors p-2 sm:p-0 z-10"
             aria-label="Close lightbox"
           >
             <svg class="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
+
+          <!-- Navigation Arrows (if multiple images) -->
+          <template v-if="allImages.length > 1">
+            <!-- Previous Image Button -->
+            <button
+              @click.stop="previousImage"
+              class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white rounded-full p-2 sm:p-3 transition-colors z-10"
+              aria-label="Previous image"
+            >
+              <svg class="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <!-- Next Image Button -->
+            <button
+              @click.stop="nextImage"
+              class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white rounded-full p-2 sm:p-3 transition-colors z-10"
+              aria-label="Next image"
+            >
+              <svg class="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </template>
 
           <!-- Zoomed Image -->
           <div class="w-full h-full flex items-center justify-center">
@@ -1045,8 +1384,13 @@ useHead({
           </div>
 
           <!-- Image Counter (if multiple images) -->
-          <div v-if="allImages.length > 1" class="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm">
+          <div v-if="allImages.length > 1" class="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm z-10">
             {{ allImages.findIndex((img: string) => img === selectedImage) + 1 }} / {{ allImages.length }}
+          </div>
+          
+          <!-- Instructions Hint -->
+          <div v-if="allImages.length > 1" class="absolute top-16 sm:top-20 left-1/2 -translate-x-1/2 bg-black/50 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm opacity-75 z-10 pointer-events-none">
+            Use arrow keys, scroll, or swipe to navigate
           </div>
         </div>
       </Transition>

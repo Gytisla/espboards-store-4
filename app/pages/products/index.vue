@@ -81,8 +81,27 @@ const hasSdCard = ref<boolean | null>(null)
 // Flag to prevent URL updates during initialization
 const isInitializing = ref(true)
 
-// Collapse state for mobile specifications
-const isSpecificationsOpen = ref(true)
+// Flag to track when component is mounted (for hydration)
+const isMounted = ref(false)
+
+// Collapse state for mobile specifications - initialize client-side only to avoid hydration mismatch
+const isSpecificationsOpen = ref(false)
+
+// Initialize specifications state on mount
+onMounted(() => {
+  // Mark as mounted
+  isMounted.value = true
+  
+  // Open specifications by default on desktop (>= 1024px)
+  isSpecificationsOpen.value = window.innerWidth >= 1024
+  
+  // Initialize filters from URL
+  initializeFiltersFromURL()
+  // Allow URL updates after initialization is complete
+  nextTick(() => {
+    isInitializing.value = false
+  })
+})
 
 // Initialize filters from URL query parameters
 const initializeFiltersFromURL = () => {
@@ -196,15 +215,6 @@ watch(selectedType, (newType, oldType) => {
     hasThread.value = null
     hasSdCard.value = null
   }
-})
-
-// Initialize filters from URL on mount
-onMounted(() => {
-  initializeFiltersFromURL()
-  // Allow URL updates after initialization is complete
-  nextTick(() => {
-    isInitializing.value = false
-  })
 })
 
 // Fetch products
@@ -471,6 +481,96 @@ const filteredProducts = computed(() => {
   return products
 })
 
+// Pagination
+const currentPage = ref(1)
+const itemsPerPage = ref(12) // 12 products per page (4x3 grid on desktop)
+
+// Calculate pagination
+const totalPages = computed(() => {
+  return Math.ceil(filteredProducts.value.length / itemsPerPage.value)
+})
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredProducts.value.slice(start, end)
+})
+
+// Reset to page 1 when filters change
+watch([searchQuery, selectedType, selectedChip, selectedWifiVersion, selectedBluetoothVersion, 
+       selectedUsbType, selectedFlashSize, selectedPsramSize, selectedGpioPins, 
+       minPrice, maxPrice, hasCamera, hasDisplay, hasBattery, hasZigbee, hasThread, hasSdCard, sortBy], () => {
+  currentPage.value = 1
+})
+
+// Scroll to products section when page changes
+watch(currentPage, (newPage, oldPage) => {
+  // Only scroll if this is a user-initiated page change (not initial load)
+  if (oldPage !== undefined) {
+    const productsSection = document.getElementById('products-section')
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+})
+
+// Pagination functions
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+  }
+}
+
+const previousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
+}
+
+// Get page numbers to display (with ellipsis)
+const visiblePages = computed(() => {
+  const pages: (number | string)[] = []
+  const total = totalPages.value
+  const current = currentPage.value
+  
+  if (total <= 7) {
+    // Show all pages if 7 or fewer
+    for (let i = 1; i <= total; i++) {
+      pages.push(i)
+    }
+  } else {
+    // Always show first page
+    pages.push(1)
+    
+    if (current > 3) {
+      pages.push('...')
+    }
+    
+    // Show pages around current page
+    const start = Math.max(2, current - 1)
+    const end = Math.min(total - 1, current + 1)
+    
+    for (let i = start; i <= end; i++) {
+      pages.push(i)
+    }
+    
+    if (current < total - 2) {
+      pages.push('...')
+    }
+    
+    // Always show last page
+    pages.push(total)
+  }
+  
+  return pages
+})
+
 // Check if any filters are active
 const hasActiveFilters = computed(() => {
   return searchQuery.value !== '' ||
@@ -705,12 +805,23 @@ useHead({
     </div>
 
     <!-- Main Content with Sidebar -->
+    <ClientOnly>
+      <template #fallback>
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-center py-12">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <p class="mt-4 text-gray-600 dark:text-gray-400">Loading products...</p>
+            </div>
+          </div>
+        </div>
+      </template>
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div class="flex flex-col lg:flex-row gap-8">
         
         <!-- Sidebar Filters -->
         <aside class="w-full lg:w-64 shrink-0">
-          <div class="sticky top-4 space-y-3">
+          <div class="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto space-y-3">
             
             <!-- Search -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
@@ -765,7 +876,7 @@ useHead({
                 >
                   <span>Specifications</span>
                   <svg
-                    class="h-4 w-4 transition-transform lg:hidden"
+                    class="h-4 w-4 transition-transform"
                     :class="{ 'rotate-180': isSpecificationsOpen }"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -1022,27 +1133,84 @@ useHead({
         </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 min-w-0">
-          <!-- Results Header -->
-          <div class="mb-6 flex items-center justify-between">
-            <div>
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                Products
-                <span v-if="productsData?.count" class="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
-                  ({{ filteredProducts.length }} of {{ productsData.count }})
-                </span>
-              </h2>
+        <main id="products-section" class="flex-1 min-w-0">
+          <!-- Results Header with Top Pagination -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Products
+                  <span v-if="productsData?.count" class="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
+                    ({{ filteredProducts.length }} of {{ productsData.count }})
+                  </span>
+                </h2>
+              </div>
+              <button
+                v-if="hasActiveFilters"
+                @click="clearAllFilters"
+                class="inline-flex items-center gap-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Clear All
+              </button>
             </div>
-            <button
-              v-if="hasActiveFilters"
-              @click="clearAllFilters"
-              class="inline-flex items-center gap-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              Clear All
-            </button>
+
+            <!-- Top Pagination (shown when there are products and multiple pages) -->
+            <div v-if="!pending && filteredProducts.length > 0 && totalPages > 1" class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <!-- Page Info -->
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Page {{ currentPage }} of {{ totalPages }}
+              </p>
+
+              <!-- Pagination Controls -->
+              <nav class="flex items-center gap-2" aria-label="Pagination">
+                <!-- Previous Button -->
+                <button
+                  @click="previousPage"
+                  :disabled="currentPage === 1"
+                  class="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  <span class="hidden sm:inline">Previous</span>
+                </button>
+
+                <!-- Page Numbers (compact for top) -->
+                <div class="hidden md:flex items-center gap-1">
+                  <button
+                    v-for="(page, idx) in visiblePages.slice(0, 5)"
+                    :key="idx"
+                    @click="typeof page === 'number' ? goToPage(page) : null"
+                    :disabled="page === '...'"
+                    :class="[
+                      'min-w-8 h-8 rounded-lg text-sm font-medium transition-all',
+                      currentPage === page
+                        ? 'bg-blue-600 dark:bg-blue-600 text-white'
+                        : page === '...'
+                        ? 'cursor-default text-gray-400 dark:text-gray-500'
+                        : 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ]"
+                  >
+                    {{ page }}
+                  </button>
+                </div>
+
+                <!-- Next Button -->
+                <button
+                  @click="nextPage"
+                  :disabled="currentPage === totalPages"
+                  class="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span class="hidden sm:inline">Next</span>
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </nav>
+            </div>
           </div>
 
           <!-- Loading State -->
@@ -1148,18 +1316,91 @@ useHead({
             </ul>
           </div>
         </div>
-      </div>
+          </div>
 
           <!-- Products Grid -->
-          <div v-else class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            <ProductCard
-              v-for="product in filteredProducts"
-              :key="product.id"
-              :product="product"
-            />
+          <div v-else class="space-y-12">
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <ProductCard
+                v-for="product in paginatedProducts"
+                :key="product.id"
+                :product="product"
+              />
+            </div>
+
+            <!-- Pagination Controls -->
+            <div v-if="totalPages > 1" class="flex flex-col items-center gap-4">
+              <!-- Page Info -->
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to {{ Math.min(currentPage * itemsPerPage, filteredProducts.length) }} of {{ filteredProducts.length }} products
+              </p>
+
+              <!-- Pagination Buttons -->
+              <nav class="flex items-center gap-2" aria-label="Pagination">
+                <!-- Previous Button -->
+                <button
+                  @click="previousPage"
+                  :disabled="currentPage === 1"
+                  class="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Previous page"
+                >
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  <span class="hidden sm:inline">Previous</span>
+                </button>
+
+                <!-- Page Numbers -->
+                <div class="flex items-center gap-1">
+                  <button
+                    v-for="(page, idx) in visiblePages"
+                    :key="idx"
+                    @click="typeof page === 'number' ? goToPage(page) : null"
+                    :disabled="page === '...'"
+                    :class="[
+                      'min-w-10 h-10 rounded-lg text-sm font-medium transition-all',
+                      currentPage === page
+                        ? 'bg-blue-600 dark:bg-blue-600 text-white'
+                        : page === '...'
+                        ? 'cursor-default text-gray-400 dark:text-gray-500'
+                        : 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ]"
+                  >
+                    {{ page }}
+                  </button>
+                </div>
+
+                <!-- Next Button -->
+                <button
+                  @click="nextPage"
+                  :disabled="currentPage === totalPages"
+                  class="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Next page"
+                >
+                  <span class="hidden sm:inline">Next</span>
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </nav>
+
+              <!-- Quick Jump (optional, for large datasets) -->
+              <div v-if="totalPages > 10" class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <span>Jump to page:</span>
+                <input
+                  type="number"
+                  :value="currentPage"
+                  @input="goToPage(parseInt(($event.target as HTMLInputElement).value))"
+                  :min="1"
+                  :max="totalPages"
+                  class="w-16 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 text-center text-gray-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400"
+                />
+              </div>
+            </div>
           </div>
         </main>
       </div>
     </div>
+    </ClientOnly>
   </div>
 </template>
