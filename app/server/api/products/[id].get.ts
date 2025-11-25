@@ -41,6 +41,7 @@ export default defineEventHandler(async (event) => {
         features,
         product_info,
         manufacture_info,
+        raw_paapi_response,
         marketplace:marketplaces!marketplace_id (
           id,
           code,

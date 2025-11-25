@@ -45,6 +45,7 @@ interface Product {
   currency: string
   status: string
   metadata: ProductMetadata | null
+  raw_paapi_response?: any
   created_at: string
 }
 
@@ -104,6 +105,20 @@ const getProductFeatures = (product: Product) => {
   return features.filter(Boolean)
 }
 
+// Check if product is Prime eligible
+const isPrimeEligible = computed(() => {
+  if (!props.product.raw_paapi_response) return false
+  
+  try {
+    const itemsResult = props.product.raw_paapi_response.ItemsResult
+    const item = itemsResult?.Items?.[0]
+    const listing = item?.Offers?.Listings?.[0]
+    return listing?.DeliveryInfo?.IsPrimeEligible === true
+  } catch (error) {
+    return false
+  }
+})
+
 const productImage = computed(() => getProductImage(props.product.images))
 const features = computed(() => getProductFeatures(props.product))
 </script>
@@ -114,13 +129,21 @@ const features = computed(() => getProductFeatures(props.product))
     class="group flex flex-col overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-sm transition-all hover:shadow-lg dark:hover:shadow-gray-900/50"
   >
     <!-- Product Image -->
-    <div class="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
+    <div class="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
       <img
         :src="productImage"
         :alt="product.title"
         class="h-full w-full object-cover object-center transition-transform group-hover:scale-105"
         loading="lazy"
       />
+      
+      <!-- Prime Badge -->
+      <div v-if="isPrimeEligible" class="absolute top-2 right-2 flex items-center gap-1 bg-linear-to-r from-blue-500 to-cyan-400 px-2 py-1 rounded-md shadow-lg">
+        <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16.613 17.12c-2.088 1.535-5.12 2.355-7.728 2.355-3.656 0-6.944-1.352-9.432-3.6-.195-.18-.02-.425.214-.285 2.656 1.545 5.952 2.475 9.352 2.475 2.292 0 4.812-.475 7.132-1.46.35-.148.644.23.312.515zm.87-.987c-.266-.342-1.767-.162-2.44-.082-.205.025-.237-.153-.052-.282 1.195-.84 3.156-.597 3.383-.316.228.285-.06 2.26-1.19 3.206-.173.145-.338.068-.262-.124.252-.63.817-2.043.552-2.386z"/>
+        </svg>
+        <span class="text-[10px] font-bold text-white tracking-tight">prime</span>
+      </div>
     </div>
 
     <!-- Product Info -->

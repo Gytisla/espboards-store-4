@@ -386,6 +386,24 @@ const technicalTags = computed(() => {
   return tags
 })
 
+// Check if product is Prime eligible
+const isPrimeEligible = computed(() => {
+  try {
+    const paapi = product.value?.raw_paapi_response
+    if (!paapi) return false
+    
+    const items = paapi.ItemsResult?.Items
+    if (!Array.isArray(items) || items.length === 0) return false
+    
+    const listings = items[0]?.Offers?.Listings
+    if (!Array.isArray(listings) || listings.length === 0) return false
+    
+    return listings[0]?.DeliveryInfo?.IsPrimeEligible === true
+  } catch (error) {
+    return false
+  }
+})
+
 // Get badge color classes
 const getBadgeClasses = (color: string) => {
   const colorMap: Record<string, string> = {
@@ -448,7 +466,7 @@ useHead({
         <div class="space-y-4 min-w-0">
           <!-- Main Image -->
           <div 
-            class="aspect-square overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg cursor-zoom-in w-full"
+            class="aspect-square overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg cursor-zoom-in w-full relative"
             @click="openLightbox"
           >
             <img
@@ -456,6 +474,17 @@ useHead({
               :alt="product.title"
               class="h-full w-full object-contain object-center"
             />
+            <!-- Prime Badge -->
+            <div
+              v-if="isPrimeEligible"
+              class="absolute top-4 right-4 bg-linear-to-r from-blue-500 to-cyan-400 text-white px-3 py-1.5 rounded-md shadow-lg flex items-center gap-1.5"
+            >
+              <!-- Amazon Arrow Icon -->
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14.09 21.56c-5.06.53-9.77-2.71-10.82-7.42C2.22 9.43 5.46 4.72 10.17 3.67c4.71-1.05 9.42 2.19 10.47 6.9.23 1.04-.07 1.87-.83 2.47-.76.6-1.73.7-2.77.27-.42-.17-.73-.49-.93-.95-.2-.46-.23-.94-.1-1.42.13-.48.41-.87.83-1.16.42-.29.9-.4 1.43-.32.53.08.98.35 1.34.81.36.46.54 1 .54 1.62 0 .62-.18 1.16-.54 1.62-.36.46-.81.73-1.34.81-.53.08-1.01-.03-1.43-.32-.42-.29-.7-.68-.83-1.16-.13-.48-.1-.96.1-1.42.2-.46.51-.78.93-.95 1.04-.43 2.01-.33 2.77.27.76.6 1.06 1.43.83 2.47-1.05 4.71-5.76 7.95-10.47 6.9-4.71-1.05-7.95-5.76-6.9-10.47C4.27 9.43 7.51 6.19 12.22 5.14c4.71-1.05 9.42 2.19 10.47 6.9 1.05 4.71-2.19 9.42-6.9 10.47"/>
+              </svg>
+              <span class="text-sm font-semibold">prime</span>
+            </div>
           </div>
 
           <!-- Thumbnail Gallery -->

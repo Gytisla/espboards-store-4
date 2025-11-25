@@ -38,6 +38,7 @@ export default defineEventHandler(async (event) => {
         currency,
         status,
         metadata,
+        raw_paapi_response,
         created_at,
         marketplace:marketplaces!marketplace_id (
           id,
