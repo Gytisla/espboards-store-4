@@ -3,10 +3,10 @@
   command = "cd app && pnpm install && pnpm run build"
   
   # Publish directory - Nuxt 3 outputs to .output/public
-  publish = "app/.output/public"
+  publish = "app/dist/public"
   
   # Functions directory for Nuxt server routes
-  functions = "app/.output/server"
+  functions = "app/dist/server"
 
 [build.environment]
   # Node.js version
