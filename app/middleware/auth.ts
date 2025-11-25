@@ -1,12 +1,15 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  // Skip middleware on server-side
-  if (process.server) return
-
   // Skip middleware for login page to avoid infinite loops
   if (to.path === '/admin/login') {
     return
   }
 
+  // On server-side, always redirect immediately - don't render anything
+  if (process.server) {
+    return navigateTo('/admin/login')
+  }
+
+  // Client-side authentication check
   const { user, initialize } = useAuth()
 
   // Initialize auth if not already done

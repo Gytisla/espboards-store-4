@@ -18,6 +18,7 @@ const closeMobileMenu = () => {
 </script>
 
 <template>
+  <ClientOnly>
   <div class="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
     <!-- Mobile Menu Backdrop -->
     <div
@@ -57,4 +58,5 @@ const closeMobileMenu = () => {
       </main>
     </div>
   </div>
+  </ClientOnly>
 </template>

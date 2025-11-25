@@ -4,6 +4,15 @@ definePageMeta({
   middleware: 'auth'
 })
 
+// Add client-only guard
+const { user, loading, initialize } = useAuth()
+const isReady = ref(false)
+
+onMounted(async () => {
+  await initialize()
+  isReady.value = true
+})
+
 const stats = [
   {
     name: 'Total Revenue',
@@ -52,7 +61,14 @@ const topProducts = [
 </script>
 
 <template>
-  <div class="space-y-6">
+  <ClientOnly>
+    <div v-if="!isReady || loading" class="flex min-h-screen items-center justify-center">
+      <div class="text-center">
+        <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Loading...</p>
+      </div>
+    </div>
+    <div v-else class="space-y-6">
     <!-- Welcome Section -->
     <div class="rounded-2xl bg-linear-to-r from-blue-600 to-purple-600 p-6 sm:p-8 text-white shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10">
       <h2 class="mb-2 text-xl sm:text-2xl font-bold">Welcome back, Admin! 👋</h2>
@@ -173,4 +189,5 @@ const topProducts = [
       </div>
     </div>
   </div>
+  </ClientOnly>
 </template>

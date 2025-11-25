@@ -39,9 +39,11 @@ export const useAuth = () => {
       user.value = data.user
       token.value = data.session.access_token
       
-      // Store token in localStorage
+      // Store token in both localStorage and cookie for SSR
       if (process.client) {
         localStorage.setItem('auth-token', data.session.access_token)
+        // Set cookie with 7 days expiry
+        document.cookie = `auth-token=${data.session.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`
       }
       
       return data
@@ -60,18 +62,25 @@ export const useAuth = () => {
     user.value = null
     token.value = null
     
-    // Clear token from localStorage
+    // Clear token from both localStorage and cookie
     if (process.client) {
       localStorage.removeItem('auth-token')
+      document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
     }
     
     await navigateTo('/admin/login')
   }
 
   const initialize = async () => {
-    // Load token from localStorage
+    // Load token from localStorage or cookie
     if (process.client) {
       token.value = localStorage.getItem('auth-token')
+      
+      // Fallback to cookie if localStorage is empty
+      if (!token.value) {
+        const cookieMatch = document.cookie.match(/auth-token=([^;]+)/)
+        token.value = cookieMatch?.[1] || null
+      }
     }
 
     if (token.value) {
