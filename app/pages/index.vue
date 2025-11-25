@@ -154,13 +154,17 @@ const productCategories = [
               Explore Categories
             </NuxtLink>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Marketplace Selector -->
-          <div class="mt-8 flex justify-center">
-            <div class="inline-flex flex-col items-center gap-3">
-              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Select your Amazon marketplace</span>
-              <MarketplaceSelector />
-            </div>
+    <!-- Marketplace Selector Section -->
+    <section class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-4">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-center">
+          <div class="inline-flex flex-col items-center gap-2">
+            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Select your Amazon marketplace</span>
+            <MarketplaceSelector />
           </div>
         </div>
       </div>

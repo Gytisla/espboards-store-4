@@ -70,18 +70,14 @@ const handleNavClick = () => {
           to="/admin"
           class="flex items-center gap-3"
         >
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-400 to-blue-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
-            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white dark:bg-gray-700 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
+            <img src="/logo.png" alt="ESPBoards" class="h-7 w-7 object-contain" />
           </div>
           <span class="text-lg font-bold text-gray-900 dark:text-white">ESPBoards Admin</span>
         </NuxtLink>
         <div v-else class="flex items-center justify-center">
-          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-blue-400 to-blue-600 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
-            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white dark:bg-gray-700 shadow-lg shadow-blue-500/30 dark:shadow-blue-500/20">
+            <img src="/logo.png" alt="ESPBoards" class="h-7 w-7 object-contain" />
           </div>
         </div>
       </Transition>
