@@ -14,12 +14,6 @@ const footerLinks = {
     { name: 'Blog', href: '/blog' },
     { name: 'Careers', href: '/careers' },
   ],
-  support: [
-    { name: 'Documentation', href: '/docs' },
-    { name: 'FAQs', href: '/faq' },
-    { name: 'Shipping', href: '/shipping' },
-    { name: 'Returns', href: '/returns' },
-  ],
   legal: [
     { name: 'Privacy Policy', href: '/privacy' },
     { name: 'Terms of Service', href: '/terms' },
@@ -55,11 +49,50 @@ const socialLinks = [
   <footer class="border-t border-gray-200 dark:border-gray-800 bg-linear-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Main Footer Content -->
-      <div class="grid grid-cols-2 gap-8 py-12 md:grid-cols-4 lg:gap-12">
-        <!-- Products -->
+      <div class="grid grid-cols-1 gap-8 py-12 md:grid-cols-3 lg:gap-12">
+        <!-- Column 1: Brand & Social -->
+        <div>
+          <!-- Logo -->
+          <NuxtLink to="/" class="inline-flex items-center gap-2 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/30">
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+            </div>
+            <span class="text-xl font-bold text-gray-900 dark:text-white">ESP Store</span>
+          </NuxtLink>
+          
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            Your trusted source for ESP32 development boards and IoT components. Discover the latest boards and accessories.
+          </p>
+
+          <!-- Social Media Links -->
+          <div>
+            <h3 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+              Follow Us
+            </h3>
+            <div class="flex items-center gap-2">
+              <a
+                v-for="social in socialLinks"
+                :key="social.name"
+                :href="social.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md hover:scale-105"
+                :aria-label="social.name"
+              >
+                <svg class="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path :d="social.icon" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Quick Links -->
         <div>
           <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
-            Products
+            Quick Links
           </h3>
           <ul class="space-y-3">
             <li v-for="link in footerLinks.products" :key="link.name">
@@ -73,41 +106,7 @@ const socialLinks = [
           </ul>
         </div>
 
-        <!-- Company -->
-        <div>
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
-            Company
-          </h3>
-          <ul class="space-y-3">
-            <li v-for="link in footerLinks.company" :key="link.name">
-              <NuxtLink
-                :to="link.href"
-                class="text-sm text-gray-600 dark:text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
-              >
-                {{ link.name }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Support -->
-        <div>
-          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
-            Support
-          </h3>
-          <ul class="space-y-3">
-            <li v-for="link in footerLinks.support" :key="link.name">
-              <NuxtLink
-                :to="link.href"
-                class="text-sm text-gray-600 dark:text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
-              >
-                {{ link.name }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Legal -->
+        <!-- Column 3: Legal -->
         <div>
           <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
             Legal
@@ -153,35 +152,16 @@ const socialLinks = [
 
       <!-- Bottom Bar -->
       <div class="border-t border-gray-200 dark:border-gray-800 py-8">
-        <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <!-- Brand & Copyright -->
-          <div class="flex items-center gap-2">
-            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/30">
-              <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-              </svg>
-            </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              © {{ currentYear }} ESPBoards. All rights reserved.
-            </p>
-          </div>
+        <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <!-- Copyright -->
+          <p class="text-sm text-gray-600 dark:text-gray-400 text-center sm:text-left">
+            © {{ currentYear }} ESP Store. All rights reserved.
+          </p>
 
-          <!-- Social Links -->
-          <div class="flex items-center gap-2">
-            <a
-              v-for="social in socialLinks"
-              :key="social.name"
-              :href="social.href"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md"
-              :aria-label="social.name"
-            >
-              <svg class="h-5 w-5 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                <path :d="social.icon" />
-              </svg>
-            </a>
-          </div>
+          <!-- Amazon Disclaimer -->
+          <p class="text-xs text-gray-500 dark:text-gray-500 text-center sm:text-right">
+            As an Amazon Associate, we earn from qualifying purchases.
+          </p>
         </div>
       </div>
     </div>

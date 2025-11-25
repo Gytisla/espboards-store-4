@@ -66,9 +66,17 @@ const selectedChip = ref<string>('all')
 const selectedWifiVersion = ref<string>('all')
 const selectedBluetoothVersion = ref<string>('all')
 const selectedUsbType = ref<string>('all')
+const selectedFlashSize = ref<string>('all')
+const selectedPsramSize = ref<string>('all')
+const selectedGpioPins = ref<string>('all')
+const minPrice = ref<number | null>(null)
+const maxPrice = ref<number | null>(null)
 const hasCamera = ref<boolean | null>(null)
 const hasDisplay = ref<boolean | null>(null)
 const hasBattery = ref<boolean | null>(null)
+const hasZigbee = ref<boolean | null>(null)
+const hasThread = ref<boolean | null>(null)
+const hasSdCard = ref<boolean | null>(null)
 
 // Flag to prevent URL updates during initialization
 const isInitializing = ref(true)
@@ -96,6 +104,21 @@ const initializeFiltersFromURL = () => {
   if (route.query.usb && typeof route.query.usb === 'string') {
     selectedUsbType.value = route.query.usb
   }
+  if (route.query.flash && typeof route.query.flash === 'string') {
+    selectedFlashSize.value = route.query.flash
+  }
+  if (route.query.psram && typeof route.query.psram === 'string') {
+    selectedPsramSize.value = route.query.psram
+  }
+  if (route.query.gpio && typeof route.query.gpio === 'string') {
+    selectedGpioPins.value = route.query.gpio
+  }
+  if (route.query.minPrice && typeof route.query.minPrice === 'string') {
+    minPrice.value = parseFloat(route.query.minPrice)
+  }
+  if (route.query.maxPrice && typeof route.query.maxPrice === 'string') {
+    maxPrice.value = parseFloat(route.query.maxPrice)
+  }
   if (route.query.camera === 'true') {
     hasCamera.value = true
   }
@@ -104,6 +127,15 @@ const initializeFiltersFromURL = () => {
   }
   if (route.query.battery === 'true') {
     hasBattery.value = true
+  }
+  if (route.query.zigbee === 'true') {
+    hasZigbee.value = true
+  }
+  if (route.query.thread === 'true') {
+    hasThread.value = true
+  }
+  if (route.query.sdcard === 'true') {
+    hasSdCard.value = true
   }
 }
 
@@ -121,15 +153,23 @@ const updateURL = () => {
   if (selectedWifiVersion.value !== 'all') query.wifi = selectedWifiVersion.value
   if (selectedBluetoothVersion.value !== 'all') query.bluetooth = selectedBluetoothVersion.value
   if (selectedUsbType.value !== 'all') query.usb = selectedUsbType.value
+  if (selectedFlashSize.value !== 'all') query.flash = selectedFlashSize.value
+  if (selectedPsramSize.value !== 'all') query.psram = selectedPsramSize.value
+  if (selectedGpioPins.value !== 'all') query.gpio = selectedGpioPins.value
+  if (minPrice.value !== null) query.minPrice = minPrice.value.toString()
+  if (maxPrice.value !== null) query.maxPrice = maxPrice.value.toString()
   if (hasCamera.value === true) query.camera = 'true'
   if (hasDisplay.value === true) query.display = 'true'
   if (hasBattery.value === true) query.battery = 'true'
+  if (hasZigbee.value === true) query.zigbee = 'true'
+  if (hasThread.value === true) query.thread = 'true'
+  if (hasSdCard.value === true) query.sdcard = 'true'
   
   navigateTo({ query }, { replace: true })
 }
 
 // Watch all filters and update URL
-watch([searchQuery, selectedType, sortBy, selectedChip, selectedWifiVersion, selectedBluetoothVersion, selectedUsbType, hasCamera, hasDisplay, hasBattery], () => {
+watch([searchQuery, selectedType, sortBy, selectedChip, selectedWifiVersion, selectedBluetoothVersion, selectedUsbType, selectedFlashSize, selectedPsramSize, selectedGpioPins, minPrice, maxPrice, hasCamera, hasDisplay, hasBattery, hasZigbee, hasThread, hasSdCard], () => {
   updateURL()
 })
 
@@ -141,9 +181,17 @@ watch(selectedType, (newType, oldType) => {
     selectedWifiVersion.value = 'all'
     selectedBluetoothVersion.value = 'all'
     selectedUsbType.value = 'all'
+    selectedFlashSize.value = 'all'
+    selectedPsramSize.value = 'all'
+    selectedGpioPins.value = 'all'
+    minPrice.value = null
+    maxPrice.value = null
     hasCamera.value = null
     hasDisplay.value = null
     hasBattery.value = null
+    hasZigbee.value = null
+    hasThread.value = null
+    hasSdCard.value = null
   }
 })
 
@@ -218,6 +266,27 @@ const usbTypeOptions = [
   { value: 'micro_usb', label: 'Micro USB' },
   { value: 'usb_c', label: 'USB-C' },
   { value: 'usb_a', label: 'USB-A' },
+]
+
+const flashOptions = [
+  { value: 'all', label: 'All Flash' },
+  { value: '4', label: '4MB' },
+  { value: '8', label: '8MB' },
+  { value: '16', label: '16MB+' },
+]
+
+const psramOptions = [
+  { value: 'all', label: 'All PSRAM' },
+  { value: 'none', label: 'No PSRAM' },
+  { value: '2', label: '2MB' },
+  { value: '8', label: '8MB+' },
+]
+
+const gpioPinOptions = [
+  { value: 'all', label: 'All GPIO' },
+  { value: '20', label: '20+ pins' },
+  { value: '30', label: '30+ pins' },
+  { value: '40', label: '40+ pins' },
 ]
 
 // Determine which filters to show based on selected category
@@ -305,6 +374,70 @@ const filteredProducts = computed(() => {
     )
   }
 
+  if (hasZigbee.value !== null) {
+    products = products.filter(
+      (p) => p.metadata?.filters?.has_zigbee === hasZigbee.value
+    )
+  }
+
+  if (hasThread.value !== null) {
+    products = products.filter(
+      (p) => p.metadata?.filters?.has_thread === hasThread.value
+    )
+  }
+
+  if (hasSdCard.value !== null) {
+    products = products.filter(
+      (p) => p.metadata?.filters?.has_sd_card === hasSdCard.value
+    )
+  }
+
+  // Flash size filter
+  if (selectedFlashSize.value !== 'all') {
+    const flashSize = parseInt(selectedFlashSize.value)
+    products = products.filter((p) => {
+      const productFlash = p.metadata?.filters?.flash_size
+      if (!productFlash) return false
+      const productFlashMB = parseInt(String(productFlash))
+      return productFlashMB >= flashSize
+    })
+  }
+
+  // PSRAM size filter
+  if (selectedPsramSize.value !== 'all') {
+    if (selectedPsramSize.value === 'none') {
+      products = products.filter((p) => !p.metadata?.filters?.psram_size)
+    } else {
+      const psramSize = parseInt(selectedPsramSize.value)
+      products = products.filter((p) => {
+        const productPsram = p.metadata?.filters?.psram_size
+        if (!productPsram) return false
+        const productPsramMB = parseInt(String(productPsram))
+        return productPsramMB >= psramSize
+      })
+    }
+  }
+
+  // GPIO pins filter
+  if (selectedGpioPins.value !== 'all') {
+    const gpioCount = parseInt(selectedGpioPins.value)
+    products = products.filter((p) => {
+      const productGpio = p.metadata?.filters?.gpio_count
+      if (!productGpio) return false
+      const productGpioCount = parseInt(String(productGpio))
+      return productGpioCount >= gpioCount
+    })
+  }
+
+  // Price range filter
+  if (minPrice.value !== null) {
+    products = products.filter((p) => (p.current_price || 0) >= minPrice.value!)
+  }
+
+  if (maxPrice.value !== null) {
+    products = products.filter((p) => (p.current_price || 0) <= maxPrice.value!)
+  }
+
   // Sort products
   switch (sortBy.value) {
     case 'newest':
@@ -333,9 +466,17 @@ const hasActiveFilters = computed(() => {
     selectedWifiVersion.value !== 'all' ||
     selectedBluetoothVersion.value !== 'all' ||
     selectedUsbType.value !== 'all' ||
+    selectedFlashSize.value !== 'all' ||
+    selectedPsramSize.value !== 'all' ||
+    selectedGpioPins.value !== 'all' ||
+    minPrice.value !== null ||
+    maxPrice.value !== null ||
     hasCamera.value !== null ||
     hasDisplay.value !== null ||
-    hasBattery.value !== null
+    hasBattery.value !== null ||
+    hasZigbee.value !== null ||
+    hasThread.value !== null ||
+    hasSdCard.value !== null
 })
 
 // Clear all filters
@@ -347,9 +488,17 @@ const clearAllFilters = () => {
   selectedWifiVersion.value = 'all'
   selectedBluetoothVersion.value = 'all'
   selectedUsbType.value = 'all'
+  selectedFlashSize.value = 'all'
+  selectedPsramSize.value = 'all'
+  selectedGpioPins.value = 'all'
+  minPrice.value = null
+  maxPrice.value = null
   hasCamera.value = null
   hasDisplay.value = null
   hasBattery.value = null
+  hasZigbee.value = null
+  hasThread.value = null
+  hasSdCard.value = null
 }
 
 // Share current filter configuration
@@ -375,230 +524,512 @@ useHead({
 
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- Header -->
-    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div class="flex items-start justify-between">
-          <div class="flex-1">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Products</h1>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Browse our selection of ESP32 boards and components
-              <span v-if="productsData?.count" class="ml-2 font-medium text-gray-900 dark:text-white">
-                ({{ filteredProducts.length }} of {{ productsData.count }} products)
-              </span>
-            </p>
-            
-            <!-- Active Filters Display -->
-            <div v-if="hasActiveFilters" class="mt-3 flex flex-wrap gap-2">
-              <span v-if="selectedType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-950 px-3 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
-                {{ productTypes.find((t: any) => t.value === selectedType)?.label }}
-              </span>
-              <span v-if="selectedChip !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-purple-50 dark:bg-purple-950 px-3 py-1 text-xs font-medium text-purple-700 dark:text-purple-300">
-                {{ chipOptions.find((c: any) => c.value === selectedChip)?.label }}
-              </span>
-              <span v-if="selectedWifiVersion !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-950 px-3 py-1 text-xs font-medium text-green-700 dark:text-green-300">
-                WiFi {{ selectedWifiVersion }}
-              </span>
-              <span v-if="selectedBluetoothVersion !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 dark:bg-indigo-950 px-3 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
-                Bluetooth {{ selectedBluetoothVersion }}
-              </span>
-              <span v-if="selectedUsbType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-orange-50 dark:bg-orange-950 px-3 py-1 text-xs font-medium text-orange-700 dark:text-orange-300">
-                {{ usbTypeOptions.find((u: any) => u.value === selectedUsbType)?.label }}
-              </span>
-              <span v-if="hasCamera === true" class="inline-flex items-center gap-1 rounded-full bg-pink-50 dark:bg-pink-950 px-3 py-1 text-xs font-medium text-pink-700 dark:text-pink-300">
-                Camera
-              </span>
-              <span v-if="hasDisplay === true" class="inline-flex items-center gap-1 rounded-full bg-cyan-50 dark:bg-cyan-950 px-3 py-1 text-xs font-medium text-cyan-700 dark:text-cyan-300">
-                Display
-              </span>
-              <span v-if="hasBattery === true" class="inline-flex items-center gap-1 rounded-full bg-yellow-50 dark:bg-yellow-950 px-3 py-1 text-xs font-medium text-yellow-700 dark:text-yellow-300">
-                Battery
-              </span>
-              <span v-if="searchQuery" class="inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-700 px-3 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
-                Search: "{{ searchQuery }}"
-              </span>
-            </div>
+    <!-- Hero Section -->
+    <div class="relative overflow-hidden bg-linear-to-br from-blue-600 via-purple-600 to-blue-800 dark:from-blue-900 dark:via-purple-900 dark:to-blue-950">
+      <!-- Animated Background Pattern -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+      </div>
+      
+      <div class="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <div class="text-center">
+          <!-- Icon -->
+          <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm shadow-lg">
+            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+            </svg>
           </div>
+
+          <h1 class="text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
+            Discover ESP32 Products
+          </h1>
+          <p class="mt-2 text-sm text-blue-100 sm:text-base">
+            Browse our curated selection of development boards, sensors, and IoT components
+          </p>
           
+          <!-- Product Count -->
+          <div v-if="productsData?.count" class="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-4 py-2 text-white shadow-lg">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            <span class="text-xs font-semibold sm:text-sm">
+              {{ filteredProducts.length }} of {{ productsData.count }} products
+            </span>
+          </div>
+
+          <!-- Active Filters Display -->
+          <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap justify-center gap-2">
+            <span v-if="selectedType !== 'all'" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              {{ productTypes.find((t: any) => t.value === selectedType)?.label }}
+            </span>
+            <span v-if="selectedChip !== 'all'" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+              {{ chipOptions.find((c: any) => c.value === selectedChip)?.label }}
+            </span>
+            <span v-if="selectedWifiVersion !== 'all'" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+              </svg>
+              WiFi {{ selectedWifiVersion }}
+            </span>
+            <span v-if="selectedBluetoothVersion !== 'all'" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/>
+              </svg>
+              BT {{ selectedBluetoothVersion }}
+            </span>
+            <span v-if="selectedUsbType !== 'all'" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              {{ usbTypeOptions.find((u: any) => u.value === selectedUsbType)?.label }}
+            </span>
+            <span v-if="hasCamera === true" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              </svg>
+              Camera
+            </span>
+            <span v-if="hasDisplay === true" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Display
+            </span>
+            <span v-if="hasBattery === true" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Battery
+            </span>
+            <span v-if="hasZigbee === true" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+              </svg>
+              Zigbee
+            </span>
+            <span v-if="hasThread === true" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+              </svg>
+              Thread
+            </span>
+            <span v-if="hasSdCard === true" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+              </svg>
+              SD Card
+            </span>
+            <span v-if="selectedFlashSize !== 'all'" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Flash: {{ flashOptions.find(o => o.value === selectedFlashSize)?.label }}
+            </span>
+            <span v-if="selectedPsramSize !== 'all'" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+              </svg>
+              PSRAM: {{ psramOptions.find(o => o.value === selectedPsramSize)?.label }}
+            </span>
+            <span v-if="selectedGpioPins !== 'all'" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+              GPIO: {{ gpioPinOptions.find(o => o.value === selectedGpioPins)?.label }}
+            </span>
+            <span v-if="minPrice !== null || maxPrice !== null" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span v-if="minPrice !== null && maxPrice !== null">
+                ${{ minPrice }} - ${{ maxPrice }}
+              </span>
+              <span v-else-if="minPrice !== null">
+                ${{ minPrice }}+
+              </span>
+              <span v-else>
+                Up to ${{ maxPrice }}
+              </span>
+            </span>
+            <span v-if="searchQuery" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              "{{ searchQuery }}"
+            </span>
+          </div>
+
           <!-- Action Buttons -->
-          <div v-if="hasActiveFilters" class="ml-4 flex gap-2">
+          <div v-if="hasActiveFilters" class="mt-4 flex justify-center gap-2">
             <button
               @click="shareFilters"
-              class="flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+              class="inline-flex items-center gap-2 rounded-lg bg-white/10 backdrop-blur-sm px-4 py-2 text-xs font-semibold text-white shadow-lg transition-all hover:bg-white/20 hover:shadow-xl"
               title="Share this filtered view"
             >
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
-              <span class="hidden sm:inline">Share</span>
+              Share View
             </button>
             
             <button
               @click="clearAllFilters"
-              class="flex items-center gap-2 rounded-lg bg-gray-900 dark:bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:hover:bg-blue-700"
+              class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-xs font-semibold text-blue-600 shadow-lg transition-all hover:shadow-xl hover:scale-105"
               title="Clear all filters"
             >
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <span class="hidden sm:inline">Clear All</span>
+              Clear All Filters
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <!-- Search -->
-        <div class="flex-1 lg:max-w-md">
-          <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <!-- Filters Section -->
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <!-- Search and Main Controls -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <!-- Search -->
+          <div class="flex-1 lg:max-w-md">
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <svg class="inline-block h-4 w-4 mr-1.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
+              Search Products
+            </label>
+            <div class="relative">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search by name, brand, or description..."
+                class="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-3 pl-11 pr-4 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
             </div>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search products..."
-              class="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 pl-10 pr-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
           </div>
-        </div>
 
-        <!-- Filters -->
-        <div class="flex flex-wrap gap-3">
-          <!-- Product Type Filter -->
-          <select
-            v-model="selectedType"
-            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
-            <option v-for="type in productTypes" :key="type.value" :value="type.value">
-              {{ type.label }}
-            </option>
-          </select>
+          <!-- Main Filters -->
+          <div class="flex flex-wrap gap-3">
+            <!-- Product Type Filter -->
+            <div>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <svg class="inline-block h-4 w-4 mr-1.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                Category
+              </label>
+              <select
+                v-model="selectedType"
+                class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              >
+                <option v-for="type in productTypes" :key="type.value" :value="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+            </div>
 
-          <!-- Sort By -->
-          <select
-            v-model="sortBy"
-            class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
-            <option v-for="option in sortOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
+            <!-- Sort By -->
+            <div>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <svg class="inline-block h-4 w-4 mr-1.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                </svg>
+                Sort By
+              </label>
+              <select
+                v-model="sortBy"
+                class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              >
+                <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Dynamic Filters (shown based on category) -->
-      <div v-if="showDevelopmentBoardFilters" class="mt-4 flex flex-wrap gap-3">
-        <div class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
-          <svg class="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-          </svg>
-          Filters:
+      <!-- Advanced Filters (Category-specific) -->
+      <div v-if="showDevelopmentBoardFilters" class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            Advanced Filters
+          </h3>
+
+          <!-- Clear Category Filters Button -->
+          <button
+            v-if="selectedChip !== 'all' || selectedWifiVersion !== 'all' || selectedBluetoothVersion !== 'all' || selectedUsbType !== 'all' || selectedFlashSize !== 'all' || selectedPsramSize !== 'all' || selectedGpioPins !== 'all' || minPrice !== null || maxPrice !== null || hasCamera !== null || hasDisplay !== null || hasBattery !== null || hasZigbee !== null || hasThread !== null || hasSdCard !== null"
+            @click="selectedChip = 'all'; selectedWifiVersion = 'all'; selectedBluetoothVersion = 'all'; selectedUsbType = 'all'; selectedFlashSize = 'all'; selectedPsramSize = 'all'; selectedGpioPins = 'all'; minPrice = null; maxPrice = null; hasCamera = null; hasDisplay = null; hasBattery = null; hasZigbee = null; hasThread = null; hasSdCard = null"
+            class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Clear Filters
+          </button>
         </div>
 
-        <!-- Chip Filter -->
-        <select
-          v-model="selectedChip"
-          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option v-for="chip in chipOptions" :key="chip.value" :value="chip.value">
-            {{ chip.label }}
-          </option>
-        </select>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- Chip Filter -->
+          <div>
+            <label class="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Chip Model
+            </label>
+            <select
+              v-model="selectedChip"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option v-for="chip in chipOptions" :key="chip.value" :value="chip.value">
+                {{ chip.label }}
+              </option>
+            </select>
+          </div>
 
-        <!-- WiFi Version Filter -->
-        <select
-          v-model="selectedWifiVersion"
-          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option v-for="wifi in wifiVersionOptions" :key="wifi.value" :value="wifi.value">
-            {{ wifi.label }}
-          </option>
-        </select>
+          <!-- WiFi Version Filter -->
+          <div>
+            <label class="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              WiFi Version
+            </label>
+            <select
+              v-model="selectedWifiVersion"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option v-for="wifi in wifiVersionOptions" :key="wifi.value" :value="wifi.value">
+                {{ wifi.label }}
+              </option>
+            </select>
+          </div>
 
-        <!-- Bluetooth Version Filter -->
-        <select
-          v-model="selectedBluetoothVersion"
-          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option v-for="bt in bluetoothVersionOptions" :key="bt.value" :value="bt.value">
-            {{ bt.label }}
-          </option>
-        </select>
+          <!-- Bluetooth Version Filter -->
+          <div>
+            <label class="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Bluetooth
+            </label>
+            <select
+              v-model="selectedBluetoothVersion"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option v-for="bt in bluetoothVersionOptions" :key="bt.value" :value="bt.value">
+                {{ bt.label }}
+              </option>
+            </select>
+          </div>
 
-        <!-- USB Type Filter -->
-        <select
-          v-model="selectedUsbType"
-          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option v-for="usb in usbTypeOptions" :key="usb.value" :value="usb.value">
-            {{ usb.label }}
-          </option>
-        </select>
+          <!-- USB Type Filter -->
+          <div>
+            <label class="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              USB Type
+            </label>
+            <select
+              v-model="selectedUsbType"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option v-for="usb in usbTypeOptions" :key="usb.value" :value="usb.value">
+                {{ usb.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Flash Size Filter -->
+          <div>
+            <label class="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Flash Size
+            </label>
+            <select
+              v-model="selectedFlashSize"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option v-for="flash in flashOptions" :key="flash.value" :value="flash.value">
+                {{ flash.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- PSRAM Size Filter -->
+          <div>
+            <label class="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              PSRAM Size
+            </label>
+            <select
+              v-model="selectedPsramSize"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option v-for="psram in psramOptions" :key="psram.value" :value="psram.value">
+                {{ psram.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- GPIO Pins Filter -->
+          <div>
+            <label class="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              GPIO Pins
+            </label>
+            <select
+              v-model="selectedGpioPins"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option v-for="gpio in gpioPinOptions" :key="gpio.value" :value="gpio.value">
+                {{ gpio.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Price Range Filter -->
+          <div>
+            <label class="mb-2 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Price Range
+            </label>
+            <div class="flex items-center gap-2">
+              <div class="relative flex-1">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400">$</span>
+                <input
+                  v-model.number="minPrice"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="Min"
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 pl-6 pr-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
+              <span class="text-gray-400 dark:text-gray-500">–</span>
+              <div class="relative flex-1">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400">$</span>
+                <input
+                  v-model.number="maxPrice"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="Max"
+                  class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 pl-6 pr-3 py-2 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-600 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Hardware Feature Toggles -->
-        <button
-          @click="hasCamera = hasCamera === true ? null : true"
-          class="rounded-lg border px-3 py-1.5 text-sm font-medium transition-all"
-          :class="hasCamera === true 
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' 
-            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
-        >
-          <span class="flex items-center gap-1.5">
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Camera
-          </span>
-        </button>
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <label class="mb-3 block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+            Hardware Features
+          </label>
+          <div class="flex flex-wrap gap-3">
+            <button
+              @click="hasCamera = hasCamera === true ? null : true"
+              class="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all shadow-sm hover:shadow-md"
+              :class="hasCamera === true 
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow-blue-200/50 dark:shadow-blue-900/50' 
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600'"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              </svg>
+              Camera
+              <span v-if="hasCamera === true" class="ml-1 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+            </button>
 
-        <button
-          @click="hasDisplay = hasDisplay === true ? null : true"
-          class="rounded-lg border px-3 py-1.5 text-sm font-medium transition-all"
-          :class="hasDisplay === true 
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' 
-            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
-        >
-          <span class="flex items-center gap-1.5">
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            Display
-          </span>
-        </button>
+            <button
+              @click="hasDisplay = hasDisplay === true ? null : true"
+              class="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all shadow-sm hover:shadow-md"
+              :class="hasDisplay === true 
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow-blue-200/50 dark:shadow-blue-900/50' 
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600'"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Display
+              <span v-if="hasDisplay === true" class="ml-1 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+            </button>
 
-        <button
-          @click="hasBattery = hasBattery === true ? null : true"
-          class="rounded-lg border px-3 py-1.5 text-sm font-medium transition-all"
-          :class="hasBattery === true 
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' 
-            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
-        >
-          <span class="flex items-center gap-1.5">
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-            </svg>
-            Battery
-          </span>
-        </button>
+            <button
+              @click="hasBattery = hasBattery === true ? null : true"
+              class="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all shadow-sm hover:shadow-md"
+              :class="hasBattery === true 
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow-blue-200/50 dark:shadow-blue-900/50' 
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600'"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Battery
+              <span v-if="hasBattery === true" class="ml-1 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+            </button>
 
-        <!-- Clear Filters Button -->
-        <button
-          v-if="selectedChip !== 'all' || selectedWifiVersion !== 'all' || selectedBluetoothVersion !== 'all' || selectedUsbType !== 'all' || hasCamera !== null || hasDisplay !== null || hasBattery !== null"
-          @click="selectedChip = 'all'; selectedWifiVersion = 'all'; selectedBluetoothVersion = 'all'; selectedUsbType = 'all'; hasCamera = null; hasDisplay = null; hasBattery = null"
-          class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-1.5"
-        >
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          Clear Category Filters
-        </button>
+            <button
+              @click="hasZigbee = hasZigbee === true ? null : true"
+              class="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all shadow-sm hover:shadow-md"
+              :class="hasZigbee === true 
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow-blue-200/50 dark:shadow-blue-900/50' 
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600'"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+              </svg>
+              Zigbee
+              <span v-if="hasZigbee === true" class="ml-1 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+            </button>
+
+            <button
+              @click="hasThread = hasThread === true ? null : true"
+              class="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all shadow-sm hover:shadow-md"
+              :class="hasThread === true 
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow-blue-200/50 dark:shadow-blue-900/50' 
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600'"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+              </svg>
+              Thread
+              <span v-if="hasThread === true" class="ml-1 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+            </button>
+
+            <button
+              @click="hasSdCard = hasSdCard === true ? null : true"
+              class="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all shadow-sm hover:shadow-md"
+              :class="hasSdCard === true 
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 shadow-blue-200/50 dark:shadow-blue-900/50' 
+                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600'"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+              </svg>
+              SD Card
+              <span v-if="hasSdCard === true" class="ml-1 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -607,25 +1038,106 @@ useHead({
       <!-- Loading State -->
       <div v-if="pending" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <div v-for="i in 8" :key="i" class="animate-pulse">
-          <div class="aspect-square rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+          <div class="aspect-square rounded-xl bg-gray-200 dark:bg-gray-700"></div>
           <div class="mt-4 h-4 rounded bg-gray-200 dark:bg-gray-700"></div>
           <div class="mt-2 h-4 w-2/3 rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
       </div>
 
-      <!-- No Products -->
-      <div v-else-if="filteredProducts.length === 0" class="py-12 text-center">
-        <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-        </svg>
-        <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">No products found</h3>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your search or filter criteria</p>
-        <button
-          @click="searchQuery = ''; selectedType = 'all'"
-          class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          Clear Filters
-        </button>
+      <!-- No Products - Enhanced Empty State -->
+      <div v-else-if="filteredProducts.length === 0" class="py-16">
+        <div class="mx-auto max-w-md text-center">
+          <!-- Illustration -->
+          <div class="mx-auto mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-linear-to-br from-blue-100 to-purple-100 dark:from-blue-950 dark:to-purple-950">
+            <svg class="h-16 w-16 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          <!-- Heading -->
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            No products found
+          </h3>
+          
+          <!-- Description -->
+          <p class="text-gray-600 dark:text-gray-400 mb-2">
+            We couldn't find any products matching your search criteria.
+          </p>
+          
+          <!-- Active Filters Info -->
+          <div v-if="hasActiveFilters" class="mt-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-100 dark:border-blue-900">
+            <p class="text-sm text-blue-800 dark:text-blue-200 mb-3 font-medium">
+              Active filters may be limiting results
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 text-xs">
+              <span v-if="searchQuery" class="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900 px-3 py-1 text-blue-700 dark:text-blue-300">
+                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                "{{ searchQuery }}"
+              </span>
+              <span v-if="selectedType !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900 px-3 py-1 text-blue-700 dark:text-blue-300">
+                {{ productTypes.find((t: any) => t.value === selectedType)?.label }}
+              </span>
+              <span v-if="selectedChip !== 'all'" class="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900 px-3 py-1 text-blue-700 dark:text-blue-300">
+                {{ selectedChip }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <button
+              @click="clearAllFilters"
+              class="inline-flex items-center justify-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 dark:shadow-blue-500/10 transition-all hover:shadow-xl hover:shadow-blue-500/40 dark:hover:shadow-blue-500/20 hover:scale-105"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Clear All Filters
+            </button>
+
+            <NuxtLink
+              to="/products"
+              class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-md"
+            >
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              View All Products
+            </NuxtLink>
+          </div>
+
+          <!-- Suggestions -->
+          <div class="mt-8 rounded-lg bg-gray-50 dark:bg-gray-800 p-6 text-left">
+            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              Try these suggestions:
+            </h4>
+            <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <li class="flex items-start gap-2">
+                <svg class="h-5 w-5 text-blue-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Use broader search terms or fewer filters
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="h-5 w-5 text-blue-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Check your spelling and try again
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="h-5 w-5 text-blue-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Browse different product categories
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <!-- Products Grid -->

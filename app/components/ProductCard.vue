@@ -126,46 +126,57 @@ const features = computed(() => getProductFeatures(props.product))
 <template>
   <NuxtLink
     :to="`/products/${product.slug}`"
-    class="group flex flex-col overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-sm transition-all hover:shadow-lg dark:hover:shadow-gray-900/50"
+    class="group flex flex-col overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/10 hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-800"
   >
     <!-- Product Image -->
-    <div class="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
+    <div class="relative aspect-square overflow-hidden bg-gray-50 dark:bg-gray-700">
       <img
         :src="productImage"
         :alt="product.title"
-        class="h-full w-full object-cover object-center transition-transform group-hover:scale-105"
+        class="h-full w-full object-contain object-center p-4 transition-transform duration-500 group-hover:scale-110"
         loading="lazy"
       />
       
       <!-- Prime Badge -->
-      <div v-if="isPrimeEligible" class="absolute top-2 right-2 flex items-center gap-1 bg-linear-to-r from-blue-500 to-cyan-400 px-2 py-1 rounded-md shadow-lg">
-        <svg class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+      <div v-if="isPrimeEligible" class="absolute top-3 right-3 flex items-center gap-1 bg-linear-to-r from-blue-500 to-cyan-400 px-2.5 py-1.5 rounded-lg shadow-lg">
+        <svg class="h-3.5 w-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
           <path d="M16.613 17.12c-2.088 1.535-5.12 2.355-7.728 2.355-3.656 0-6.944-1.352-9.432-3.6-.195-.18-.02-.425.214-.285 2.656 1.545 5.952 2.475 9.352 2.475 2.292 0 4.812-.475 7.132-1.46.35-.148.644.23.312.515zm.87-.987c-.266-.342-1.767-.162-2.44-.082-.205.025-.237-.153-.052-.282 1.195-.84 3.156-.597 3.383-.316.228.285-.06 2.26-1.19 3.206-.173.145-.338.068-.262-.124.252-.63.817-2.043.552-2.386z"/>
         </svg>
-        <span class="text-[10px] font-bold text-white tracking-tight">prime</span>
+        <span class="text-xs font-bold text-white tracking-tight">prime</span>
       </div>
+
+      <!-- Savings Badge -->
+      <div v-if="product.savings_percentage && product.savings_percentage > 10" class="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1.5 rounded-lg shadow-lg">
+        <span class="text-xs font-bold">-{{ Math.round(product.savings_percentage) }}%</span>
+      </div>
+
+      <!-- Overlay Gradient on Hover -->
+      <div class="absolute inset-0 bg-linear-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     </div>
 
     <!-- Product Info -->
-    <div class="flex flex-1 flex-col p-3">
+    <div class="flex flex-1 flex-col p-4">
       <!-- Brand -->
-      <p v-if="product.brand" class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+      <p v-if="product.brand" class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
         {{ product.brand }}
       </p>
 
       <!-- Title -->
-      <h3 class="mt-0.5 text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+      <h3 class="mt-1.5 text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
         {{ product.title }}
       </h3>
 
       <!-- Features/Tags -->
-      <div v-if="features.length > 0" class="mt-1.5 flex flex-wrap gap-1">
+      <div v-if="features.length > 0" class="mt-2.5 flex flex-wrap gap-1.5">
         <span
           v-for="(feature, idx) in features.slice(0, 2)"
           :key="idx"
-          class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-950 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300"
+          class="inline-flex items-center rounded-md bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900"
         >
           {{ feature }}
+        </span>
+        <span v-if="features.length > 2" class="inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-700 px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+          +{{ features.length - 2 }}
         </span>
       </div>
 
@@ -173,27 +184,30 @@ const features = computed(() => getProductFeatures(props.product))
       <div class="flex-1"></div>
 
       <!-- Pricing -->
-      <div class="mt-2">
+      <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
         <div class="flex items-baseline gap-2">
-          <span class="text-base font-bold text-gray-900 dark:text-white">
+          <span class="text-xl font-bold text-gray-900 dark:text-white">
             {{ formatPrice(product.current_price, product.currency) }}
           </span>
-          <span v-if="product.original_price && product.original_price > product.current_price" class="text-xs text-gray-500 dark:text-gray-400 line-through">
+          <span v-if="product.original_price && product.original_price > product.current_price" class="text-sm text-gray-500 dark:text-gray-400 line-through">
             {{ formatPrice(product.original_price, product.currency) }}
           </span>
         </div>
 
-        <!-- Savings Badge -->
-        <span v-if="product.savings_percentage" class="mt-1 inline-flex items-center rounded-full bg-green-50 dark:bg-green-950 px-2 py-0.5 text-xs font-medium text-green-700 dark:text-green-300">
+        <!-- Savings Info -->
+        <div v-if="product.savings_percentage" class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 dark:bg-green-950 px-3 py-1 text-xs font-semibold text-green-700 dark:text-green-300">
+          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
           Save {{ Math.round(product.savings_percentage) }}%
-        </span>
+        </div>
       </div>
 
       <!-- View Details Button -->
-      <div class="mt-2">
-        <div class="flex items-center justify-between rounded-lg bg-gray-50 dark:bg-gray-700 px-2.5 py-1.5 text-xs text-gray-600 dark:text-gray-300 transition-colors group-hover:bg-blue-50 dark:group-hover:bg-blue-950 group-hover:text-blue-700 dark:group-hover:text-blue-300">
-          <span class="font-medium">View Details</span>
-          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="mt-3">
+        <div class="flex items-center justify-between rounded-lg bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 px-4 py-2.5 text-sm font-semibold text-blue-700 dark:text-blue-300 transition-all group-hover:from-blue-100 group-hover:to-purple-100 dark:group-hover:from-blue-900 dark:group-hover:to-purple-900 border border-blue-100 dark:border-blue-900">
+          <span>View Details</span>
+          <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
         </div>

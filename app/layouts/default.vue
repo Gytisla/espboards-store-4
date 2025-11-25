@@ -10,5 +10,8 @@
     
     <!-- Footer -->
     <AppFooter />
+    
+    <!-- Cookie Consent Banner -->
+    <CookieConsent />
   </div>
 </template>
