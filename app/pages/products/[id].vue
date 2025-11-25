@@ -450,12 +450,70 @@ const getBadgeClasses = (color: string) => {
   return colorMap[color] || colorMap.gray
 }
 
+// Generate Product Schema for SEO (JSON-LD)
+const productSchema = computed(() => {
+  if (!product.value) return null
+
+  const schema: any = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.value.title,
+    description: product.value.description || product.value.title,
+    image: allImages.value.length > 0 ? allImages.value : [mainImage.value],
+    brand: product.value.brand ? {
+      '@type': 'Brand',
+      name: product.value.brand
+    } : undefined,
+    sku: product.value.asin,
+    mpn: product.value.asin,
+    offers: {
+      '@type': 'Offer',
+      url: product.value.detail_page_url,
+      priceCurrency: product.value.currency || 'USD',
+      price: product.value.current_price,
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
+      availability: product.value.status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'Amazon'
+      }
+    }
+  }
+
+  // Add aggregateRating if available
+  if (product.value.star_rating && product.value.customer_review_count) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: product.value.star_rating,
+      reviewCount: product.value.customer_review_count,
+      bestRating: 5,
+      worstRating: 1
+    }
+  }
+
+  // Add category if available
+  if (product.value.metadata?.filters?.product_type) {
+    schema.category = product.value.metadata.filters.product_type.replace('_', ' ')
+  }
+
+  // Add GTIN (using ASIN as identifier)
+  schema.gtin = product.value.asin
+
+  return schema
+})
+
 // Set page meta
 useHead({
   title: computed(() => product.value?.title || 'Product Details'),
   meta: [
     { name: 'description', content: computed(() => product.value?.description || 'Product details and specifications') },
   ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: computed(() => productSchema.value ? JSON.stringify(productSchema.value) : ''),
+    }
+  ]
 })
 </script>
 

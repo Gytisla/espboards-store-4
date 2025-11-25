@@ -48,7 +48,7 @@ const categories = [
     icon: 'camera',
     color: 'pink',
     filterValue: 'camera',
-    image: 'https://images.unsplash.com/photo-1606166325683-7e2b24e27567?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1526498460520-4c246339dccb?w=400&h=300&fit=crop',
     count: null
   },
   {
