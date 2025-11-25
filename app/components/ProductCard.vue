@@ -139,9 +139,6 @@ const features = computed(() => getProductFeatures(props.product))
       
       <!-- Prime Badge -->
       <div v-if="isPrimeEligible" class="absolute top-3 right-3 flex items-center gap-1 bg-linear-to-r from-blue-500 to-cyan-400 px-2.5 py-1.5 rounded-lg shadow-lg">
-        <svg class="h-3.5 w-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M16.613 17.12c-2.088 1.535-5.12 2.355-7.728 2.355-3.656 0-6.944-1.352-9.432-3.6-.195-.18-.02-.425.214-.285 2.656 1.545 5.952 2.475 9.352 2.475 2.292 0 4.812-.475 7.132-1.46.35-.148.644.23.312.515zm.87-.987c-.266-.342-1.767-.162-2.44-.082-.205.025-.237-.153-.052-.282 1.195-.84 3.156-.597 3.383-.316.228.285-.06 2.26-1.19 3.206-.173.145-.338.068-.262-.124.252-.63.817-2.043.552-2.386z"/>
-        </svg>
         <span class="text-xs font-bold text-white tracking-tight">prime</span>
       </div>
 
