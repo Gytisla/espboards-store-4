@@ -5,6 +5,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   toggle: []
+  closeMobile: []
 }>()
 
 const navigation = [
@@ -33,12 +34,28 @@ const navigation = [
     badge: null,
   }
 ]
+
+const handleNavClick = () => {
+  // Close mobile menu when navigation link is clicked
+  emit('closeMobile')
+}
 </script>
 
 <template>
   <div class="flex h-full flex-col">
     <!-- Logo & Toggle -->
     <div class="flex h-16 items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4">
+      <!-- Mobile Close Button (visible only on mobile) -->
+      <button
+        @click="emit('closeMobile')"
+        class="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 lg:hidden"
+        aria-label="Close menu"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
       <Transition
         mode="out-in"
         enter-active-class="transition-opacity duration-200"
@@ -71,7 +88,7 @@ const navigation = [
 
       <button
         @click="emit('toggle')"
-        class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white"
+        class="hidden lg:flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white"
         :title="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
       >
         <svg
@@ -93,6 +110,7 @@ const navigation = [
         :key="item.name"
         :to="item.href"
         :title="collapsed ? item.name : undefined"
+        @click="handleNavClick"
         class="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
         active-class="!bg-linear-to-r from-blue-600 to-purple-600 !text-white hover:!bg-linear-to-r hover:from-blue-700 hover:to-purple-700"
       >

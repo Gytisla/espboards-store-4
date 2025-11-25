@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const emit = defineEmits(['toggle-mobile-menu'])
+
 const searchQuery = ref('')
 const notificationsOpen = ref(false)
 const userMenuOpen = ref(false)
@@ -27,9 +29,20 @@ const unreadCount = notifications.filter(n => n.unread).length
 
 <template>
   <header class="flex h-16 items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 sm:px-6 lg:px-8">
-    <!-- Left: Breadcrumbs / Page Title -->
-    <div class="flex items-center gap-4">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+    <!-- Left: Mobile Menu + Page Title -->
+    <div class="flex items-center gap-3 sm:gap-4">
+      <!-- Mobile Menu Button -->
+      <button
+        @click="emit('toggle-mobile-menu')"
+        class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 lg:hidden"
+        aria-label="Toggle menu"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <h1 class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
       <nav class="hidden items-center gap-2 text-sm text-gray-600 dark:text-gray-400 md:flex">
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -39,7 +52,7 @@ const unreadCount = notifications.filter(n => n.unread).length
     </div>
 
     <!-- Right: Search, Notifications, User Menu -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3">
       <!-- Marketplace Selector -->
       <MarketplaceSelector />
 

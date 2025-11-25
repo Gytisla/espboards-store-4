@@ -77,58 +77,63 @@
             <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
               <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Basic Information</h2>
               
-              <!-- Product Image -->
-              <div class="mb-6">
-                <div class="aspect-square w-full max-w-md overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
-                  <img
-                    v-if="product.images?.primary?.large?.url || product.images?.primary?.medium?.url || product.images?.primary?.small?.url"
-                    :src="product.images?.primary?.large?.url || product.images?.primary?.medium?.url || product.images?.primary?.small?.url"
-                    :alt="product.title"
-                    class="h-full w-full object-cover"
-                  />
-                  <div v-else class="flex h-full w-full items-center justify-center text-gray-400 dark:text-gray-500">
-                    <svg class="h-24 w-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+              <div class="flex flex-col sm:flex-row gap-6">
+                <!-- Product Image -->
+                <div class="shrink-0">
+                  <div class="aspect-square w-48 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
+                    <img
+                      v-if="product.images?.primary?.large?.url || product.images?.primary?.medium?.url || product.images?.primary?.small?.url"
+                      :src="product.images?.primary?.large?.url || product.images?.primary?.medium?.url || product.images?.primary?.small?.url"
+                      :alt="product.title"
+                      class="h-full w-full object-cover"
+                    />
+                    <div v-else class="flex h-full w-full items-center justify-center text-gray-400 dark:text-gray-500">
+                      <svg class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Title (Read-only) -->
-              <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
-                <input
-                  type="text"
-                  :value="product.title"
-                  disabled
-                  class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-2 text-gray-900 dark:text-gray-300"
-                />
-              </div>
+                <!-- Input Fields -->
+                <div class="flex-1 space-y-4">
+                  <!-- Title (Read-only) -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
+                    <input
+                      type="text"
+                      :value="product.title"
+                      disabled
+                      class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-2 text-gray-900 dark:text-gray-300"
+                    />
+                  </div>
 
-              <!-- Brand (Read-only) -->
-              <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Brand</label>
-                <input
-                  type="text"
-                  :value="product.brand || 'N/A'"
-                  disabled
-                  class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-2 text-gray-900 dark:text-gray-300"
-                />
-              </div>
+                  <!-- Brand (Read-only) -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Brand</label>
+                    <input
+                      type="text"
+                      :value="product.brand || 'N/A'"
+                      disabled
+                      class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-2 text-gray-900 dark:text-gray-300"
+                    />
+                  </div>
 
-              <!-- Custom Description -->
-              <div>
-                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Description
-                  <span class="text-gray-500 dark:text-gray-400 font-normal">(Optional override)</span>
-                </label>
-                <textarea
-                  id="description"
-                  v-model="formData.description"
-                  rows="4"
-                  class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-gray-900 dark:text-gray-100 outline-none transition-all focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/50"
-                  placeholder="Enter custom description or leave blank to use Amazon's"
-                ></textarea>
+                  <!-- Custom Description -->
+                  <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Description
+                      <span class="text-gray-500 dark:text-gray-400 font-normal">(Optional override)</span>
+                    </label>
+                    <textarea
+                      id="description"
+                      v-model="formData.description"
+                      rows="4"
+                      class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-gray-900 dark:text-gray-100 outline-none transition-all focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/50"
+                      placeholder="Enter custom description or leave blank to use Amazon's"
+                    ></textarea>
+                  </div>
+                </div>
               </div>
             </div>
 
