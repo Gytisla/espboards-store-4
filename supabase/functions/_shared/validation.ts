@@ -125,6 +125,20 @@ export const SearchProductsRequestSchema = z.object({
     .max(100, 'Search query must be at most 100 characters')
     .trim(),
   marketplace: MarketplaceCodeSchema,
+  limit: z
+    .number()
+    .int('Limit must be an integer')
+    .min(1, 'Limit must be at least 1')
+    .max(10, 'Limit must be at most 10 per page')
+    .optional()
+    .default(10),
+  page: z
+    .number()
+    .int('Page must be an integer')
+    .min(1, 'Page must be at least 1')
+    .max(10, 'Page must be at most 10')
+    .optional()
+    .default(1),
 });
 
 export type SearchProductsRequestInput = z.infer<typeof SearchProductsRequestSchema>;

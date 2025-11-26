@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const isScrolled = ref(false)
 const mobileMenuOpen = ref(false)
+const categoriesDropdownOpen = ref(false)
+const mobileCategoriesOpen = ref(false)
 const { theme, cycleTheme } = useTheme()
 
 const handleScroll = () => {
@@ -17,12 +19,23 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 
-const navigation = [
-  { name: 'Products', href: '/products' },
-  { name: 'Categories', href: '/categories' },
-  { name: 'About', href: '/about' },
-  { name: 'ESPBoards', href: 'https://www.espboards.dev', external: true },
+const categories = [
+  { name: 'Development Boards', href: '/categories/development-boards', icon: '🔷' },
+  { name: 'Sensors', href: '/products?type=sensor', icon: '🌡️' },
+  { name: 'Displays', href: '/products?type=display', icon: '🖥️' },
+  { name: 'Power & Battery', href: '/products?type=power', icon: '🔋' },
+  { name: 'Communication', href: '/products?type=communication', icon: '📡' },
+  { name: 'Accessories', href: '/products?type=accessory', icon: '🔧' },
+  { name: 'View All Categories', href: '/categories', icon: '📂', divider: true },
 ]
+
+const closeDropdown = () => {
+  categoriesDropdownOpen.value = false
+}
+
+const closeMobileMenu = () => {
+  mobileMenuOpen.value = false
+}
 </script>
 
 <template>
@@ -56,16 +69,86 @@ const navigation = [
 
         <!-- Desktop Navigation -->
         <div class="hidden md:flex md:items-center md:gap-1">
+          <!-- Products Link -->
           <NuxtLink
-            v-for="item in navigation"
-            :key="item.name"
-            :to="item.href"
-            :target="item.external ? '_blank' : '_self'"
+            to="/products"
             class="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white flex items-center gap-1.5"
             active-class="!bg-blue-50 dark:!bg-blue-950 !text-blue-600 dark:!text-blue-400"
           >
-            {{ item.name }}
-            <svg v-if="item.external" class="h-3.5 w-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            Products
+          </NuxtLink>
+          
+          <!-- Categories Dropdown -->
+          <div class="relative" @mouseleave="closeDropdown">
+            <button
+              @mouseenter="categoriesDropdownOpen = true"
+              @click="categoriesDropdownOpen = !categoriesDropdownOpen"
+              class="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white flex items-center gap-1.5"
+              :class="{ 'bg-blue-50! dark:bg-blue-950! text-blue-600! dark:text-blue-400!': categoriesDropdownOpen }"
+            >
+              Categories
+              <svg 
+                class="h-4 w-4 transition-transform" 
+                :class="{ 'rotate-180': categoriesDropdownOpen }"
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <Transition
+              enter-active-class="transition-all duration-200 ease-out"
+              enter-from-class="opacity-0 -translate-y-2"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition-all duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-2"
+            >
+              <div
+                v-if="categoriesDropdownOpen"
+                @mouseenter="categoriesDropdownOpen = true"
+                class="absolute top-full left-0 pt-2 w-64"
+              >
+                <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl overflow-hidden">
+                  <div class="py-2">
+                    <template v-for="category in categories" :key="category.name">
+                      <div v-if="category.divider" class="my-2 h-px bg-gray-200 dark:bg-gray-700"></div>
+                      <NuxtLink
+                        :to="category.href"
+                        @click="closeDropdown"
+                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+                        :class="{ 'font-semibold': category.divider }"
+                      >
+                        <span class="text-lg">{{ category.icon }}</span>
+                        <span>{{ category.name }}</span>
+                      </NuxtLink>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </Transition>
+          </div>
+          
+          <!-- About Link -->
+          <NuxtLink
+            to="/about"
+            class="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white flex items-center gap-1.5"
+            active-class="!bg-blue-50 dark:!bg-blue-950 !text-blue-600 dark:!text-blue-400"
+          >
+            About
+          </NuxtLink>
+          
+          <!-- ESPBoards Link -->
+          <NuxtLink
+            to="https://www.espboards.dev"
+            target="_blank"
+            class="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white flex items-center gap-1.5"
+          >
+            ESPBoards
+            <svg class="h-3.5 w-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </NuxtLink>
@@ -148,19 +231,83 @@ const navigation = [
           class="md:hidden absolute left-0 right-0 top-full mt-2 mx-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl"
         >
           <div class="flex flex-col p-2">
+            <!-- Products Link -->
             <NuxtLink
-              v-for="item in navigation"
-              :key="item.name"
-              :to="item.href"
-              @click="mobileMenuOpen = false"
+              to="/products"
+              @click="closeMobileMenu"
               class="rounded-lg px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center gap-2"
-              active-class="!bg-blue-50 dark:!bg-blue-950 !text-blue-600 dark:!text-blue-400"
+              active-class="bg-blue-50! dark:bg-blue-950! text-blue-600! dark:text-blue-400!"
             >
-              {{ item.name }}
-              <svg v-if="item.href.startsWith('http')" class="h-3.5 w-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              Products
+            </NuxtLink>
+            
+            <!-- Categories Section -->
+            <button
+              @click="mobileCategoriesOpen = !mobileCategoriesOpen"
+              class="rounded-lg px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center justify-between"
+            >
+              <span>Categories</span>
+              <svg 
+                class="h-4 w-4 transition-transform" 
+                :class="{ 'rotate-180': mobileCategoriesOpen }"
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            <!-- Categories List -->
+            <Transition
+              enter-active-class="transition-all duration-200 ease-out"
+              enter-from-class="opacity-0 max-h-0"
+              enter-to-class="opacity-100 max-h-96"
+              leave-active-class="transition-all duration-150 ease-in"
+              leave-from-class="opacity-100 max-h-96"
+              leave-to-class="opacity-0 max-h-0"
+            >
+              <div v-if="mobileCategoriesOpen" class="overflow-hidden">
+                <div class="ml-2 mt-1 space-y-1 border-l-2 border-gray-200 dark:border-gray-700 pl-2">
+                  <template v-for="category in categories" :key="category.name">
+                    <div v-if="category.divider" class="my-2"></div>
+                    <NuxtLink
+                      :to="category.href"
+                      @click="closeMobileMenu"
+                      class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 dark:text-gray-400 transition-all hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                      :class="{ 'font-semibold': category.divider }"
+                    >
+                      <span class="text-base">{{ category.icon }}</span>
+                      <span>{{ category.name }}</span>
+                    </NuxtLink>
+                  </template>
+                </div>
+              </div>
+            </Transition>
+            
+            <!-- About Link -->
+            <NuxtLink
+              to="/about"
+              @click="closeMobileMenu"
+              class="rounded-lg px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center gap-2"
+              active-class="bg-blue-50! dark:bg-blue-950! text-blue-600! dark:text-blue-400!"
+            >
+              About
+            </NuxtLink>
+            
+            <!-- ESPBoards Link -->
+            <NuxtLink
+              to="https://www.espboards.dev"
+              target="_blank"
+              @click="closeMobileMenu"
+              class="rounded-lg px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center gap-2"
+            >
+              ESPBoards
+              <svg class="h-3.5 w-3.5 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </NuxtLink>
+            
             <div class="my-2 h-px bg-gray-200 dark:bg-gray-700"></div>
             <button
               @click="cycleTheme"

@@ -174,12 +174,14 @@ async function handler(req: Request): Promise<Response> {
     }
 
     // Extract validated data
-    const { query, marketplace } = validationResult.data;
+    const { query, marketplace, limit = 10, page = 1 } = validationResult.data;
 
     // Log validated request with correlation ID
     logger.info("Request validated successfully", {
       query,
       marketplace,
+      limit,
+      page,
       correlation_id: correlationId,
     });
 
@@ -260,6 +262,8 @@ async function handler(req: Request): Promise<Response> {
     logger.info("Searching products on PA-API", {
       query,
       marketplace,
+      limit,
+      page,
       resourceCount: resources.length,
       correlation_id: correlationId,
     });
@@ -271,7 +275,8 @@ async function handler(req: Request): Promise<Response> {
       const searchRequest: SearchItemsRequest = {
         Keywords: query,
         SearchIndex: "Electronics", // Focus on electronics for ESP32 products
-        ItemCount: 10, // Limit to 10 results for performance
+        ItemCount: limit, // Configurable result limit per page (1-10)
+        ItemPage: page, // Page number (1-10)
         Resources: resources,
       };
 
@@ -296,12 +301,17 @@ async function handler(req: Request): Promise<Response> {
       // Return successful response
       const response = {
         results: transformedResults,
+        totalResults: paapiResponse.SearchResult?.TotalResultCount || 0,
+        page,
+        limit,
         correlation_id: correlationId,
       };
 
       logger.info("Search products request completed", {
         query,
         resultCount: transformedResults.length,
+        totalResults: paapiResponse.SearchResult?.TotalResultCount || 0,
+        page,
         correlation_id: correlationId,
       });
 

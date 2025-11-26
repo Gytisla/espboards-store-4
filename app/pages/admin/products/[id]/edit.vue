@@ -56,7 +56,7 @@
             Delete Product
           </button>
           <a
-            :href="product.detail_page_url"
+            :href="cleanAmazonUrl"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -182,12 +182,90 @@
                 >
                   <option value="">Select chip...</option>
                   <option value="ESP32">ESP32</option>
+                  <option value="ESP32-WROOM-32">ESP32-WROOM-32</option>
+                  <option value="ESP32-WROVER">ESP32-WROVER</option>
                   <option value="ESP32-S2">ESP32-S2</option>
                   <option value="ESP32-S3">ESP32-S3</option>
                   <option value="ESP32-C3">ESP32-C3</option>
                   <option value="ESP32-C6">ESP32-C6</option>
                   <option value="ESP32-H2">ESP32-H2</option>
                 </select>
+              </div>
+
+              <!-- MCU Architecture -->
+              <div v-if="formData.metadata.filters.product_type === 'development_board'" class="mb-4">
+                <label for="mcu_architecture" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">MCU Architecture</label>
+                <select
+                  id="mcu_architecture"
+                  v-model="formData.metadata.filters.mcu_architecture"
+                  @change="updateDisplayField('mcu_architecture')"
+                  class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-2 outline-none transition-all focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/50"
+                >
+                  <option value="">Select architecture...</option>
+                  <option value="Xtensa LX6">Xtensa LX6</option>
+                  <option value="Xtensa LX7">Xtensa LX7</option>
+                  <option value="RISC-V">RISC-V</option>
+                </select>
+              </div>
+
+              <!-- CPU Cores -->
+              <div v-if="formData.metadata.filters.product_type === 'development_board'" class="mb-4">
+                <label for="cpu_cores" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">CPU Cores</label>
+                <select
+                  id="cpu_cores"
+                  v-model.number="formData.metadata.filters.cpu_cores"
+                  @change="updateDisplayField('cpu_cores')"
+                  class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-2 outline-none transition-all focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/50"
+                >
+                  <option :value="null">Select cores...</option>
+                  <option :value="1">1 Core (Single-core)</option>
+                  <option :value="2">2 Cores (Dual-core)</option>
+                </select>
+              </div>
+
+              <!-- CPU Speed -->
+              <div v-if="formData.metadata.filters.product_type === 'development_board'" class="mb-4">
+                <label for="cpu_speed_mhz" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">CPU Speed (MHz)</label>
+                <input
+                  id="cpu_speed_mhz"
+                  v-model.number="formData.metadata.filters.cpu_speed_mhz"
+                  @input="updateDisplayField('cpu_speed_mhz')"
+                  type="number"
+                  min="0"
+                  step="1"
+                  class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-2 outline-none transition-all focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/50"
+                  placeholder="e.g., 240"
+                />
+              </div>
+
+              <!-- USB Ports Count -->
+              <div v-if="formData.metadata.filters.product_type === 'development_board'" class="mb-4">
+                <label for="usb_ports" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">USB Ports</label>
+                <input
+                  id="usb_ports"
+                  v-model.number="formData.metadata.filters.usb_ports"
+                  @input="updateDisplayField('usb_ports')"
+                  type="number"
+                  min="0"
+                  step="1"
+                  class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-2 outline-none transition-all focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/50"
+                  placeholder="e.g., 1"
+                />
+              </div>
+
+              <!-- Pieces in Package -->
+              <div v-if="formData.metadata.filters.product_type === 'development_board'" class="mb-4">
+                <label for="pieces" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pieces in Package</label>
+                <input
+                  id="pieces"
+                  v-model.number="formData.metadata.filters.pieces"
+                  @input="updateDisplayField('pieces')"
+                  type="number"
+                  min="1"
+                  step="1"
+                  class="w-full rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-2 outline-none transition-all focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/50"
+                  placeholder="e.g., 1"
+                />
               </div>
 
               <!-- PSRAM -->
@@ -538,6 +616,21 @@ const formData = ref({
   },
 })
 
+// Clean Amazon URL without affiliate tag
+const cleanAmazonUrl = computed(() => {
+  if (!product.value?.detail_page_url) return ''
+  
+  try {
+    const url = new URL(product.value.detail_page_url)
+    // Remove the affiliate tag parameter
+    url.searchParams.delete('tag')
+    return url.toString()
+  } catch {
+    // If URL parsing fails, return original
+    return product.value.detail_page_url
+  }
+})
+
 // Load product
 const loadProduct = async () => {
   isLoading.value = true
@@ -645,6 +738,21 @@ const updateDisplayField = (field: string) => {
       break
     case 'gpio_pins':
       formData.value.metadata.display[field] = value ? `${value} GPIO pins` : ''
+      break
+    case 'mcu_architecture':
+      formData.value.metadata.display[field] = value
+      break
+    case 'cpu_cores':
+      formData.value.metadata.display[field] = value ? `${value} ${value === 1 ? 'Core' : 'Cores'}` : ''
+      break
+    case 'cpu_speed_mhz':
+      formData.value.metadata.display[field] = value ? `${value} MHz` : ''
+      break
+    case 'usb_ports':
+      formData.value.metadata.display[field] = value ? `${value} USB ${value === 1 ? 'Port' : 'Ports'}` : ''
+      break
+    case 'pieces':
+      formData.value.metadata.display[field] = value ? `${value} ${value === 1 ? 'Piece' : 'Pieces'}` : ''
       break
     default:
       formData.value.metadata.display[field] = String(value)

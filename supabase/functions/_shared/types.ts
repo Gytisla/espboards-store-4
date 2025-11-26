@@ -237,6 +237,7 @@ export interface PaapiSearchItemsRequest {
   Keywords: string;
   SearchIndex?: string;
   ItemCount?: number;
+  ItemPage?: number; // Page number (1-10), each page returns up to ItemCount results
   Resources?: string[];
 }
 

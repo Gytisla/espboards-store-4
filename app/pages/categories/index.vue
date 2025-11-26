@@ -84,10 +84,17 @@ const categories = [
 ]
 
 // Navigate to products page with category filter
-const navigateToCategory = (filterValue: string) => {
+const navigateToCategory = (category: typeof categories[0]) => {
+  // Special handling for development boards - go to dedicated landing page
+  if (category.id === 'development-board') {
+    navigateTo('/categories/development-boards')
+    return
+  }
+  
+  // For other categories, go directly to products with filter
   navigateTo({
     path: '/products',
-    query: { type: filterValue }
+    query: { type: category.filterValue }
   })
 }
 
@@ -148,7 +155,7 @@ useHead({
         <button
           v-for="category in categories"
           :key="category.id"
-          @click="navigateToCategory(category.filterValue)"
+          @click="navigateToCategory(category)"
           class="group relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
         >
           <!-- Category Image Background -->

@@ -9,8 +9,11 @@ const { selectedMarketplace, marketplace } = useMarketplace()
 
 // Reactive state
 const searchQuery = ref('')
+const searchLimit = ref(10)
+const searchPage = ref(1)
 const isLoading = ref(false)
 const searchResults = ref<any[]>([])
+const totalResults = ref(0)
 const error = ref('')
 const importingAsins = ref<Set<string>>(new Set())
 const importedAsins = ref<Set<string>>(new Set())
@@ -94,15 +97,18 @@ const performSearch = async () => {
   selectedAsins.value.clear()
 
   try {
-    const response = await $fetch('/api/admin/search', {
+    const response = await $fetch<{ results: any[]; totalResults: number; page: number; limit: number }>('/api/admin/search', {
       method: 'POST',
       body: {
         query: searchQuery.value.trim(),
-        marketplace: selectedMarketplace.value
+        marketplace: selectedMarketplace.value,
+        limit: searchLimit.value,
+        page: searchPage.value,
       }
     })
 
     searchResults.value = response.results || []
+    totalResults.value = response.totalResults || 0
     
     // Mark already imported products in our local state
     searchResults.value.forEach(product => {
@@ -248,7 +254,40 @@ const closeBulkModal = () => {
 // Handle form submission
 const handleSubmit = (e: Event) => {
   e.preventDefault()
+  searchPage.value = 1 // Reset to first page on new search
   performSearch()
+}
+
+// Pagination helpers
+const totalPages = computed(() => Math.ceil(totalResults.value / searchLimit.value))
+const hasNextPage = computed(() => searchPage.value < totalPages.value && searchPage.value < 10)
+const hasPrevPage = computed(() => searchPage.value > 1)
+
+const goToNextPage = () => {
+  if (hasNextPage.value) {
+    searchPage.value++
+    performSearch()
+    // Scroll to top of results
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
+const goToPrevPage = () => {
+  if (hasPrevPage.value) {
+    searchPage.value--
+    performSearch()
+    // Scroll to top of results
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}
+
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= Math.min(totalPages.value, 10)) {
+    searchPage.value = page
+    performSearch()
+    // Scroll to top of results
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 }
 </script>
 
@@ -265,7 +304,7 @@ const handleSubmit = (e: Event) => {
       <form @submit="handleSubmit" class="space-y-4">
         <div class="grid gap-4 md:grid-cols-3">
           <!-- Search Input -->
-          <div class="md:col-span-3">
+          <div class="md:col-span-2">
             <label for="search" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
               Search Query
             </label>
@@ -285,6 +324,22 @@ const handleSubmit = (e: Event) => {
                 :disabled="isLoading"
               />
             </div>
+          </div>
+          
+          <!-- Results Limit -->
+          <div>
+            <label for="limit" class="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Per Page
+            </label>
+            <select
+              id="limit"
+              v-model.number="searchLimit"
+              class="block w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 py-3 px-4 text-gray-900 dark:text-white outline-none transition-all focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30"
+              :disabled="isLoading"
+            >
+              <option :value="5">5 per page</option>
+              <option :value="10">10 per page</option>
+            </select>
           </div>
         </div>
 
@@ -541,6 +596,65 @@ const handleSubmit = (e: Event) => {
                 <span v-else>Import to Store</span>
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pagination -->
+      <div v-if="totalResults > 0" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <!-- Results info -->
+          <div class="text-sm text-gray-600 dark:text-gray-400">
+            Showing {{ ((searchPage - 1) * searchLimit) + 1 }} to {{ Math.min(searchPage * searchLimit, totalResults) }} of {{ totalResults }} results
+            <span v-if="totalPages > 10" class="text-orange-600 dark:text-orange-400">(max 10 pages via API)</span>
+          </div>
+          
+          <!-- Page controls -->
+          <div class="flex items-center gap-2">
+            <button
+              @click="goToPrevPage"
+              :disabled="!hasPrevPage || isLoading"
+              class="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Previous
+            </button>
+            
+            <!-- Page numbers -->
+            <div class="hidden sm:flex items-center gap-1">
+              <template v-for="pageNum in Math.min(totalPages, 10)" :key="pageNum">
+                <button
+                  v-if="pageNum === 1 || pageNum === Math.min(totalPages, 10) || (pageNum >= searchPage - 1 && pageNum <= searchPage + 1)"
+                  @click="goToPage(pageNum)"
+                  :disabled="isLoading"
+                  class="min-w-10 rounded-lg px-3 py-2 text-sm font-medium transition-all disabled:cursor-not-allowed"
+                  :class="pageNum === searchPage 
+                    ? 'bg-blue-600 text-white' 
+                    : 'border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
+                >
+                  {{ pageNum }}
+                </button>
+                <span v-else-if="pageNum === searchPage - 2 || pageNum === searchPage + 2" class="px-2 text-gray-400">...</span>
+              </template>
+            </div>
+            
+            <!-- Mobile: Just show page number -->
+            <div class="sm:hidden text-sm font-medium text-gray-700 dark:text-gray-300">
+              Page {{ searchPage }} of {{ Math.min(totalPages, 10) }}
+            </div>
+            
+            <button
+              @click="goToNextPage"
+              :disabled="!hasNextPage || isLoading"
+              class="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

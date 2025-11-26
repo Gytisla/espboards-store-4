@@ -399,6 +399,7 @@ export class PaapiClient {
       Keywords: request.Keywords,
       SearchIndex: request.SearchIndex || "All",
       ItemCount: request.ItemCount || 10,
+      ItemPage: request.ItemPage || 1,
       Resources: request.Resources || [
         "ItemInfo.Title",
         "Images.Primary.Large",

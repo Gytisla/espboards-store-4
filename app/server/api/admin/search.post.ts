@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
   // Read and validate request body
   const body = await readBody(event)
-  const { query, marketplace } = body
+  const { query, marketplace, limit, page } = body
 
   if (!query || typeof query !== 'string' || query.trim().length < 2) {
     throw createError({
@@ -25,6 +25,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Validate limit if provided (1-10 per page)
+  const itemLimit = limit && typeof limit === 'number' && limit >= 1 && limit <= 10 ? limit : 10
+  
+  // Validate page if provided (1-10)
+  const itemPage = page && typeof page === 'number' && page >= 1 && page <= 10 ? page : 1
+
   try {
     // Create Supabase client
     const supabase = await createServerSupabaseClient(event)
@@ -34,6 +40,8 @@ export default defineEventHandler(async (event) => {
       body: {
         query: query.trim(),
         marketplace,
+        limit: itemLimit,
+        page: itemPage,
       },
     })
 
@@ -104,8 +112,10 @@ export default defineEventHandler(async (event) => {
     console.log('Results with import status:', resultsWithImportStatus.map((p: any) => ({ asin: p.asin, isImported: p.isImported })))
 
     return {
-      ...data,
-      results: resultsWithImportStatus
+      results: resultsWithImportStatus,
+      totalResults: data?.totalResults || 0,
+      page: itemPage,
+      limit: itemLimit,
     }
   } catch (error) {
     console.error('Search API error:', error)
