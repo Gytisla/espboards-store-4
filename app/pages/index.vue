@@ -37,6 +37,18 @@ interface Product {
   status: string
   metadata: any
   created_at: string
+  variants?: Array<{
+    id: string
+    asin: string
+    title: string
+    current_price: number | null
+    original_price: number | null
+    savings_amount: number | null
+    savings_percentage: number | null
+    currency: string
+    images: ProductImages | null
+  }>
+  variant_count?: number
 }
 
 const { selectedMarketplace } = useMarketplace()

@@ -1325,6 +1325,7 @@ useHead({
                 v-for="product in paginatedProducts"
                 :key="product.id"
                 :product="product"
+                :hide-brand="!!product.group"
               />
             </div>
 

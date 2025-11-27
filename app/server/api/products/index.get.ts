@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   try {
     const supabase = await createServerSupabaseClient(event)
 
-    // Build query
+    // Build query - exclude variants (only show parent products and ungrouped products)
     let productsQuery = supabase
       .from('products')
       .select(`
@@ -40,6 +40,7 @@ export default defineEventHandler(async (event) => {
         metadata,
         raw_paapi_response,
         created_at,
+        group_id,
         marketplace:marketplaces!marketplace_id (
           id,
           code,
@@ -48,6 +49,7 @@ export default defineEventHandler(async (event) => {
         )
       `)
       .eq('status', 'active')
+      .is('custom_parent_id', null) // Only products without custom parent (excludes manually grouped variants)
       .order('created_at', { ascending: false })
 
     // Filter by marketplace if specified
@@ -79,9 +81,61 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Fetch variants for each product
+    const productsWithVariants = await Promise.all(
+      (products || []).map(async (product) => {
+        const { data: variants, error: variantsError } = await supabase
+          .from('products')
+          .select('id, asin, title, current_price, original_price, savings_amount, savings_percentage, currency, images')
+          .eq('custom_parent_id', product.id)
+          .eq('status', 'active')
+          .order('current_price', { ascending: true, nullsFirst: false })
+
+        if (variantsError) {
+          console.error('Failed to fetch variants:', variantsError)
+        }
+
+        // Fetch group information if product has group_id
+        let group = null
+        let groupProductCount = 0
+        if (product.group_id) {
+          const { data: groupData, error: groupError } = await supabase
+            .from('product_groups')
+            .select('id, slug, title, description')
+            .eq('id', product.group_id)
+            .single()
+
+          if (!groupError && groupData) {
+            group = groupData
+            
+            // Count all products in this group
+            const { count, error: countError } = await supabase
+              .from('products')
+              .select('id', { count: 'exact', head: true })
+              .eq('group_id', product.group_id)
+              .eq('status', 'active')
+            
+            if (!countError && count !== null) {
+              groupProductCount = count
+            }
+          }
+        }
+
+        // If product has a group, use the group product count, otherwise use variants count
+        const totalCount = group ? groupProductCount : (variants?.length || 0)
+
+        return {
+          ...product,
+          variants: variants || [],
+          variant_count: totalCount,
+          group,
+        }
+      })
+    )
+
     return {
-      products: products || [],
-      count: products?.length || 0,
+      products: productsWithVariants,
+      count: productsWithVariants.length,
     }
   } catch (error) {
     console.error('Products API error:', error)

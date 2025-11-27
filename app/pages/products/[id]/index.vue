@@ -982,10 +982,10 @@ useHead({
             </div>
           </div>
 
-          <!-- Product Variants/Group Section - Link to Group Comparison Page -->
-          <div v-if="data?.group || (data?.variant_count && data.variant_count > 0)" class="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <!-- Product Variants Section - Link to Variants Page -->
+          <div v-if="data?.variant_count && data.variant_count > 0" class="border-t border-gray-200 dark:border-gray-700 pt-6">
             <NuxtLink
-              :to="data.group ? `/groups/${data.group.slug}` : `/products/${product.slug}/variants`"
+              :to="data.group?.slug ? `/groups/${data.group.slug}` : `/products/${product.slug}/variants`"
               class="group block rounded-xl border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 transition-all hover:border-purple-300 dark:hover:border-purple-600 hover:shadow-lg"
             >
               <div class="flex items-center justify-between gap-4">
@@ -997,7 +997,7 @@ useHead({
                   </div>
                   <div class="flex-1 min-w-0">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                      {{ data.variant_count || 0 }} {{ (data.variant_count || 0) === 1 ? 'Option' : 'Options' }} Available
+                      {{ data.variant_count }} {{ data.variant_count === 1 ? 'Option' : 'Options' }} Available
                     </h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
                       This product is available from multiple vendors. Compare prices and find the best deal.
@@ -1005,7 +1005,7 @@ useHead({
                   </div>
                 </div>
                 <div class="shrink-0 flex items-center gap-2 text-purple-600 dark:text-purple-400">
-                  <span class="hidden sm:inline text-sm font-semibold">Compare Options</span>
+                  <span class="hidden sm:inline text-sm font-semibold">View All Options</span>
                   <svg class="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
