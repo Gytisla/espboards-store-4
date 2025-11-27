@@ -11,7 +11,6 @@ export default defineNuxtConfig({
     ],
   },
   app: {
-    baseURL: "/store",
     head: {
       title: 'ESPBoards Store - ESP32 Development Boards & Components',
       meta: [
