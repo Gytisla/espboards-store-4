@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   },
   app: {
     baseURL: '/',          // required
-    cdnURL: '/store',             // prevent absolute paths
+    cdnURL: '/',             // prevent absolute paths
     head: {
       title: 'ESPBoards Store - ESP32 Development Boards & Components',
       meta: [
