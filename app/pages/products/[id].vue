@@ -1,9 +1,18 @@
 <script setup lang="ts">
+definePageMeta({
+  scrollToTop: true
+})
+
 const route = useRoute()
 const productSlug = route.params.id as string // Route param is still 'id' for file naming compatibility
 
 // Fetch product details from public API using slug
 const { data, pending, error } = await useFetch(`/api/products/${productSlug}`)
+
+// Scroll to top when component is mounted
+onMounted(() => {
+  window.scrollTo(0, 0)
+})
 
 // Handle errors
 if (error.value) {
