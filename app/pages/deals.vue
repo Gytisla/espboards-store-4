@@ -54,8 +54,8 @@ interface Product {
 
 const { selectedMarketplace } = useMarketplace()
 
-// Fetch all deal products (including variants) directly from deals API
-const { data: productsData, pending: loadingProducts } = await useFetch<{ products: Product[] }>('/api/deals', {
+// Fetch all deal products (including variants) directly from deals API - no await for instant navigation
+const { data: productsData, pending: loadingProducts } = useFetch<{ products: Product[] }>('/api/deals', {
   query: {
     marketplace: selectedMarketplace,
   },

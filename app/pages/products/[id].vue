@@ -6,8 +6,8 @@ definePageMeta({
 const route = useRoute()
 const productSlug = route.params.id as string // Route param is still 'id' for file naming compatibility
 
-// Fetch product details from public API using slug
-const { data, pending, error } = await useFetch(`/api/products/${productSlug}`)
+// Fetch product details from public API using slug - no await for instant navigation
+const { data, pending, error } = useFetch(`/api/products/${productSlug}`)
 
 // Scroll to top when component is mounted
 onMounted(() => {
@@ -15,12 +15,14 @@ onMounted(() => {
 })
 
 // Handle errors
-if (error.value) {
-  throw createError({
-    statusCode: 404,
-    message: 'Product not found',
-  })
-}
+watch(error, (newError) => {
+  if (newError) {
+    throw createError({
+      statusCode: 404,
+      message: 'Product not found',
+    })
+  }
+})
 
 // Extract product from response (with type assertion)
 const product = computed(() => (data.value as any)?.product)

@@ -54,8 +54,8 @@ interface Product {
 
 const { selectedMarketplace } = useMarketplace()
 
-// Fetch featured products (latest 8 active products)
-const { data: featuredProductsData, pending: loadingProducts } = await useFetch<{ products: Product[] }>('/api/products', {
+// Fetch featured products (latest 8 active products) - no await for instant navigation
+const { data: featuredProductsData, pending: loadingProducts } = useFetch<{ products: Product[] }>('/api/products', {
   query: {
     marketplace: selectedMarketplace,
   },
@@ -65,8 +65,8 @@ const featuredProducts = computed(() => {
   return featuredProductsData.value?.products?.slice(0, 8) || []
 })
 
-// Fetch deal products from dedicated deals API (includes all products with discounts)
-const { data: dealsData, pending: loadingDeals } = await useFetch<{ products: Product[] }>('/api/deals', {
+// Fetch deal products from dedicated deals API (includes all products with discounts) - no await for instant navigation
+const { data: dealsData, pending: loadingDeals } = useFetch<{ products: Product[] }>('/api/deals', {
   query: {
     marketplace: selectedMarketplace,
   },

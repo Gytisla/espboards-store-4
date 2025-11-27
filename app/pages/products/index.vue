@@ -217,8 +217,8 @@ watch(selectedType, (newType, oldType) => {
   }
 })
 
-// Fetch products
-const { data: productsData, pending, refresh } = await useFetch('/api/products', {
+// Fetch products - no await for instant navigation
+const { data: productsData, pending, refresh } = useFetch('/api/products', {
   query: {
     marketplace: selectedMarketplace,
   },
