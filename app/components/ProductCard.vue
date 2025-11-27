@@ -143,6 +143,28 @@ const isPrimeEligible = computed(() => {
 const productImage = computed(() => getProductImage(props.product.images))
 const features = computed(() => getProductFeatures(props.product))
 
+// Get best discount from parent and variants
+const bestDiscount = computed(() => {
+  const discounts = []
+  
+  // Add parent product discount
+  if (props.product.savings_percentage && props.product.savings_percentage > 0) {
+    discounts.push(props.product.savings_percentage)
+  }
+  
+  // Add variant discounts
+  if (props.product.variants && props.product.variants.length > 0) {
+    props.product.variants.forEach(variant => {
+      if (variant.savings_percentage && variant.savings_percentage > 0) {
+        discounts.push(variant.savings_percentage)
+      }
+    })
+  }
+  
+  // Return the highest discount
+  return discounts.length > 0 ? Math.max(...discounts) : null
+})
+
 // Get price range for variants
 const priceRange = computed(() => {
   if (!props.product.variants || props.product.variants.length === 0) {
@@ -239,9 +261,9 @@ const cardLink = computed(() => {
         <span class="text-xs font-bold text-white tracking-tight">prime</span>
       </div>
 
-      <!-- Savings Badge -->
-      <div v-if="product.savings_percentage && product.savings_percentage > 10" class="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1.5 rounded-lg shadow-lg">
-        <span class="text-xs font-bold">-{{ Math.round(product.savings_percentage) }}%</span>
+      <!-- Savings Badge - Shows best discount from parent or variants -->
+      <div v-if="bestDiscount" class="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1.5 rounded-lg shadow-lg">
+        <span class="text-xs font-bold">-{{ Math.round(bestDiscount) }}%</span>
       </div>
 
       <!-- Overlay Gradient on Hover -->
@@ -255,16 +277,13 @@ const cardLink = computed(() => {
         {{ product.brand }}
       </p>
       <!-- Group Badge -->
-      <div v-else-if="hideBrand && product.brand" class="inline-flex items-center gap-1 self-start rounded-md bg-linear-to-r from-purple-500 to-pink-500 px-2 py-1 text-[10px] font-bold text-white uppercase tracking-wider shadow-sm">
-        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-        </svg>
-        Group
+      <div v-else-if="hideBrand && product.brand">
+        <span class="text-xs font-bold text-purple-700 dark:text-purple-500 uppercase">Various Manufacturers</span>
       </div>
 
       <!-- Title -->
       <h3 class="mt-1.5 text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-        {{ product.title }}
+        {{ product.group?.title || product.title }}
       </h3>
 
       <!-- Features/Tags -->
@@ -303,12 +322,12 @@ const cardLink = computed(() => {
           </span>
         </div>
 
-        <!-- Savings Info -->
-        <div v-if="product.savings_percentage" class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-950 px-2.5 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-300">
+        <!-- Savings Info - Shows best discount available -->
+        <div v-if="bestDiscount" class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-950 px-2.5 py-0.5 text-[10px] font-semibold text-green-700 dark:text-green-300">
           <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
           </svg>
-          Save {{ Math.round(product.savings_percentage) }}%
+          Save up to {{ Math.round(bestDiscount) }}%
         </div>
       </div>
 

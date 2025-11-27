@@ -544,13 +544,27 @@ const goToPage = (page: number) => {
                 </span>
               </div>
 
-              <div class="flex items-center justify-between">
-                <span class="text-lg font-bold text-gray-900 dark:text-white">
-                  {{ product.currentPrice ? `$${product.currentPrice}` : 'Price N/A' }}
-                </span>
-                <span class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ marketplace.flag }}
-                </span>
+              <!-- Price and Discount -->
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg font-bold text-gray-900 dark:text-white">
+                    {{ product.pricing?.display || 'Price N/A' }}
+                  </span>
+                  <span v-if="product.pricing?.originalPrice && product.pricing.originalPrice > product.pricing.amount" class="text-sm text-gray-500 dark:text-gray-400 line-through">
+                    {{ product.pricing.currency === 'EUR' ? '€' : '$' }}{{ product.pricing.originalPrice.toFixed(2) }}
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span v-if="product.pricing?.savingsPercentage && product.pricing.savingsPercentage > 0" class="inline-flex items-center gap-1 rounded-full bg-red-100 dark:bg-red-900/30 px-2 py-0.5 text-xs font-semibold text-red-700 dark:text-red-400">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                    </svg>
+                    {{ product.pricing.savingsPercentage }}% OFF
+                  </span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ marketplace.flag }}
+                  </span>
+                </div>
               </div>
             </div>
 

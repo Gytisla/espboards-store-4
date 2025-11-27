@@ -41,10 +41,41 @@ const getProductImage = (images: any) => {
 // Sorting
 const sortBy = ref<'default' | 'price-low' | 'price-high' | 'savings'>('default')
 
+// Helper function to check if product is Prime eligible
+const isPrimeEligible = (product: any) => {
+  // Check multiple possible locations for Prime eligibility
+  const isPrime = product.raw_paapi_response?.ItemsResult?.Items?.[0]?.Offers?.Listings?.[0]?.DeliveryInfo?.IsPrimeEligible === true ||
+                  product.raw_paapi_response?.ItemInfo?.Features?.DisplayValues?.some((f: string) => 
+                    f?.toLowerCase().includes('prime')
+                  ) === true
+  
+  return isPrime
+}
+
 const sortedProducts = computed(() => {
   const items = [...products.value]
   
   if (sortBy.value === 'default') {
+    // Default: Sort by Prime eligibility first, then by lowest price
+    items.sort((a: any, b: any) => {
+      const aIsPrime = isPrimeEligible(a)
+      const bIsPrime = isPrimeEligible(b)
+      
+      console.log('Comparing:', 
+        a.title?.substring(0, 20), 'Prime:', aIsPrime,
+        'vs',
+        b.title?.substring(0, 20), 'Prime:', bIsPrime
+      )
+      
+      // Prime products first (Prime = true should come before Prime = false)
+      if (aIsPrime && !bIsPrime) return -1  // a comes first
+      if (!aIsPrime && bIsPrime) return 1   // b comes first
+      
+      // If both Prime or both not Prime, sort by price (lowest first)
+      const priceA = a.current_price || Infinity
+      const priceB = b.current_price || Infinity
+      return priceA - priceB
+    })
     return items
   }
   

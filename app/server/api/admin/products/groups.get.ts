@@ -39,6 +39,7 @@ export default defineEventHandler(async (event) => {
         custom_parent_id,
         group_id,
         status,
+        detail_page_url,
         created_at
       `)
       .eq('marketplace_id', marketplaceData.id)

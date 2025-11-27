@@ -21,11 +21,12 @@ onUnmounted(() => {
 
 const categories = [
   { name: 'Development Boards', href: '/categories/development-boards', icon: '🔷' },
-  { name: 'Sensors', href: '/products?type=sensor', icon: '🌡️' },
-  { name: 'Displays', href: '/products?type=display', icon: '🖥️' },
-  { name: 'Power & Battery', href: '/products?type=power', icon: '🔋' },
-  { name: 'Communication', href: '/products?type=communication', icon: '📡' },
-  { name: 'Accessories', href: '/products?type=accessory', icon: '🔧' },
+  // Temporarily disabled categories
+  // { name: 'Sensors', href: '/products?type=sensor', icon: '🌡️' },
+  // { name: 'Displays', href: '/products?type=display', icon: '🖥️' },
+  // { name: 'Power & Battery', href: '/products?type=power', icon: '🔋' },
+  // { name: 'Communication', href: '/products?type=communication', icon: '📡' },
+  // { name: 'Accessories', href: '/products?type=accessory', icon: '🔧' },
   { name: 'View All Categories', href: '/categories', icon: '📂', divider: true },
 ]
 
@@ -76,6 +77,18 @@ const closeMobileMenu = () => {
             active-class="!bg-blue-50 dark:!bg-blue-950 !text-blue-600 dark:!text-blue-400"
           >
             Products
+          </NuxtLink>
+          
+          <!-- Deals Link -->
+          <NuxtLink
+            to="/deals"
+            class="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white flex items-center gap-1.5"
+            active-class="!bg-blue-50 dark:!bg-blue-950 !text-blue-600 dark:!text-blue-400"
+          >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+            </svg>
+            Deals
           </NuxtLink>
           
           <!-- Categories Dropdown -->
@@ -239,6 +252,19 @@ const closeMobileMenu = () => {
               active-class="bg-blue-50! dark:bg-blue-950! text-blue-600! dark:text-blue-400!"
             >
               Products
+            </NuxtLink>
+            
+            <!-- Deals Link -->
+            <NuxtLink
+              to="/deals"
+              @click="closeMobileMenu"
+              class="rounded-lg px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white flex items-center gap-2"
+              active-class="bg-blue-50! dark:bg-blue-950! text-blue-600! dark:text-blue-400!"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+              </svg>
+              Deals
             </NuxtLink>
             
             <!-- Categories Section -->

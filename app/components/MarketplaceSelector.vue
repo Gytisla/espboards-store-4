@@ -2,13 +2,17 @@
   <div class="relative">
     <button
       @click="isOpen = !isOpen"
-      class="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-sm font-medium transition-all hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900"
+      disabled
+      class="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-3 py-2 text-sm font-medium opacity-60 cursor-not-allowed"
       :aria-expanded="isOpen"
       aria-haspopup="true"
+      title="Additional marketplaces coming soon"
     >
       <span class="text-xl leading-none">{{ marketplace.flag }}</span>
       <span class="font-semibold text-gray-700 dark:text-gray-300">{{ marketplace.code }}</span>
-      <svg
+      <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">(More coming soon)</span>
+      <!-- Disabled dropdown icon -->
+      <!-- <svg
         class="h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform"
         :class="{ 'rotate-180': isOpen }"
         xmlns="http://www.w3.org/2000/svg"
@@ -20,10 +24,11 @@
           d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
           clip-rule="evenodd"
         />
-      </svg>
+      </svg> -->
     </button>
 
-    <transition
+    <!-- Dropdown disabled -->
+    <!-- <transition
       enter-active-class="transition-all duration-200 ease-out"
       enter-from-class="opacity-0 -translate-y-2"
       enter-to-class="opacity-100 translate-y-0"
@@ -59,7 +64,7 @@
           </svg>
         </button>
       </div>
-    </transition>
+    </transition> -->
   </div>
 </template>
 

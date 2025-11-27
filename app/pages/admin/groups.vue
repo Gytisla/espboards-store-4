@@ -28,6 +28,21 @@ const editGroupForm = ref({
 })
 const isSavingGroup = ref(false)
 
+// Collapse state for groups - track expanded groups by parent product ID
+const expandedGroups = ref<Set<string>>(new Set())
+
+// Helper function to remove affiliate tags from Amazon URLs
+const stripAffiliateTag = (url: string) => {
+  if (!url) return url
+  try {
+    const urlObj = new URL(url)
+    urlObj.searchParams.delete('tag')
+    return urlObj.toString()
+  } catch {
+    return url
+  }
+}
+
 // Computed
 const filteredProducts = computed(() => {
   let filtered = products.value
@@ -99,6 +114,56 @@ const canCreateGroup = computed(() => {
   return selectedProducts.value.size >= 2 && 
          selectedProductsList.value.every(p => !p.custom_parent_id)
 })
+
+// Check if we can add to an existing group
+const canAddToGroup = computed(() => {
+  const selected = selectedProductsList.value
+  
+  // Need at least 2 products selected
+  if (selected.length < 2) return false
+  
+  // Find parent products (products with variants/group)
+  const parents = selected.filter(p => !p.custom_parent_id && p.variant_count > 0)
+  
+  // Find ungrouped products
+  const ungrouped = selected.filter(p => !p.custom_parent_id && p.variant_count === 0)
+  
+  // Can add to group if: exactly 1 parent + at least 1 ungrouped product
+  return parents.length === 1 && ungrouped.length >= 1
+})
+
+const selectedParentForAddition = computed(() => {
+  if (!canAddToGroup.value) return null
+  return selectedProductsList.value.find(p => !p.custom_parent_id && p.variant_count > 0)
+})
+
+// Toggle group expansion
+const toggleGroupExpansion = (parentId: string) => {
+  if (expandedGroups.value.has(parentId)) {
+    expandedGroups.value.delete(parentId)
+  } else {
+    expandedGroups.value.add(parentId)
+  }
+}
+
+// Check if group is expanded
+const isGroupExpanded = (parentId: string) => {
+  return expandedGroups.value.has(parentId)
+}
+
+// Expand all groups
+const expandAll = () => {
+  productGroups.value.forEach(group => {
+    if (group.isGroup) {
+      expandedGroups.value.add(group.parent.id)
+    }
+  })
+}
+
+// Collapse all groups
+const collapseAll = () => {
+  expandedGroups.value.clear()
+}
 
 // Load products with variant counts
 const loadProducts = async () => {
@@ -178,6 +243,41 @@ const createGroup = async () => {
   } catch (err: any) {
     console.error('Failed to create group:', err)
     alert(`Failed to create group: ${err.message}`)
+  } finally {
+    isGrouping.value = false
+  }
+}
+
+// Add products to existing group
+const addToGroup = async () => {
+  if (!canAddToGroup.value || !selectedParentForAddition.value) return
+
+  const parent = selectedParentForAddition.value
+  const ungroupedProducts = selectedProductsList.value.filter(
+    p => !p.custom_parent_id && p.variant_count === 0
+  )
+
+  if (!confirm(`Add ${ungroupedProducts.length} product(s) to the group "${parent.title}"?`)) return
+
+  isGrouping.value = true
+
+  try {
+    await $fetch('/api/admin/products/groups', {
+      method: 'PATCH',
+      body: {
+        parentId: parent.id,
+        variantIds: ungroupedProducts.map(p => p.id),
+      },
+    })
+
+    // Reload products
+    await loadProducts()
+    
+    // Reset state
+    selectedProducts.value.clear()
+  } catch (err: any) {
+    console.error('Failed to add to group:', err)
+    alert(`Failed to add to group: ${err.message}`)
   } finally {
     isGrouping.value = false
   }
@@ -321,16 +421,32 @@ onMounted(() => {
               Clear
             </button>
           </div>
-          <button
-            @click="openGroupModal"
-            :disabled="!canCreateGroup"
-            class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-            Group Selected Products
-          </button>
+          <div class="flex flex-wrap gap-2">
+            <!-- Add to Group button - only show when 1 parent + ungrouped products selected -->
+            <button
+              v-if="canAddToGroup"
+              @click="addToGroup"
+              :disabled="isGrouping"
+              class="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Add to "{{ selectedParentForAddition?.title?.substring(0, 30) }}{{ selectedParentForAddition?.title?.length > 30 ? '...' : '' }}"
+            </button>
+            <!-- Create Group button - only show when all ungrouped products selected -->
+            <button
+              v-if="!canAddToGroup"
+              @click="openGroupModal"
+              :disabled="!canCreateGroup"
+              class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              Group Selected Products
+            </button>
+          </div>
         </div>
       </div>
     </Transition>
@@ -367,6 +483,24 @@ onMounted(() => {
 
       <!-- Actions -->
       <div class="flex items-center gap-2">
+        <button
+          @click="expandAll"
+          class="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-600"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+          Expand All
+        </button>
+        <button
+          @click="collapseAll"
+          class="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-600"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" transform="rotate(90 12 12)" />
+          </svg>
+          Collapse All
+        </button>
         <button
           @click="selectAll"
           class="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -455,10 +589,20 @@ onMounted(() => {
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-2 mb-2">
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white line-clamp-2">
-                  {{ group.parent.title }}
+                  {{ group.parent.group?.title || group.parent.title }}
                 </h3>
                 <div class="flex flex-col items-end gap-1 flex-shrink-0">
-                  <span class="text-xs font-mono text-gray-400 dark:text-gray-500">{{ group.parent.asin }}</span>
+                  <a
+                    v-if="group.parent.detail_page_url"
+                    :href="stripAffiliateTag(group.parent.detail_page_url)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-xs font-mono text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline cursor-pointer transition-colors"
+                    :title="`Open ${group.parent.asin} on Amazon`"
+                  >
+                    {{ group.parent.asin }}
+                  </a>
+                  <span v-else class="text-xs font-mono text-gray-400 dark:text-gray-500">{{ group.parent.asin }}</span>
                   <span
                     v-if="group.isGroup"
                     class="inline-flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-900/50 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-300"
@@ -466,7 +610,7 @@ onMounted(() => {
                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    {{ group.variants.length }} variant{{ group.variants.length === 1 ? '' : 's' }}
+                    {{ group.variants.length + 1 }} variant{{ group.variants.length + 1 === 1 ? '' : 's' }}
                   </span>
                 </div>
               </div>
@@ -492,7 +636,18 @@ onMounted(() => {
               </div>
 
               <!-- Actions -->
-              <div class="flex gap-2">
+              <div class="flex gap-2 flex-wrap">
+                <!-- Collapse/Expand button for groups -->
+                <button
+                  v-if="group.isGroup"
+                  @click="toggleGroupExpansion(group.parent.id)"
+                  class="inline-flex items-center justify-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  <svg class="h-3 w-3 transition-transform" :class="{ 'rotate-180': isGroupExpanded(group.parent.id) }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  {{ isGroupExpanded(group.parent.id) ? 'Collapse' : 'Expand' }}
+                </button>
                 <NuxtLink
                   :to="`/admin/products/${group.parent.id}/edit`"
                   class="inline-flex items-center justify-center gap-1 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -527,18 +682,26 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Variants Section -->
-        <div v-if="group.isGroup && group.variants.length > 0" class="border-t border-purple-200 dark:border-purple-700/50 bg-white/50 dark:bg-gray-900/30 p-4">
-          <h4 class="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider mb-3">
-            Variants ({{ group.variants.length }})
-          </h4>
-          <div class="space-y-2">
-            <!-- Variant Card -->
-            <div
-              v-for="variant in group.variants"
-              :key="variant.id"
-              class="rounded-lg border border-pink-200 dark:border-pink-800 bg-white dark:bg-gray-800 p-3 transition-all hover:shadow-md"
-            >
+        <!-- Variants Section - Collapsible -->
+        <Transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 max-h-0"
+          enter-to-class="opacity-100 max-h-[2000px]"
+          leave-active-class="transition-all duration-300 ease-in"
+          leave-from-class="opacity-100 max-h-[2000px]"
+          leave-to-class="opacity-0 max-h-0"
+        >
+          <div v-if="group.isGroup && group.variants.length > 0 && isGroupExpanded(group.parent.id)" class="border-t border-purple-200 dark:border-purple-700/50 bg-white/50 dark:bg-gray-900/30 p-4 overflow-hidden">
+            <h4 class="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider mb-3">
+              Variants ({{ group.variants.length }})
+            </h4>
+            <div class="space-y-2">
+              <!-- Variant Card -->
+              <div
+                v-for="variant in group.variants"
+                :key="variant.id"
+                class="rounded-lg border border-pink-200 dark:border-pink-800 bg-white dark:bg-gray-800 p-3 transition-all hover:shadow-md"
+              >
               <div class="flex gap-3">
                 <!-- Variant Image -->
                 <div class="w-16 h-16 flex-shrink-0 overflow-hidden rounded-md bg-gray-100 dark:bg-gray-700">
@@ -561,7 +724,17 @@ onMounted(() => {
                     <h5 class="text-sm font-medium text-gray-900 dark:text-white line-clamp-1">
                       {{ variant.title }}
                     </h5>
-                    <span class="text-xs font-mono text-gray-400 dark:text-gray-500 flex-shrink-0">{{ variant.asin }}</span>
+                    <a
+                      v-if="variant.detail_page_url"
+                      :href="stripAffiliateTag(variant.detail_page_url)"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-xs font-mono text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline cursor-pointer transition-colors shrink-0"
+                      :title="`Open ${variant.asin} on Amazon`"
+                    >
+                      {{ variant.asin }}
+                    </a>
+                    <span v-else class="text-xs font-mono text-gray-400 dark:text-gray-500 shrink-0">{{ variant.asin }}</span>
                   </div>
 
                   <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 mb-2">
@@ -585,7 +758,20 @@ onMounted(() => {
                   </div>
 
                   <!-- Variant Actions -->
-                  <div class="flex gap-2">
+                  <div class="flex gap-2 flex-wrap">
+                    <!-- Open in Amazon for variant -->
+                    <a
+                      v-if="variant.detail_page_url"
+                      :href="stripAffiliateTag(variant.detail_page_url)"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center justify-center gap-1 rounded-md border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 text-xs font-medium text-orange-700 dark:text-orange-300 transition-all hover:bg-orange-100 dark:hover:bg-orange-900/30"
+                    >
+                      <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                      Amazon
+                    </a>
                     <NuxtLink
                       :to="`/admin/products/${variant.id}/edit`"
                       class="inline-flex items-center justify-center gap-1 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 transition-all hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -608,8 +794,9 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+            </div>
           </div>
-        </div>
+        </Transition>
       </div>
     </div>
 

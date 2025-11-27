@@ -497,6 +497,15 @@ function transformSearchResults(paapiResponse: PaapiSearchItemsResponse, marketp
     const listing = item.Offers?.Listings?.[0];
     const currentPrice = listing?.Price?.Amount || null;
     const currency = listing?.Price?.Currency || null;
+    const originalPrice = listing?.SavingBasis?.Amount || null;
+    
+    // Calculate savings if both prices are available
+    let savingsAmount = null;
+    let savingsPercentage = null;
+    if (currentPrice && originalPrice && originalPrice > currentPrice) {
+      savingsAmount = originalPrice - currentPrice;
+      savingsPercentage = Math.round((savingsAmount / originalPrice) * 100);
+    }
 
     // Format pricing for display
     let pricing = null;
@@ -512,6 +521,9 @@ function transformSearchResults(paapiResponse: PaapiSearchItemsResponse, marketp
         amount: currentPrice,
         currency,
         display: formatter.format(currentPrice),
+        originalPrice: originalPrice,
+        savingsAmount: savingsAmount,
+        savingsPercentage: savingsPercentage,
       };
     }
 

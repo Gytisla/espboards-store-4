@@ -65,6 +65,7 @@ export default defineEventHandler(async (event) => {
         currency,
         status,
         metadata,
+        custom_parent_id,
         raw_paapi_response,
         created_at
       `)
@@ -74,6 +75,48 @@ export default defineEventHandler(async (event) => {
 
     if (productsError) {
       throw productsError
+    }
+
+    // Inherit parent metadata for variant products
+    if (products && products.length > 0) {
+      // Get all unique parent IDs
+      const parentIds = [...new Set(
+        products
+          .filter(p => p.custom_parent_id)
+          .map(p => p.custom_parent_id)
+      )] as string[]
+
+      // Fetch all parent metadata in one query
+      let parentsMap: Map<string, any> = new Map()
+      if (parentIds.length > 0) {
+        const { data: parents } = await supabase
+          .from('products')
+          .select('id, metadata')
+          .in('id', parentIds)
+
+        if (parents) {
+          parentsMap = new Map(parents.map(p => [p.id, p]))
+        }
+      }
+
+      // Apply parent metadata to each variant
+      products.forEach(product => {
+        if (product.custom_parent_id) {
+          const parent = parentsMap.get(product.custom_parent_id)
+          if (parent) {
+            // Merge metadata: use parent's display metadata, keep variant's filters
+            const parentMetadata = parent.metadata || {}
+            const variantFilters = product.metadata?.filters || {}
+            
+            product.metadata = {
+              ...parentMetadata,
+              ...product.metadata,
+              display: parentMetadata.display || product.metadata?.display,
+              filters: variantFilters || parentMetadata.filters,
+            }
+          }
+        }
+      })
     }
 
     // Calculate price range

@@ -19,7 +19,8 @@ const categories = [
     color: 'purple',
     filterValue: 'module',
     image: 'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=400&h=300&fit=crop',
-    count: null
+    count: null,
+    comingSoon: true
   },
   {
     id: 'sensor',
@@ -29,7 +30,8 @@ const categories = [
     color: 'green',
     filterValue: 'sensor',
     image: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&h=300&fit=crop',
-    count: null
+    count: null,
+    comingSoon: true
   },
   {
     id: 'display',
@@ -39,7 +41,8 @@ const categories = [
     color: 'indigo',
     filterValue: 'display',
     image: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=400&h=300&fit=crop',
-    count: null
+    count: null,
+    comingSoon: true
   },
   {
     id: 'camera',
@@ -49,7 +52,8 @@ const categories = [
     color: 'pink',
     filterValue: 'camera',
     image: 'https://images.unsplash.com/photo-1526498460520-4c246339dccb?w=400&h=300&fit=crop',
-    count: null
+    count: null,
+    comingSoon: true
   },
   {
     id: 'communication',
@@ -59,7 +63,8 @@ const categories = [
     color: 'cyan',
     filterValue: 'communication',
     image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&h=300&fit=crop',
-    count: null
+    count: null,
+    comingSoon: true
   },
   {
     id: 'power',
@@ -69,7 +74,8 @@ const categories = [
     color: 'yellow',
     filterValue: 'power',
     image: 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400&h=300&fit=crop',
-    count: null
+    count: null,
+    comingSoon: true
   },
   {
     id: 'accessory',
@@ -79,7 +85,8 @@ const categories = [
     color: 'gray',
     filterValue: 'accessory',
     image: 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400&h=300&fit=crop',
-    count: null
+    count: null,
+    comingSoon: true
   }
 ]
 
@@ -155,15 +162,18 @@ useHead({
         <button
           v-for="category in categories"
           :key="category.id"
-          @click="navigateToCategory(category)"
-          class="group relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+          @click="!category.comingSoon && navigateToCategory(category)"
+          :disabled="category.comingSoon"
+          class="group relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-md transition-all duration-300"
+          :class="category.comingSoon ? 'cursor-not-allowed opacity-75' : 'cursor-pointer hover:shadow-xl hover:-translate-y-1'"
         >
           <!-- Category Image Background -->
           <div class="relative h-48 overflow-hidden">
             <img
               :src="category.image"
               :alt="category.name"
-              class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+              class="h-full w-full object-cover transition-transform duration-300"
+              :class="!category.comingSoon && 'group-hover:scale-110'"
             />
             <!-- Gradient Overlay -->
             <div 
@@ -171,8 +181,23 @@ useHead({
               :class="getColorClasses(category.color)"
             ></div>
             
+            <!-- Coming Soon Overlay -->
+            <div 
+              v-if="category.comingSoon"
+              class="absolute inset-0 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm"
+            >
+              <div class="text-center">
+                <div class="inline-flex items-center gap-2 rounded-full bg-yellow-500 px-4 py-2 text-sm font-bold text-gray-900 shadow-lg">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Coming Soon
+                </div>
+              </div>
+            </div>
+            
             <!-- Icon -->
-            <div class="absolute inset-0 flex items-center justify-center">
+            <div class="absolute inset-0 flex items-center justify-center" :class="category.comingSoon && 'opacity-30'">
               <div class="rounded-full bg-white/20 p-4 backdrop-blur-sm">
                 <svg 
                   class="h-12 w-12 text-white" 

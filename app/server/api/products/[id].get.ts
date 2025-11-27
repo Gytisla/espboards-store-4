@@ -93,7 +93,25 @@ export default defineEventHandler(async (event) => {
 
     // Fetch variants if this is a parent product (custom_parent_id is null and might have children)
     let variants: any[] = []
-    if (product && !product.custom_parent_id) {
+    let parentMetadata = null
+    
+    if (product && product.custom_parent_id) {
+      // This product is a variant - fetch parent's metadata
+      const { data: parentData, error: parentError } = await supabase
+        .from('products')
+        .select('metadata, features')
+        .eq('id', product.custom_parent_id)
+        .single()
+      
+      if (!parentError && parentData) {
+        parentMetadata = parentData.metadata
+        // If the variant doesn't have features but parent does, use parent's features
+        if (!product.features && parentData.features) {
+          product.features = parentData.features
+        }
+      }
+    } else if (product && !product.custom_parent_id) {
+      // This is a parent product - fetch its variants
       const { data: variantsData, error: variantsError } = await supabase
         .from('products')
         .select(`
@@ -124,6 +142,22 @@ export default defineEventHandler(async (event) => {
 
     // If product has a group, use the group product count, otherwise use variants count
     const totalCount = group ? groupProductCount : variants.length
+
+    // If product has parent metadata, inherit parent's display metadata while keeping variant's own filters
+    if (parentMetadata && product) {
+      // Keep the variant's own filters (specific to this variant)
+      const variantFilters = product.metadata?.filters
+      
+      // Merge with parent metadata (parent's display fields take precedence)
+      product.metadata = {
+        // ...parentMetadata,
+        ...product.metadata,
+        // Override: Use parent's display metadata if available
+        display: parentMetadata.display || product.metadata?.display,
+        // Keep variant's own filters (price, availability, etc. are variant-specific)
+        filters: parentMetadata.filters
+      }
+    }
 
     return {
       product,

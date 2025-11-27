@@ -37,6 +37,7 @@ interface Product {
   status: string
   metadata: any
   created_at: string
+  group_id: string | null
   variants?: Array<{
     id: string
     asin: string
@@ -62,6 +63,17 @@ const { data: featuredProductsData, pending: loadingProducts } = await useFetch<
 
 const featuredProducts = computed(() => {
   return featuredProductsData.value?.products?.slice(0, 8) || []
+})
+
+// Fetch deal products from dedicated deals API (includes all products with discounts)
+const { data: dealsData, pending: loadingDeals } = await useFetch<{ products: Product[] }>('/api/deals', {
+  query: {
+    marketplace: selectedMarketplace,
+  },
+})
+
+const dealProducts = computed(() => {
+  return dealsData.value?.products?.slice(0, 6) || []
 })
 
 const features = [
@@ -96,30 +108,31 @@ const productCategories = [
     href: '/products?type=development_board',
     gradient: 'from-blue-500 to-cyan-500',
   },
-  {
-    name: 'Sensors',
-    description: 'Temperature, humidity, motion, and more',
-    image: '📡',
-    count: '30+ products',
-    href: '/products?type=sensor',
-    gradient: 'from-purple-500 to-pink-500',
-  },
-  {
-    name: 'Displays',
-    description: 'OLED, LCD, and e-paper displays',
-    image: '📺',
-    count: '25+ products',
-    href: '/products?type=display',
-    gradient: 'from-green-500 to-emerald-500',
-  },
-  {
-    name: 'Power Modules',
-    description: 'Battery chargers and voltage regulators',
-    image: '🔋',
-    count: '15+ products',
-    href: '/products?type=power',
-    gradient: 'from-orange-500 to-red-500',
-  },
+  // Temporarily disabled categories
+  // {
+  //   name: 'Sensors',
+  //   description: 'Temperature, humidity, motion, and more',
+  //   image: '📡',
+  //   count: '30+ products',
+  //   href: '/products?type=sensor',
+  //   gradient: 'from-purple-500 to-pink-500',
+  // },
+  // {
+  //   name: 'Displays',
+  //   description: 'OLED, LCD, and e-paper displays',
+  //   image: '📺',
+  //   count: '25+ products',
+  //   href: '/products?type=display',
+  //   gradient: 'from-green-500 to-emerald-500',
+  // },
+  // {
+  //   name: 'Power Modules',
+  //   description: 'Battery chargers and voltage regulators',
+  //   image: '🔋',
+  //   count: '15+ products',
+  //   href: '/products?type=power',
+  //   gradient: 'from-orange-500 to-red-500',
+  // },
 ]
 </script>
 
@@ -137,15 +150,15 @@ const productCategories = [
         <div class="text-center">
           <!-- Heading -->
           <h1 class="mb-6 text-5xl font-bold tracking-tight text-gray-900 dark:text-white md:text-6xl lg:text-7xl">
-            Build Amazing IoT
+            Discover Best
             <span class="bg-linear-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
-              Projects
+              ESP32 Boards
             </span>
+            & Components
           </h1>
 
           <p class="mx-auto mb-10 max-w-2xl text-lg text-gray-600 dark:text-gray-400 md:text-xl">
-            Your one-stop shop for ESP32 development boards, sensors, displays, and components. 
-            Everything you need to bring your IoT ideas to life.
+            From powerful development boards to sensors and displays — find everything you need to build your next IoT project.
           </p>
 
           <!-- CTA Buttons -->
@@ -178,6 +191,57 @@ const productCategories = [
             <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Select your Amazon marketplace</span>
             <MarketplaceSelector />
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deals Section -->
+    <section v-if="dealProducts.length > 0 || loadingDeals" class="border-t border-gray-200 dark:border-gray-800 bg-linear-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-red-950 dark:to-orange-950 py-16 md:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-12 text-center">
+          <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-500/30">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+            </svg>
+            Hot Deals
+          </div>
+          <h2 class="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl">
+            Best Deals Right Now
+          </h2>
+          <p class="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
+            Save big on top ESP32 components with our current best discounts
+          </p>
+        </div>
+
+        <div v-if="loadingDeals" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div v-for="i in 6" :key="i" class="animate-pulse">
+            <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+              <div class="mb-4 aspect-square w-full rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+              <div class="mb-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+              <div class="mb-4 h-4 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+              <div class="h-8 w-full rounded bg-gray-200 dark:bg-gray-700"></div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ProductCard
+            v-for="product in dealProducts"
+            :key="product.id"
+            :product="product"
+          />
+        </div>
+
+        <div class="mt-12 text-center">
+          <NuxtLink
+            to="/deals"
+            class="inline-flex items-center gap-2 rounded-xl bg-red-500 hover:bg-red-600 px-8 py-4 text-base font-semibold text-white transition-all shadow-xl shadow-red-500/30 hover:shadow-2xl hover:shadow-red-500/40 hover:-translate-y-0.5"
+          >
+            View All Deals
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </NuxtLink>
         </div>
       </div>
     </section>
@@ -236,7 +300,7 @@ const productCategories = [
     </section>
 
     <!-- Product Categories -->
-    <section class="py-20 md:py-24 bg-white dark:bg-gray-900">
+    <!-- <section class="py-20 md:py-24 bg-white dark:bg-gray-900">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center">
           <h2 class="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white md:text-4xl">
@@ -254,17 +318,14 @@ const productCategories = [
             :to="category.href"
             class="group relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 transition-all hover:border-transparent hover:shadow-2xl hover:-translate-y-1"
           >
-            <!-- Gradient background on hover -->
             <div 
               class="absolute inset-0 bg-linear-to-br opacity-0 transition-opacity group-hover:opacity-5 dark:group-hover:opacity-10"
               :class="category.gradient"
             ></div>
             
             <div class="relative">
-              <!-- Icon -->
               <div class="mb-4 text-5xl">{{ category.image }}</div>
               
-              <!-- Content -->
               <h3 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
                 {{ category.name }}
               </h3>
@@ -272,7 +333,6 @@ const productCategories = [
                 {{ category.description }}
               </p>
               
-              <!-- Count badge -->
               <div class="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400">
                 {{ category.count }}
                 <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -283,7 +343,7 @@ const productCategories = [
           </NuxtLink>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- Features Section -->
     <section class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-20 md:py-24">

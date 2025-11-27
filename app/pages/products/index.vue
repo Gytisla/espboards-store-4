@@ -229,13 +229,13 @@ const { data: productsData, pending, refresh } = await useFetch('/api/products',
 const productTypes = [
   { value: 'all', label: 'All Products' },
   { value: 'development_board', label: 'Development Boards' },
-  { value: 'sensor', label: 'Sensors' },
-  { value: 'display', label: 'Displays' },
-  { value: 'power', label: 'Power Modules' },
-  { value: 'communication', label: 'Communication' },
-  { value: 'motor_driver', label: 'Motor Drivers' },
-  { value: 'breakout', label: 'Breakout Boards' },
-  { value: 'accessory', label: 'Accessories' },
+  { value: 'sensor', label: 'Sensors', disabled: true, comingSoon: true },
+  { value: 'display', label: 'Displays', disabled: true, comingSoon: true },
+  { value: 'power', label: 'Power Modules', disabled: true, comingSoon: true },
+  { value: 'communication', label: 'Communication', disabled: true, comingSoon: true },
+  { value: 'motor_driver', label: 'Motor Drivers', disabled: true, comingSoon: true },
+  { value: 'breakout', label: 'Breakout Boards', disabled: true, comingSoon: true },
+  { value: 'accessory', label: 'Accessories', disabled: true, comingSoon: true },
 ]
 
 // Sort options
@@ -846,8 +846,8 @@ useHead({
                   v-model="selectedType"
                   class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2.5 py-1.5 text-xs text-gray-700 dark:text-gray-300 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500/20"
                 >
-                  <option v-for="type in productTypes" :key="type.value" :value="type.value">
-                    {{ type.label }}
+                  <option v-for="type in productTypes" :key="type.value" :value="type.value" :disabled="type.disabled">
+                    {{ type.label }}{{ type.comingSoon ? ' (Coming Soon)' : '' }}
                   </option>
                 </select>
               </div>
