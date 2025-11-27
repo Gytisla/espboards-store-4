@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     // Verify product exists and is a parent
     const { data: product, error: productError } = await supabase
       .from('products')
-      .select('id, custom_parent_id, title')
+      .select('id, custom_parent_id, group_id, title')
       .eq('id', productId)
       .single()
 
@@ -31,6 +31,9 @@ export default defineEventHandler(async (event) => {
         message: 'Product is a variant, not a parent',
       })
     }
+
+    // Store group_id to delete the group later
+    const groupIdToDelete = product.group_id
 
     // Count variants
     const { count, error: countError } = await supabase
@@ -49,10 +52,13 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Remove custom_parent_id from all variants
+    // Remove custom_parent_id and group_id from all variants
     const { error: updateError } = await supabase
       .from('products')
-      .update({ custom_parent_id: null })
+      .update({ 
+        custom_parent_id: null,
+        group_id: null 
+      })
       .eq('custom_parent_id', productId)
 
     if (updateError) {
@@ -63,10 +69,25 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // Also clear the parent product's group_id
+    await supabase
+      .from('products')
+      .update({ group_id: null })
+      .eq('id', productId)
+
+    // If there was a group, delete it since all products are now ungrouped
+    if (groupIdToDelete) {
+      await supabase
+        .from('product_groups')
+        .delete()
+        .eq('id', groupIdToDelete)
+    }
+
     return {
       success: true,
       message: `Successfully ungrouped ${count} variant(s) from "${product.title}"`,
       ungroupedCount: count,
+      groupDeleted: !!groupIdToDelete,
     }
   } catch (err: any) {
     console.error('Failed to ungroup variants:', err)

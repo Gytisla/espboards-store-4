@@ -18,10 +18,13 @@ export default defineEventHandler(async (event) => {
   try {
     const supabase = createServerSupabaseAdminClient()
 
-    // First, ungroup all products in this group
+    // First, ungroup all products in this group (clear both group_id and custom_parent_id)
     const { error: ungroupError } = await supabase
       .from('products')
-      .update({ group_id: null })
+      .update({ 
+        group_id: null,
+        custom_parent_id: null 
+      })
       .eq('group_id', groupId)
 
     if (ungroupError) {
