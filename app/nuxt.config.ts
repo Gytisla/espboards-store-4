@@ -11,7 +11,8 @@ export default defineNuxtConfig({
     ],
   },
   app: {
-    baseURL: '/store', // Keep at root for Netlify
+    baseURL: '/',          // required
+    cdnURL: '',             // prevent absolute paths
     head: {
       title: 'ESPBoards Store - ESP32 Development Boards & Components',
       meta: [
