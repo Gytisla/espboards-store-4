@@ -26,21 +26,6 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', href: '/favicon.png' },
         { rel: 'apple-touch-icon', href: '/favicon.png' },
       ],
-      script: [
-        // Google Analytics
-        {
-          src: 'https://www.googletagmanager.com/gtag/js?id=G-5SD44L3D4Q',
-          async: true,
-        },
-        {
-          innerHTML: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-5SD44L3D4Q');
-          `,
-        },
-      ],
     },
   },
   runtimeConfig: {
