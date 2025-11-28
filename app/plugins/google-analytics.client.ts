@@ -1,72 +1,77 @@
-export default defineNuxtPlugin(() => {
-  const route = useRoute()
-  const router = useRouter()
-
-  // Check if GA should be disabled via query param
-  const checkGAStatus = () => {
-    const disableGA = route.query.disableGA
-    
-    if (disableGA === 'true') {
-      // Disable GA and store in localStorage
-      localStorage.setItem('disableGA', 'true')
-      return true
-    } else if (disableGA === 'false') {
-      // Enable GA and remove from localStorage
-      localStorage.removeItem('disableGA')
-      return false
-    }
-    
-    // Check localStorage for persistent setting
-    return localStorage.getItem('disableGA') === 'true'
-  }
-
-  // Initialize GA if not disabled
-  const initGA = () => {
-    if (checkGAStatus()) {
-      console.log('Google Analytics disabled by user')
-      return
-    }
-
-    // Load gtag.js
-    const script = document.createElement('script')
-    script.async = true
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-5SD44L3D4Q'
-    document.head.appendChild(script)
-
-    // Initialize dataLayer
-    window.dataLayer = window.dataLayer || []
-    function gtag(...args: any[]) {
-      window.dataLayer.push(args)
-    }
-    gtag('js', new Date())
-    gtag('config', 'G-5SD44L3D4Q')
-
-    // Make gtag available globally
-    window.gtag = gtag
-  }
-
-  // Initialize on mount
-  initGA()
-
-  // Re-check on route changes (in case query param changes)
-  router.afterEach(() => {
-    const shouldDisable = checkGAStatus()
-    
-    if (shouldDisable && window.gtag) {
-      // If GA was enabled but now should be disabled, log it
-      console.log('Google Analytics disabled by user')
-      // Note: Can't fully remove GA once loaded, but won't track new events
-    } else if (!shouldDisable && !window.gtag) {
-      // If GA was disabled but now should be enabled, initialize it
-      initGA()
-    }
-  })
-})
-
-// Type declaration for gtag
+// TypeScript declarations
 declare global {
   interface Window {
     dataLayer: any[]
     gtag: (...args: any[]) => void
   }
 }
+
+export default defineNuxtPlugin(() => {
+  // Skip analytics in development
+  if (process.dev) {
+    console.log('Analytics disabled in development mode')
+    return
+  }
+
+  // Simple Google tag (gtag.js) insertion
+  const GA_ID = 'G-5SD44L3D4Q'
+
+  // Helper: safe localStorage read
+  const safeGet = (key: string) => {
+    try {
+      return localStorage.getItem(key)
+    } catch (e) {
+      return null
+    }
+  }
+
+  // If URL contains ?disableGA=true, persist the preference and skip injection
+  try {
+    const params = new URLSearchParams(window.location.search)
+    const disableParam = params.get('disableGA')
+
+    // Explicit enable param (?disableGA=false)
+    if (disableParam === 'false') {
+      try {
+        localStorage.removeItem('analytics_disabled')
+      } catch (e) {
+        // ignore
+      }
+      console.log('Google Analytics re-enabled via URL param')
+      // continue to inject
+    }
+
+    if (disableParam === 'true') {
+      try {
+        localStorage.setItem('analytics_disabled', '1')
+      } catch (e) {
+        // ignore storage errors
+      }
+      console.log('Google Analytics disabled via URL param')
+      return
+    }
+  } catch (e) {
+    // ignore URL parsing errors
+  }
+
+  // Respect the explicit analytics_disabled flag in localStorage
+  try {
+    if (safeGet('analytics_disabled') === '1') {
+      console.log('Google Analytics disabled via localStorage flag')
+      return
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  // Inject GA script
+  const script = document.createElement('script')
+  script.async = true
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`
+  document.head.appendChild(script)
+
+  const inline = document.createElement('script')
+  inline.innerHTML = `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${GA_ID}');`
+  document.head.appendChild(inline)
+})
+
