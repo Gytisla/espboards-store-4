@@ -1,4 +1,6 @@
+import type { RouterConfig } from '@nuxt/schema'
+import { createWebHistory } from 'vue-router'
+
 export default {
-  history: 'browser',
-  base: '/store/'
-}
+  history: () => createWebHistory('/store/')
+} satisfies RouterConfig
