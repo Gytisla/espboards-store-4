@@ -728,12 +728,34 @@ const productSchema = computed(() => {
   return schema
 })
 
-// Set page meta
+// Set page meta with proper SEO
+useSeoMeta({
+  title: computed(() => product.value ? `${product.value.title} - ESPBoards Store` : 'Product Details'),
+  description: computed(() => {
+    if (!product.value) return 'Product details and specifications'
+    const desc = product.value.description || product.value.title
+    // Truncate to 160 chars for meta description
+    return desc.length > 160 ? desc.substring(0, 157) + '...' : desc
+  }),
+  ogTitle: computed(() => product.value ? `${product.value.title} - ESPBoards Store` : 'Product Details'),
+  ogDescription: computed(() => {
+    if (!product.value) return 'Product details and specifications'
+    const desc = product.value.description || product.value.title
+    return desc.length > 160 ? desc.substring(0, 157) + '...' : desc
+  }),
+  ogImage: computed(() => mainImage.value),
+  twitterCard: 'summary_large_image',
+  twitterTitle: computed(() => product.value ? `${product.value.title} - ESPBoards Store` : 'Product Details'),
+  twitterDescription: computed(() => {
+    if (!product.value) return 'Product details and specifications'
+    const desc = product.value.description || product.value.title
+    return desc.length > 160 ? desc.substring(0, 157) + '...' : desc
+  }),
+  twitterImage: computed(() => mainImage.value),
+})
+
+// Add structured data script
 useHead({
-  title: computed(() => product.value?.title || 'Product Details'),
-  meta: [
-    { name: 'description', content: computed(() => product.value?.description || 'Product details and specifications') },
-  ],
   script: [
     {
       type: 'application/ld+json',
