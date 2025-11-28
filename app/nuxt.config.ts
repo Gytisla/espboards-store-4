@@ -11,8 +11,8 @@ export default defineNuxtConfig({
     ],
   },
   app: {
-    baseURL: '/store/',          // required
-    cdnURL: '/store/',             // prevent absolute paths
+    baseURL: '/store/',
+    cdnURL: '/store/',
     head: {
       title: 'ESPBoards Store - ESP32 Development Boards & Components',
       meta: [
@@ -25,6 +25,21 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'icon', type: 'image/png', href: '/favicon.png' },
         { rel: 'apple-touch-icon', href: '/favicon.png' },
+      ],
+      script: [
+        // Google Analytics
+        {
+          src: 'https://www.googletagmanager.com/gtag/js?id=G-5SD44L3D4Q',
+          async: true,
+        },
+        {
+          innerHTML: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-5SD44L3D4Q');
+          `,
+        },
       ],
     },
   },
