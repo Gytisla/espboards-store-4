@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
     // Get Supabase admin client (for analytics access)
     const supabase = createServerSupabaseAdminClient()
 
-    // Base query
+    // Base query - fetch clicks first, then we'll join with products manually
     let dbQuery = supabase
       .from('amazon_clicks')
       .select('*')
@@ -51,11 +51,37 @@ export default defineEventHandler(async (event) => {
     const { data: clicks, error } = await dbQuery
 
     if (error) {
+      console.error('Error fetching clicks:', error)
       throw createError({
         statusCode: 500,
         message: 'Failed to fetch click analytics',
       })
     }
+
+    // Get unique product slugs to fetch product details
+    const productSlugs = [...new Set(clicks.map((c: any) => c.product_slug).filter(Boolean))]
+    
+    // Fetch product details
+    let productsMap: Record<string, any> = {}
+    if (productSlugs.length > 0) {
+      const { data: products, error: productsError } = await supabase
+        .from('products')
+        .select('slug, title, images')
+        .in('slug', productSlugs)
+      
+      if (!productsError && products) {
+        productsMap = products.reduce((acc, p) => {
+          acc[p.slug] = p
+          return acc
+        }, {} as Record<string, any>)
+      }
+    }
+
+    // Attach product details to clicks
+    const clicksWithProducts = clicks.map((click: any) => ({
+      ...click,
+      products: productsMap[click.product_slug] || null
+    }))
 
     // Process data based on groupBy
     let analytics: any = {}
@@ -63,41 +89,73 @@ export default defineEventHandler(async (event) => {
     switch (groupBy) {
       case 'product':
         // Group by product
-        analytics = clicks.reduce((acc: any, click: any) => {
+        analytics = clicksWithProducts.reduce((acc: any, click: any) => {
           const key = click.product_slug || click.product_asin
           if (!acc[key]) {
+            const product = click.products
+            const primaryImage = product?.images?.primary?.large?.url || 
+                                product?.images?.primary?.medium?.url || 
+                                product?.images?.primary?.small?.url
+            
             acc[key] = {
               product_slug: click.product_slug,
               product_asin: click.product_asin,
+              product_title: product?.title,
+              product_image: primaryImage,
               clicks: 0,
+              sessions: new Set(),
             }
           }
           acc[key].clicks++
+          if (click.session_id) {
+            acc[key].sessions.add(click.session_id)
+          }
           return acc
         }, {})
-        analytics = Object.values(analytics).sort((a: any, b: any) => b.clicks - a.clicks)
+        analytics = Object.values(analytics).map((item: any) => ({
+          ...item,
+          sessions: item.sessions.size,
+        })).sort((a: any, b: any) => b.clicks - a.clicks)
         break
 
       case 'marketplace':
-        // Group by marketplace
-        analytics = clicks.reduce((acc: any, click: any) => {
-          const key = click.marketplace_code
+        // Group by marketplace with product details
+        analytics = clicksWithProducts.reduce((acc: any, click: any) => {
+          // Create composite key with marketplace and product
+          const key = `${click.marketplace_code}_${click.product_slug || click.product_asin}`
+          
           if (!acc[key]) {
+            const product = click.products
+            const primaryImage = product?.images?.primary?.large?.url || 
+                                product?.images?.primary?.medium?.url || 
+                                product?.images?.primary?.small?.url
+            
             acc[key] = {
-              marketplace_code: key,
+              marketplace_code: click.marketplace_code,
+              product_slug: click.product_slug,
+              product_asin: click.product_asin,
+              product_title: product?.title,
+              product_image: primaryImage,
               clicks: 0,
+              sessions: new Set(),
             }
           }
           acc[key].clicks++
+          if (click.session_id) {
+            acc[key].sessions.add(click.session_id)
+          }
           return acc
         }, {})
-        analytics = Object.values(analytics).sort((a: any, b: any) => b.clicks - a.clicks)
+        analytics = Object.values(analytics).map((item: any) => ({
+          ...item,
+          sessions: item.sessions.size,
+        })).sort((a: any, b: any) => b.clicks - a.clicks)
         break
 
       case 'day':
       case 'week':
-        // Group by time period
-        analytics = clicks.reduce((acc: any, click: any) => {
+        // Group by time period with product details
+        analytics = clicksWithProducts.reduce((acc: any, click: any) => {
           const date = new Date(click.clicked_at)
           let key: string
           
@@ -110,22 +168,41 @@ export default defineEventHandler(async (event) => {
             key = weekStart.toISOString().split('T')[0]
           }
           
-          if (!acc[key]) {
-            acc[key] = {
+          // Create a composite key with date and product for better granularity
+          const compositeKey = `${key}_${click.product_slug || click.product_asin}`
+          
+          if (!acc[compositeKey]) {
+            const product = click.products
+            const primaryImage = product?.images?.primary?.large?.url || 
+                                product?.images?.primary?.medium?.url || 
+                                product?.images?.primary?.small?.url
+            
+            acc[compositeKey] = {
               date: key,
+              product_slug: click.product_slug,
+              product_asin: click.product_asin,
+              product_title: product?.title,
+              product_image: primaryImage,
               clicks: 0,
+              sessions: new Set(),
             }
           }
-          acc[key].clicks++
+          acc[compositeKey].clicks++
+          if (click.session_id) {
+            acc[compositeKey].sessions.add(click.session_id)
+          }
           return acc
         }, {})
-        analytics = Object.values(analytics).sort((a: any, b: any) => 
-          new Date(a.date).getTime() - new Date(b.date).getTime()
+        analytics = Object.values(analytics).map((item: any) => ({
+          ...item,
+          sessions: item.sessions.size,
+        })).sort((a: any, b: any) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime() || b.clicks - a.clicks
         )
         break
 
       default:
-        analytics = clicks
+        analytics = clicksWithProducts
     }
 
     // Calculate summary statistics

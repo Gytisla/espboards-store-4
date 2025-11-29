@@ -225,7 +225,7 @@ const calculateCTR = (clicks: number, impressions: number = 1000) => {
                 <th v-if="selectedGroupBy === 'day' || selectedGroupBy === 'week'" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Date
                 </th>
-                <th v-if="selectedGroupBy === 'product'" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Product
                 </th>
                 <th v-if="selectedGroupBy === 'marketplace'" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -249,13 +249,35 @@ const calculateCTR = (clicks: number, impressions: number = 1000) => {
                   {{ formatDate(row.date || row.clicked_at) }}
                 </td>
                 
-                <!-- Product column -->
-                <td v-if="selectedGroupBy === 'product'" class="px-4 sm:px-6 py-4 text-sm text-gray-900 dark:text-white">
-                  <div class="max-w-xs truncate" :title="row.product_slug">
-                    {{ row.product_slug || 'Unknown' }}
-                  </div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400">
-                    ASIN: {{ row.product_asin || 'N/A' }}
+                <!-- Product column - always show -->
+                <td class="px-4 sm:px-6 py-4 text-sm text-gray-900 dark:text-white">
+                  <div class="flex items-start gap-3">
+                    <!-- Product image if available -->
+                    <img 
+                      v-if="row.product_image" 
+                      :src="row.product_image" 
+                      :alt="row.product_title || row.product_slug"
+                      class="h-12 w-12 rounded-lg object-cover shrink-0"
+                    />
+                    <div class="min-w-0 flex-1">
+                      <div class="max-w-sm truncate font-medium" :title="row.product_title || row.product_slug">
+                        {{ row.product_title || row.product_slug || 'Unknown Product' }}
+                      </div>
+                      <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                          ASIN: {{ row.product_asin || 'N/A' }}
+                        </span>
+                        <span v-if="row.product_slug" class="text-xs text-gray-400 dark:text-gray-500">•</span>
+                        <NuxtLink 
+                          v-if="row.product_slug"
+                          :to="`/products/${row.product_slug}`"
+                          class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                          target="_blank"
+                        >
+                          View Product →
+                        </NuxtLink>
+                      </div>
+                    </div>
                   </div>
                 </td>
                 

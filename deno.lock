@@ -1,9 +1,11 @@
 {
   "version": "5",
   "specifiers": {
+    "npm:@supabase/supabase-js@2": "2.49.4",
     "npm:@supabase/supabase-js@^2.45.0": "2.49.4",
     "npm:@types/node@*": "22.15.3",
     "npm:pino@9": "9.14.0",
+    "npm:vue-bundle-renderer@^2.2.0": "2.2.0",
     "npm:zod@3.22.4": "3.22.4",
     "npm:zod@^3.23.0": "3.24.3"
   },
@@ -138,8 +140,17 @@
     "tr46@0.0.3": {
       "integrity": "sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw=="
     },
+    "ufo@1.6.1": {
+      "integrity": "sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA=="
+    },
     "undici-types@6.21.0": {
       "integrity": "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="
+    },
+    "vue-bundle-renderer@2.2.0": {
+      "integrity": "sha512-sz/0WEdYH1KfaOm0XaBmRZOWgYTEvUDt6yPYaUzl4E52qzgWLlknaPPTTZmp6benaPTlQAI/hN1x3tAzZygycg==",
+      "dependencies": [
+        "ufo"
+      ]
     },
     "webidl-conversions@3.0.1": {
       "integrity": "sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ=="
@@ -289,6 +300,11 @@
       "npm:@supabase/supabase-js@^2.45.0",
       "npm:pino@9",
       "npm:zod@^3.23.0"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:vue-bundle-renderer@^2.2.0"
+      ]
+    }
   }
 }

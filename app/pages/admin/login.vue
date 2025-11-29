@@ -16,11 +16,15 @@ const { user, signIn, initialize } = useAuth()
 // Theme management
 const { theme, cycleTheme } = useTheme()
 
+// Get redirect target from query or default to dashboard
+const route = useRoute()
+const redirectTo = (route.query.redirect as string) || '/admin'
+
 // Redirect if already logged in
 onMounted(async () => {
   await initialize()
   if (user.value) {
-    await navigateTo('/admin')
+    await navigateTo(redirectTo)
   }
 })
 
@@ -35,7 +39,7 @@ const handleSubmit = async () => {
 
   try {
     await signIn(email.value, password.value)
-    await navigateTo('/admin')
+    await navigateTo(redirectTo)
   } catch (err: any) {
     error.value = err.message || 'Invalid email or password'
   } finally {

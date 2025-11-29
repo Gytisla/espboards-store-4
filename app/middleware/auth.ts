@@ -4,9 +4,53 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
   }
 
-  // On server-side, always redirect immediately - don't render anything
+  // Server-side: check auth cookie
   if (process.server) {
-    return navigateTo('/admin/login')
+    const event = useRequestEvent()
+    
+    if (!event) {
+      // No event available, redirect to login
+      return navigateTo({
+        path: '/admin/login',
+        query: { redirect: to.fullPath }
+      })
+    }
+    
+    const cookieHeader = event.node.req.headers.cookie
+    const authToken = cookieHeader
+      ?.split(';')
+      .find(c => c.trim().startsWith('auth-token='))
+      ?.split('=')[1]
+
+    // If no auth token in cookie, redirect to login
+    if (!authToken) {
+      return navigateTo({
+        path: '/admin/login',
+        query: { redirect: to.fullPath }
+      })
+    }
+
+    // Token exists, verify it with Supabase directly
+    try {
+      const supabase = await createServerSupabaseClient(event)
+      const { data: { user }, error } = await supabase.auth.getUser(authToken)
+      
+      if (error || !user) {
+        // Invalid token, redirect to login
+        return navigateTo({
+          path: '/admin/login',
+          query: { redirect: to.fullPath }
+        })
+      }
+      // User is authenticated, allow access
+      return
+    } catch (error) {
+      // Error verifying token, redirect to login
+      return navigateTo({
+        path: '/admin/login',
+        query: { redirect: to.fullPath }
+      })
+    }
   }
 
   // Client-side authentication check
@@ -18,12 +62,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
       await initialize()
     } catch (error) {
       console.error('Auth initialization error:', error)
-      return navigateTo('/admin/login')
+      return navigateTo({
+        path: '/admin/login',
+        query: { redirect: to.fullPath }
+      })
     }
   }
 
-  // If user is not authenticated, redirect to login
+  // If user is not authenticated, redirect to login with return path
   if (!user.value) {
-    return navigateTo('/admin/login')
+    return navigateTo({
+      path: '/admin/login',
+      query: { redirect: to.fullPath }
+    })
   }
 })
